@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Tiny-Lit TodoMVC</title>
+    <script type="module" src="./index.js"></script>
+    <style>
+        #menu {
+            position: fixed;
+            background: #999;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            height: 50px;
+            box-sizing: border-box;
+        }
+
+        .menu-link {
+            display: inline-block;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 0 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="menu">
+        <a class="menu-link todo" href="">Todo</a>
+        <a class="menu-link fiber" href="">Fiber</a>
+    </div>
+    <div id="content">
+        <!-- <todo-mvc></todo-mvc> -->
+        <!-- <fiber-demo></fiber-demo> -->
+    </div>
+</body>
+
+<script>
+    var content = document.getElementById('content');
+    document.querySelector('.menu-link.todo').addEventListener('click', function(e) {
+        e.preventDefault();
+        content.innerHTML = '';
+        content.appendChild(document.createElement('todo-mvc'));
+    });
+    document.querySelector('.menu-link.fiber').addEventListener('click', function(e) {
+        e.preventDefault();
+        content.innerHTML = '';
+        content.appendChild(document.createElement('fiber-demo'));
+    });
+</script>
+
+</html>

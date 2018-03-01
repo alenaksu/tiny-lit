@@ -1,0 +1,51 @@
+{
+    "name": "tiny-lit",
+    "version": "1.0.0",
+    "repository": "git@github.com:alenaksu/tiny-lit.git",
+    "author": "alenaksu",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "license": "MIT",
+    "dependencies": {
+        "typescript": "^2.7.1"
+    },
+    "scripts": {
+        "precommit": "lint-staged",
+        "start": "tsc -w",
+        "clear": "rm -rf dist/",
+        "build": "npm run clear && tsc",
+        "build:commonjs": "npm run clear && tsc --target es5 --module commonjs",
+        "lint": "tslint --project ./",
+        "checksize:commonjs": "npm run build:commonjs && js-size dist/tiny-lit.js",
+        "checksize": "npm run build && js-size dist/tiny-lit.js --es",
+        "demo": "tsc -w & node demo/server.js",
+        "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
+    },
+    "devDependencies": {
+        "@types/jasmine": "^2.8.6",
+        "express": "^4.16.2",
+        "husky": "^0.14.3",
+        "jasmine": "^3.0.0",
+        "jasmine-core": "^3.1.0",
+        "js-size": "^2.1.7",
+        "karma": "^2.0.0",
+        "karma-chrome-launcher": "^2.2.0",
+        "karma-coverage": "^1.1.1",
+        "karma-jasmine": "^1.1.1",
+        "karma-typescript": "^3.0.12",
+        "lint-staged": "^6.0.1",
+        "prettier": "^1.10.2",
+        "ts-loader": "^3.5.0",
+        "tslint": "^5.9.1",
+        "uglify-es": "^3.3.8",
+        "uglifyjs-webpack-plugin": "^1.1.8",
+        "webpack": "^3.11.0"
+    },
+    "lint-staged": {
+        "@(packages|web-apps|site)/**/*.@(ts|s?css)": [
+            "prettier --write",
+            "git add"
+        ]
+    },
+    "typings": "dist/index.d.ts"
+}
