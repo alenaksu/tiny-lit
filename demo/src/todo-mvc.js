@@ -1,6 +1,5 @@
-import { html, render, collection } from '../../src/tiny-lit';
-import { TinyElement } from '../../src/tiny-element';
-import style from './style.js';
+import { html, render, collection, Element } from "../../src/index.ts";
+import style from "./style.js";
 
 function prevented(f) {
     return e => {
@@ -10,17 +9,17 @@ function prevented(f) {
 }
 
 function loadStorage(defaultValue) {
-    const s = localStorage.getItem('todoMvc');
-    return s ? JSON.parse(s) : defaultValue
+    const s = localStorage.getItem("todoMvc");
+    return s ? JSON.parse(s) : defaultValue;
 }
 
 function saveStorage(value) {
-    window.requestAnimationFrame(()=>
-        localStorage.setItem('todoMvc', JSON.stringify(value))
+    window.requestAnimationFrame(() =>
+        localStorage.setItem("todoMvc", JSON.stringify(value))
     );
 }
 
-class TodoMVC extends TinyElement {
+class TodoMVC extends Element {
     constructor() {
         super();
         this.state = loadStorage({
@@ -30,7 +29,7 @@ class TodoMVC extends TinyElement {
     }
 
     static get is() {
-        return 'todo-mvc';
+        return "todo-mvc";
     }
 
     setState(nextState) {
@@ -104,7 +103,7 @@ class TodoMVC extends TinyElement {
                                     filter === null || todo.completed === filter
                             ),
                             (todo, index) => html`
-                            <li class=${todo.completed ? 'completed' : ''}>
+                            <li class=${todo.completed ? "completed" : ""}>
                                 <div
                                     class="view"
                                 >
@@ -140,7 +139,7 @@ class TodoMVC extends TinyElement {
                     <ul class="filters">
                         <li>
                             <a
-                                class=${filter === null && 'selected'}
+                                class=${filter === null && "selected"}
                                 href="#/"
                                 onClick=${prevented(() => this.setFilter(null))}
                             >
@@ -149,7 +148,7 @@ class TodoMVC extends TinyElement {
                         </li>
                         <li>
                             <a
-                                class=${filter === false && 'selected'}
+                                class=${filter === false && "selected"}
                                 href="#/active"
                                 onClick=${prevented(() =>
                                     this.setFilter(false)
@@ -160,7 +159,7 @@ class TodoMVC extends TinyElement {
                         </li>
                         <li>
                             <a
-                                class=${filter && 'selected'}
+                                class=${filter && "selected"}
                                 href="#/completed"
                                 onClick=${prevented(() => this.setFilter(true))}
                             >
