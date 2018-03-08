@@ -11,7 +11,7 @@ const requestIdleCallback =
                             0,
                             (options.timeout || 50) - (Date.now() - start)
                         );
-                    }
+                    },
                 }),
             1
         );
@@ -51,18 +51,22 @@ export class Scheduler implements SchedulerInterface {
         } else {
             this.running = false;
         }
-    }
+    };
 
     private start() {
         requestIdleCallback(this.process, {
-            timeout: 100
+            timeout: 100,
         });
         this.running = true;
     }
 
     defer(fn: ScheduledFunction): Function {
         return () => {
-            if (!fn._scheduled) {
+            if (fn._scheduled === undefined) {
+                // Force first rendering
+                requestAnimationFrame(fn as any);
+                fn._scheduled = false;
+            } else if (!fn._scheduled) {
                 this.tasks.push(fn);
                 fn._scheduled = true;
                 fn._priority = 0;
@@ -73,7 +77,7 @@ export class Scheduler implements SchedulerInterface {
                 );
             }
 
-            if (!this.running) {
+            if (this.tasks.length && !this.running) {
                 this.start();
             }
         };
