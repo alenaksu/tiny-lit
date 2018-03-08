@@ -134,7 +134,7 @@ function createElement(
 
     return {
         fragment: wrapper,
-        expressions
+        expressions,
     };
 }
 
@@ -206,7 +206,7 @@ export class TemplateCollection implements TemplateInterface {
 
     create(): Node {
         const fragment = document.createDocumentFragment();
-        this.rootNode = document.createTextNode("");
+        this.rootNode = document.createTextNode('');
         fragment.appendChild(this.rootNode);
 
         this.update(this.values);
@@ -231,7 +231,7 @@ class AttributeExpression implements Expression {
             return;
         }
 
-        if (typeof value === "string") {
+        if (typeof value === 'string') {
             element.setAttribute(attribute.name, value);
         } else {
             element.hasAttribute(attribute.name) &&
@@ -262,7 +262,7 @@ class ElementExpression implements Expression {
         const { element } = this;
 
         if (value === undefined || value === null) {
-            value = document.createTextNode("");
+            value = document.createTextNode('');
         }
 
         if (isTemplate(element) && isTemplate(value)) {
@@ -304,7 +304,7 @@ export function render(
 ) {
     if (!container.__template) {
         container.__template = template;
-        !append && (container.innerHTML = "");
+        !append && (container.innerHTML = '');
         container.appendChild(template.create());
     } else {
         container.__template.update(template.values);
