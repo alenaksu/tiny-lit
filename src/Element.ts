@@ -11,16 +11,13 @@ export abstract class Element extends HTMLElement {
     constructor() {
         super();
         this.render = this.scheduler.defer(this.render.bind(this));
-    }
-
-    connectedCallback() {
         this.render();
     }
 
     setState(nextState: any) {
         this.state = {
             ...this.state,
-            ...nextState
+            ...nextState,
         };
 
         this.render();
