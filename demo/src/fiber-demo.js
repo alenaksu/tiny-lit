@@ -1,20 +1,19 @@
-import { html } from '../../src/tiny-lit';
-import { TinyElement } from '../../src/tiny-element';
+import { html, Element } from "../../src/index.ts";
 
 const targetSize = 25;
 
-class FiberDot extends TinyElement {
+class FiberDot extends Element {
     static get observedAttributes() {
-        return ['x', 'y', 'size', 'text'];
+        return ["x", "y", "size", "text"];
     }
 
     static get is() {
-        return 'fiber-dot';
+        return "fiber-dot";
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
         this.setState({
-            [name]: name !== 'text' ? parseFloat(newValue) || 0 : newValue
+            [name]: name !== "text" ? parseFloat(newValue) || 0 : newValue
         });
     }
 
@@ -31,9 +30,9 @@ class FiberDot extends TinyElement {
             height: ${s}px;
             left: ${x}px;
             top: ${y}px;
-            border-radius: ${s/2}px;
+            border-radius: ${s / 2}px;
             line-height: ${s}px;
-            background: ${hover ? '#ff0' : '#61dafb'};
+            background: ${hover ? "#ff0" : "#61dafb"};
         `;
     }
 
@@ -41,14 +40,14 @@ class FiberDot extends TinyElement {
         const { hover, text } = this.state;
 
         return html`<span style=${this.getStyle()}>${
-            hover ? '**' + text + '**' : text
+            hover ? "**" + text + "**" : text
         }</span>`;
     }
 }
 
-class FiberTriangle extends TinyElement {
+class FiberTriangle extends Element {
     static get observedAttributes() {
-        return ['x', 'y', 's', 'seconds'];
+        return ["x", "y", "s", "seconds"];
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
@@ -58,7 +57,7 @@ class FiberTriangle extends TinyElement {
     }
 
     static get is() {
-        return 'fiber-triangle';
+        return "fiber-triangle";
     }
 
     getTemplate() {
@@ -108,13 +107,13 @@ class FiberTriangle extends TinyElement {
     }
 }
 
-class FiberDemo extends TinyElement {
+class FiberDemo extends Element {
     static get observedAttributes() {
-        return ['elapsed'];
+        return ["elapsed"];
     }
 
     static get is() {
-        return 'fiber-demo';
+        return "fiber-demo";
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
@@ -149,7 +148,6 @@ class FiberDemo extends TinyElement {
         const elapsed = Date.now() - this.start;
         const t = (elapsed / 1000) % 10;
         const scale = 1 + (t > 5 ? 10 - t : t) / 10;
-
 
         return `
             position: absolute;
