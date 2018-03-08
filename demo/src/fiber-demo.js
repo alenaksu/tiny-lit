@@ -1,19 +1,19 @@
-import { html, Element } from "../../src/index.ts";
+import { html, Element } from '../../src/index.ts';
 
 const targetSize = 25;
 
 class FiberDot extends Element {
     static get observedAttributes() {
-        return ["x", "y", "size", "text"];
+        return ['x', 'y', 'size', 'text'];
     }
 
     static get is() {
-        return "fiber-dot";
+        return 'fiber-dot';
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
         this.setState({
-            [name]: name !== "text" ? parseFloat(newValue) || 0 : newValue
+            [name]: name !== 'text' ? parseFloat(newValue) || 0 : newValue,
         });
     }
 
@@ -32,7 +32,7 @@ class FiberDot extends Element {
             top: ${y}px;
             border-radius: ${s / 2}px;
             line-height: ${s}px;
-            background: ${hover ? "#ff0" : "#61dafb"};
+            background: ${hover ? '#ff0' : '#61dafb'};
         `;
     }
 
@@ -40,24 +40,24 @@ class FiberDot extends Element {
         const { hover, text } = this.state;
 
         return html`<span style=${this.getStyle()}>${
-            hover ? "**" + text + "**" : text
+            hover ? '**' + text + '**' : text
         }</span>`;
     }
 }
 
 class FiberTriangle extends Element {
     static get observedAttributes() {
-        return ["x", "y", "s", "seconds"];
+        return ['x', 'y', 's', 'seconds'];
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
         this.setState({
-            [name]: parseFloat(newValue)
+            [name]: parseFloat(newValue),
         });
     }
 
     static get is() {
-        return "fiber-triangle";
+        return 'fiber-triangle';
     }
 
     getTemplate() {
@@ -109,16 +109,16 @@ class FiberTriangle extends Element {
 
 class FiberDemo extends Element {
     static get observedAttributes() {
-        return ["elapsed"];
+        return ['elapsed'];
     }
 
     static get is() {
-        return "fiber-demo";
+        return 'fiber-demo';
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
         this.setState({
-            [name]: newValue
+            [name]: newValue,
         });
     }
 
@@ -127,10 +127,8 @@ class FiberDemo extends Element {
         this.timerInterval = setInterval(this.tick.bind(this), 1000);
         this.renderInterval = setInterval(this.render, 20);
         this.state = {
-            seconds: 0
+            seconds: 0,
         };
-
-        super.connectedCallback();
     }
 
     disconnectedCallback() {
@@ -140,7 +138,7 @@ class FiberDemo extends Element {
 
     tick() {
         this.setState({
-            seconds: this.state.seconds % 10 + 1
+            seconds: this.state.seconds % 10 + 1,
         });
     }
 

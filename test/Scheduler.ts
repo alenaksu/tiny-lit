@@ -3,7 +3,9 @@ import { Scheduler, ScheduledFunction } from '../src/Scheduler';
 describe('Scheduler', () => {
     it('should prioritize frequent tasks', () => {
         const s = new Scheduler();
-        const a: any = () => { }, b: any = () => { }, c: any = () => { };
+        const a: any = () => {},
+            b: any = () => {},
+            c: any = () => {};
 
         // cheating
         (<any>s).running = true;
@@ -11,6 +13,12 @@ describe('Scheduler', () => {
         const da = s.defer(a),
             db = s.defer(b),
             dc = s.defer(c);
+
+        // first render is forced
+        da();
+        db();
+        dc();
+        expect((<any>s).tasks).toEqual([]);
 
         da();
         db();
@@ -28,7 +36,9 @@ describe('Scheduler', () => {
 
     it('should process task queue', () => {
         const s = new Scheduler();
-        const a: any = () => { }, b: any = () => { }, c: any = () => { };
+        const a: any = () => {},
+            b: any = () => {},
+            c: any = () => {};
 
         // cheating
         (<any>s).running = true;
@@ -46,7 +56,7 @@ describe('Scheduler', () => {
             didTimeout: true,
             timeRemaining: () => {
                 return 0;
-            }
+            },
         });
         dc();
         expect((<any>s).tasks).toEqual([c]);
