@@ -18,14 +18,17 @@ function removeNodes(nodes: Node[] | Node): void {
         .forEach((node: Node) => node.parentNode!.removeChild(node));
 }
 
+function treeWalkerFilter(node: any) {
+    return node.__skip ? NodeFilter.FILTER_SKIP : NodeFilter.FILTER_ACCEPT;
+}
+// fix(IE11): expect filter to be a function and not an object
+(<any>treeWalkerFilter).acceptNode = treeWalkerFilter;
+
 function createTreeWalker(root: Node): TreeWalker {
     return document.createTreeWalker(
         root,
         NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-        {
-            acceptNode: (node: any) =>
-                node.__skip ? NodeFilter.FILTER_SKIP : NodeFilter.FILTER_ACCEPT
-        },
+        treeWalkerFilter as any,
         false
     );
 }
@@ -203,7 +206,7 @@ export class TemplateCollection implements TemplateInterface {
 
     create(): Node {
         const fragment = document.createDocumentFragment();
-        this.rootNode = document.createTextNode('');
+        this.rootNode = document.createTextNode("");
         fragment.appendChild(this.rootNode);
 
         this.update(this.values);
@@ -228,7 +231,7 @@ class AttributeExpression implements Expression {
             return;
         }
 
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
             element.setAttribute(attribute.name, value);
         } else {
             element.hasAttribute(attribute.name) &&
@@ -259,7 +262,7 @@ class ElementExpression implements Expression {
         const { element } = this;
 
         if (value === undefined || value === null) {
-            value = document.createTextNode('');
+            value = document.createTextNode("");
         }
 
         if (isTemplate(element) && isTemplate(value)) {
@@ -301,7 +304,7 @@ export function render(
 ) {
     if (!container.__template) {
         container.__template = template;
-        !append && (container.innerHTML = '');
+        !append && (container.innerHTML = "");
         container.appendChild(template.create());
     } else {
         container.__template.update(template.values);
