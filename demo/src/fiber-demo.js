@@ -12,13 +12,11 @@ class FiberDot extends Element {
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
-        this.setState({
-            [name]: name !== 'text' ? parseFloat(newValue) || 0 : newValue,
-        });
+        this.render();
     }
 
     getStyle() {
-        const { x, hover, y, size } = this.state;
+        const { x, hover, y, size } = this;
         const s = size * 1.3;
 
         return `
@@ -37,11 +35,11 @@ class FiberDot extends Element {
     }
 
     getTemplate() {
-        const { hover, text } = this.state;
+        const { hover, text } = this;
 
-        return html`<span style=${this.getStyle()}>${
-            hover ? '**' + text + '**' : text
-        }</span>`;
+        return html`<span style=${this.getStyle()}>
+                        ${hover ? '**' + text + '**' : text}
+                    </span>`;
     }
 }
 
@@ -61,16 +59,12 @@ class FiberTriangle extends Element {
     }
 
     getTemplate() {
-        let { s, seconds, x, y } = this.state;
+        let { s, seconds, x, y } = this;
 
         if (s <= targetSize) {
             return html`
-                <fiber-dot
-                    x=${x - targetSize / 2}
-                    y=${y - targetSize / 2}
-                    size=${targetSize}
-                    text=${seconds}
-                />
+                <fiber-dot x=${x - targetSize / 2} y=${y -
+                targetSize / 2} size=${targetSize} text=${seconds} />
             `;
         }
 
@@ -85,24 +79,12 @@ class FiberTriangle extends Element {
         }
 
         return html`
-            <fiber-triangle
-                x=${x}
-                y=${y - s / 2}
-                s=${s}
-                seconds=${seconds}
-            ></fiber-triangle>
-            <fiber-triangle
-                x=${x - s}
-                y=${y + s / 2}
-                s=${s}
-                seconds=${seconds}
-            ></fiber-triangle>
-            <fiber-triangle
-                x=${x + s}
-                y=${y + s / 2}
-                s=${s}
-                seconds=${seconds}
-            ></fiber-triangle>
+            <fiber-triangle x=${x} y=${y -
+            s / 2} s=${s} seconds=${seconds}></fiber-triangle>
+            <fiber-triangle x=${x - s} y=${y +
+            s / 2} s=${s} seconds=${seconds}></fiber-triangle>
+            <fiber-triangle x=${x + s} y=${y +
+            s / 2} s=${s} seconds=${seconds}></fiber-triangle>
         `;
     }
 }
@@ -117,18 +99,16 @@ class FiberDemo extends Element {
     }
 
     propertyChangedCallback(name, oldValue, newValue) {
-        this.setState({
-            [name]: newValue,
-        });
+        this.render();
     }
 
     connectedCallback() {
         this.start = Date.now();
         this.timerInterval = setInterval(this.tick.bind(this), 1000);
         this.renderInterval = setInterval(this.render, 20);
-        this.state = {
+        this.setState({
             seconds: 0,
-        };
+        });
     }
 
     disconnectedCallback() {

@@ -64,8 +64,8 @@ export class Scheduler implements SchedulerInterface {
         return () => {
             if (fn._scheduled === undefined) {
                 // Force first rendering
-                requestAnimationFrame(fn as any);
                 fn._scheduled = false;
+                fn();
             } else if (!fn._scheduled) {
                 this.tasks.push(fn);
                 fn._scheduled = true;
