@@ -41,7 +41,7 @@ module.exports = {
             // }
         ],
     },
-    plugins: [new UglifyJsPlugin({ sourceMap: true })],
+    // plugins: [new UglifyJsPlugin({ sourceMap: true })],
     devServer: {
         contentBase: __dirname,
     },
