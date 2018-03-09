@@ -220,7 +220,7 @@ class AttributeExpression implements Expression {
     element: Element;
 
     constructor(element: Element, attribute: Attr) {
-        this.attribute = { name: attribute.name, value: attribute.value };
+        this.attribute = { name: attribute.name, value: undefined };
         this.element = element;
     }
 
@@ -239,7 +239,8 @@ class AttributeExpression implements Expression {
             (element as any)[attribute.name] = value;
 
             // ???
-            (<any>element).propertyChangedCallback &&
+            attribute.value !== undefined &&
+                (<any>element).propertyChangedCallback &&
                 (<any>element).propertyChangedCallback(
                     attribute.name,
                     attribute.value,
@@ -253,9 +254,11 @@ class AttributeExpression implements Expression {
 
 class ElementExpression implements Expression {
     element: Node | TemplateInterface;
+    value: any;
 
     constructor(element: Node) {
         this.element = element;
+        this.value = undefined;
     }
 
     update(value: any): void {
@@ -263,6 +266,8 @@ class ElementExpression implements Expression {
 
         if (value === undefined || value === null) {
             value = document.createTextNode('');
+        } else if (value === this.value) {
+            return;
         }
 
         if (isTemplate(element) && isTemplate(value)) {
@@ -274,11 +279,11 @@ class ElementExpression implements Expression {
                     : [<Node>element],
                 isTemplate(value) ? value.create() : value
             );
-
             this.element = value;
         } else {
             (<Node>element).nodeValue = value;
         }
+        this.value = value;
     }
 }
 
