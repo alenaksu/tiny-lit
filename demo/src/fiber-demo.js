@@ -2,6 +2,18 @@ import { html, Element } from '../../src/index.ts';
 
 const targetSize = 25;
 
+function rafInterval(fn) {
+    let running = true;
+
+    function run() {
+        fn();
+        running && requestAnimationFrame(run);
+    }
+
+    requestAnimationFrame(run);
+
+    return () => (running = false);
+}
 class FiberDot extends Element {
     static get observedAttributes() {
         return ['x', 'y', 'size', 'text'];
@@ -105,14 +117,14 @@ class FiberDemo extends Element {
     connectedCallback() {
         this.start = Date.now();
         this.timerInterval = setInterval(this.tick.bind(this), 1000);
-        this.renderInterval = setInterval(this.render, 20);
+        this.renderInterval = rafInterval(this.render);
         this.setState({
             seconds: 0,
         });
     }
 
     disconnectedCallback() {
-        clearInterval(this.renderInterval);
+        this.renderInterval();
         clearInterval(this.timerInterval);
     }
 
