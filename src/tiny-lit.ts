@@ -232,6 +232,7 @@ export class TemplateCollection implements TemplateInterface {
 
 class AttributeExpression implements Expression {
     name: string;
+    value?: any;
     element: Element;
 
     constructor(element: Element, name: string) {
@@ -240,8 +241,7 @@ class AttributeExpression implements Expression {
     }
 
     update(value: any): void {
-        const { name, element } = this;
-        const currentValue: any = (<any>element)[name];
+        const { name, element, value: currentValue } = this;
 
         if (currentValue === value) {
             return;
@@ -259,6 +259,8 @@ class AttributeExpression implements Expression {
         currentValue !== undefined &&
             (<any>element).propertyChangedCallback &&
             (<any>element).propertyChangedCallback(name, currentValue, value);
+
+        this.value = value;
     }
 }
 
