@@ -198,12 +198,17 @@ export class TemplateCollection implements TemplateInterface {
     update(items: any[]) {
         const { rootNode, templates } = this;
         items.forEach((template, i) => {
+            if (templates[i] && !isTemplateEqual(templates[i], template)) {
+                removeNodes(templates[i].content);
+                (<any>templates)[i] = null;
+            }
+
             if (!templates[i]) {
                 // ADD
                 const node: Node = template.create();
                 insertBefore(node, rootNode!);
 
-                templates.push(template);
+                templates[i] = template;
             } else {
                 // UPDATE
                 templates[i].update(template.values);
