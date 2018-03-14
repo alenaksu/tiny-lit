@@ -37,6 +37,16 @@ function insertBefore(node: Node, before: Node) {
     before.parentNode!.insertBefore(node, before);
 }
 
+function isTemplateEqual(t1: Template, t2: Template) {
+    return (
+        t1.constructor === t2.constructor &&
+        ((!t1.strings && !t2.strings) ||
+            (t1.strings.length &&
+                t2.strings.length &&
+                t1.strings.every((s, i) => t2.strings[i] === s)))
+    );
+}
+
 /**
  * TEMPLATES
  */
@@ -270,7 +280,11 @@ class ElementExpression implements Expression {
             return;
         }
 
-        if (isTemplate(element) && isTemplate(value)) {
+        if (
+            isTemplate(element) &&
+            isTemplate(value) &&
+            isTemplateEqual(element as Template, value)
+        ) {
             (element as Template).update(value.values);
         } else if (isNode(value) || isTemplate(value)) {
             replaceContent(
