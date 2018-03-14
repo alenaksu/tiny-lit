@@ -38,15 +38,13 @@ function insertBefore(node: Node, before: Node) {
 }
 
 function isTemplateEqual(t1: Template, t2: Template) {
-    console.time('isTemplateEqual');
-    let value =
+    return (
         t1.constructor === t2.constructor &&
         ((!t1.strings && !t2.strings) ||
             (t1.strings.length &&
                 t2.strings.length &&
-                t1.strings.every((s, i) => t2.strings[i] === s)));
-    console.timeEnd('isTemplateEqual');
-    return value;
+                t1.strings.every((s, i) => t2.strings[i] === s)))
+    );
 }
 
 /**
@@ -74,7 +72,9 @@ function attributesToExpressions(
         node.attributes,
         (attributes: AttributeExpression[], attr: Attr) => {
             attr.value in expressions &&
-                attributes.push(new AttributeExpression(<Element>node, attr));
+                attributes.push(
+                    new AttributeExpression(<Element>node, attr.name)
+                );
             return attributes;
         },
         []
@@ -231,39 +231,34 @@ export class TemplateCollection implements TemplateInterface {
 }
 
 class AttributeExpression implements Expression {
-    attribute: any;
+    name: string;
     element: Element;
 
-    constructor(element: Element, attribute: Attr) {
-        this.attribute = { name: attribute.name, value: undefined };
+    constructor(element: Element, name: string) {
+        this.name = name;
         this.element = element;
     }
 
     update(value: any): void {
-        const { attribute, element } = this;
+        const { name, element } = this;
+        const currentValue: any = (<any>element)[name];
 
-        if (attribute.value === value) {
+        if (currentValue === value) {
             return;
         }
 
         if (typeof value === 'string') {
-            element.setAttribute(attribute.name, value);
+            element.setAttribute(name, value);
         } else {
-            element.hasAttribute(attribute.name) &&
-                element.removeAttribute(attribute.name);
-            (element as any)[attribute.name] = value;
-
-            // ???
-            attribute.value !== undefined &&
-                (<any>element).propertyChangedCallback &&
-                (<any>element).propertyChangedCallback(
-                    attribute.name,
-                    attribute.value,
-                    value
-                );
+            element.hasAttribute(name) && element.removeAttribute(name);
         }
 
-        attribute.value = value;
+        (element as any)[name] = value;
+
+        // ???
+        currentValue !== undefined &&
+            (<any>element).propertyChangedCallback &&
+            (<any>element).propertyChangedCallback(name, currentValue, value);
     }
 }
 
