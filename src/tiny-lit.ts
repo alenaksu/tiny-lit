@@ -38,13 +38,15 @@ function insertBefore(node: Node, before: Node) {
 }
 
 function isTemplateEqual(t1: Template, t2: Template) {
-    return (
+    console.time('isTemplateEqual');
+    let value =
         t1.constructor === t2.constructor &&
         ((!t1.strings && !t2.strings) ||
             (t1.strings.length &&
                 t2.strings.length &&
-                t1.strings.every((s, i) => t2.strings[i] === s)))
-    );
+                t1.strings.every((s, i) => t2.strings[i] === s)));
+    console.timeEnd('isTemplateEqual');
+    return value;
 }
 
 /**
@@ -199,11 +201,9 @@ export class TemplateCollection implements TemplateInterface {
         const { rootNode, templates } = this;
         items.forEach((template, i) => {
             if (templates[i] && !isTemplateEqual(templates[i], template)) {
-                removeNodes(templates[i].content);
-                (<any>templates)[i] = null;
-            }
-
-            if (!templates[i]) {
+                replaceContent(templates[i].content, template.create());
+                templates[i] = template;
+            } else if (!templates[i]) {
                 // ADD
                 const node: Node = template.create();
                 insertBefore(node, rootNode!);
