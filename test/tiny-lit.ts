@@ -1,4 +1,10 @@
-import { html, Template, render, collection, TemplateCollection } from '../src/tiny-lit';
+import {
+    html,
+    Template,
+    render,
+    collection,
+    TemplateCollection,
+} from '../src/tiny-lit';
 import { div } from './utils';
 
 describe('tiny-lit', () => {
@@ -8,7 +14,9 @@ describe('tiny-lit', () => {
         });
 
         it('returns a TemplateCollection', () => {
-            expect(collection([], () => { })).toEqual(jasmine.any(TemplateCollection));
+            expect(collection([], () => {})).toEqual(
+                jasmine.any(TemplateCollection)
+            );
         });
 
         it('Template.strings are identical for multiple calls', () => {
@@ -17,7 +25,8 @@ describe('tiny-lit', () => {
         });
 
         it('values contain interpolated values', () => {
-            const foo = 'foo', bar = 1;
+            const foo = 'foo',
+                bar = 1;
             expect(html`${foo}${bar}`.values).toEqual([foo, bar]);
         });
     });
@@ -55,7 +64,7 @@ describe('tiny-lit', () => {
         });
 
         it('should update the template', () => {
-            const t = (name) => html`<div>${name}</div>`;
+            const t = name => html`<div>${name}</div>`;
 
             render(t('pippo'), root);
             const children = [].slice.call(root.childNodes);
@@ -74,7 +83,7 @@ describe('tiny-lit', () => {
         });
 
         it('should correctly set non-string attribute as property', () => {
-            const c = () => { },
+            const c = () => {},
                 t = html`<div onclick=${c}></div>`;
 
             render(t, root);
@@ -82,9 +91,9 @@ describe('tiny-lit', () => {
         });
 
         it('should update property', () => {
-            const c = () => { },
-                d = () => { },
-                t = (c) => html`<div onclick=${c}></div>`;
+            const c = () => {},
+                d = () => {},
+                t = c => html`<div onclick=${c}></div>`;
 
             render(t(c), root);
             render(t(d), root);
@@ -94,7 +103,7 @@ describe('tiny-lit', () => {
         it('should update attribute', () => {
             const c = 'pippo',
                 d = 'pluto',
-                t = (c) => html`<div class=${c}></div>`;
+                t = c => html`<div class=${c}></div>`;
 
             render(t(c), root);
             render(t(d), root);
@@ -102,13 +111,14 @@ describe('tiny-lit', () => {
         });
 
         it('should not update attribute with same value', () => {
-            const c = () => { },
-                t = (c) => html`<div onclick=${c}></div>`;
+            const c = () => {},
+                t = c => html`<div onclick=${c}></div>`;
 
             render(t(c), root);
-            Object.defineProperty(root.children[0], 'onclick', {
-                set(value) { throw 'changed'; }
-            });
+
+            root.children[0].propertyChangedCallback = () => {
+                throw 'changed';
+            };
 
             expect(() => {
                 render(t(c), root);
@@ -117,8 +127,8 @@ describe('tiny-lit', () => {
 
         it('should switch between attribute and property', () => {
             const c = 'pippo',
-                d = () => { },
-                t = (cb) => html`<div onclick=${cb}></div>`;
+                d = () => {},
+                t = cb => html`<div onclick=${cb}></div>`;
 
             render(t(c), root);
             render(t(d), root);
@@ -141,12 +151,13 @@ describe('tiny-lit', () => {
                 t = html`<div>${c}</div>`;
 
             render(t, root);
-            expect(root.innerHTML).toEqual('<div>&lt;b&gt;pippo&lt;/b&gt;</div>');
+            expect(root.innerHTML).toEqual(
+                '<div>&lt;b&gt;pippo&lt;/b&gt;</div>'
+            );
         });
 
         it('should render nested templates', () => {
-            const
-                a = html`<b>pippo</b>`,
+            const a = html`<b>pippo</b>`,
                 b = html`<div>${a}</div>`;
 
             render(b, root);
@@ -154,7 +165,7 @@ describe('tiny-lit', () => {
         });
 
         it('should replace nodes', () => {
-            const t = (s) => html`<div>${s ? 'pippo' : null}</div>`;
+            const t = s => html`<div>${s ? 'pippo' : null}</div>`;
 
             render(t(true), root);
             expect(root.innerHTML).toBe('<div>pippo</div>');
@@ -162,10 +173,20 @@ describe('tiny-lit', () => {
             expect(root.innerHTML).toBe('<div></div>');
         });
 
+        it('should replace different templates', () => {
+            const boldTemplate = html`<b>bold</b>`;
+            const normalTemplate = html`<span>normal</span>`;
+            const t = bold =>
+                html`<div>${bold ? boldTemplate : normalTemplate}</div>`;
+
+            render(t(false), root);
+            render(t(true), root);
+            expect(root.innerHTML).toBe('<div><b>bold</b></div>');
+        });
+
         it('should update nested template', () => {
-            const
-                a = (c) => html`<b>pippo ${c}</b>`,
-                b = (c) => html`<div>${a(c)}</div>`;
+            const a = c => html`<b>pippo ${c}</b>`,
+                b = c => html`<div>${a(c)}</div>`;
 
             render(b('pippo'), root);
 
@@ -173,7 +194,7 @@ describe('tiny-lit', () => {
 
             const elementExpression = root.__template.expressions[0].element;
             const update = elementExpression.update.bind(elementExpression);
-            elementExpression.update = (values) => {
+            elementExpression.update = values => {
                 update(values);
                 updated = true;
             };
@@ -184,9 +205,8 @@ describe('tiny-lit', () => {
         });
 
         it('should remove nested template on null value', () => {
-            const
-                a = html`<b>pippo</b>`,
-                b = (show) => html`<div>${show ? a : null}</div>`;
+            const a = html`<b>pippo</b>`,
+                b = show => html`<div>${show ? a : null}</div>`;
 
             render(b(true), root);
 
@@ -198,34 +218,44 @@ describe('tiny-lit', () => {
 
         describe('collection', () => {
             it('TemplateCollection.create returns the rendered dom', () => {
-                const t = collection(['a', 'b', 'c'], (i) => html`<li>${i}</li>`),
+                const t = collection(['a', 'b', 'c'], i => html`<li>${i}</li>`),
                     node = t.create();
 
                 expect(node).toEqual(jasmine.any(Node));
 
                 root.appendChild(node);
-                expect(root.innerHTML).toEqual('<li>a</li><li>b</li><li>c</li>');
+                expect(root.innerHTML).toEqual(
+                    '<li>a</li><li>b</li><li>c</li>'
+                );
             });
 
             it('should update existing items', () => {
-                const t = (items) => html`
+                const t = items => html`
                     <ul>
-                        ${collection(items, (i) => html`
-                        <li>${i}</li>`)}
+                        ${collection(
+                            items,
+                            i => html`
+                        <li>${i}</li>`
+                        )}
                     </ul>`;
 
                 render(t(['a', 'b', 'c']), root);
                 const li = root.querySelectorAll('li');
                 render(t(['d', 'e', 'c']), root);
 
-                expect([].slice.call(li).every((i) => root.contains(i))).toBe(true);
+                expect([].slice.call(li).every(i => root.contains(i))).toBe(
+                    true
+                );
             });
 
             it('should remove items', () => {
-                const t = (items) => html`
+                const t = items => html`
                     <ul>
-                        ${collection(items, (i) => html`
-                        <li>${i}</li>`)}
+                        ${collection(
+                            items,
+                            i => html`
+                        <li>${i}</li>`
+                        )}
                     </ul>`;
 
                 render(t(['a', 'b', 'c']), root);
@@ -233,6 +263,30 @@ describe('tiny-lit', () => {
                 render(t(['a', 'b']), root);
 
                 expect(root.querySelectorAll('li').length).toBe(2);
+            });
+
+            it('should replace different templates', () => {
+                const t = (items, bold) => html`
+                    <ul>
+                        ${collection(
+                            items,
+                            i =>
+                                bold
+                                    ? html`<li><b>${i}</b></li>`
+                                    : html`<li>${i}</li>`
+                        )}
+                    </ul>`;
+
+                const list = ['a', 'b', 'c'];
+
+                render(t(list, false), root);
+                render(t(list.filter(c => c !== 'b'), true), root);
+
+                const items = root.querySelectorAll('li');
+                expect(items.length).toBe(2);
+                expect(
+                    [].every.call(items, item => !!item.querySelector('b'))
+                ).toBe(true);
             });
         });
     });
