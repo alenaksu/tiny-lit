@@ -59,4 +59,27 @@ describe('Element', () => {
 
         expect(rendered).toBe(true);
     });
+
+    it('should accept functions as setState argument', () => {
+        const e = <Element>document.createElement('c-element');
+        const increment = state => ({
+            value: state.value + 1,
+        });
+
+        e.setState({
+            value: 0,
+        });
+        expect(e.state.value).toBe(0);
+
+        e.setState(increment);
+        expect(e.state.value).toBe(1);
+    });
+
+    it('should pass state and element as setState function arguments', () => {
+        const e = <Element>document.createElement('c-element');
+        const increment = (state, instance) => {
+            expect(state).toEqual({});
+            expect(instance).toBe(e);
+        };
+    });
 });
