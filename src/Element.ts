@@ -24,9 +24,13 @@ export abstract class Element extends HTMLElement {
     }
 
     setState(nextState: any) {
+        const state: any = this.state;
+
         this.state = {
-            ...this.state,
-            ...nextState,
+            ...state,
+            ...(typeof nextState === 'function'
+                ? nextState(state, this)
+                : nextState),
         };
 
         this.render();
