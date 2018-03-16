@@ -1,6 +1,6 @@
 {
     "rules": {
-        "arrow-parens": true,
+        "arrow-parens": false,
         "class-name": true,
         "indent": [true, "spaces", 2],
         "prefer-const": true,
