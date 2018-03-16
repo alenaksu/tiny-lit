@@ -52,15 +52,15 @@ function isTemplateEqual(t1: Template, t2: Template) {
  */
 
 interface ExpressionMap {
-    [comment: string]: HTMLElement | Function | string;
+    [marker: string]: HTMLElement | Function | string;
 }
 
 export interface Expression {
-    update(value: any): void;
+    update(value: any, force?: boolean): void;
 }
 
 export interface TemplateInterface {
-    update(values: any[]): void;
+    update(values: any[], force?: boolean): void;
     create(): Node;
 }
 
@@ -161,9 +161,9 @@ export class Template implements TemplateInterface {
         this.strings = strings;
     }
 
-    update(values: any[]) {
+    update(values: any[], force?: boolean) {
         values.forEach((value: any, i: number) =>
-            this.expressions[i].update(value)
+            this.expressions[i].update(value, force)
         );
     }
 
@@ -174,7 +174,7 @@ export class Template implements TemplateInterface {
         );
         this.content = [].slice.call(fragment.childNodes);
         this.expressions = expressions;
-        this.update(this.values);
+        this.update(this.values, true);
 
         return fragment;
     }
@@ -240,10 +240,10 @@ class AttributeExpression implements Expression {
         this.element = element;
     }
 
-    update(value: any): void {
+    update(value: any, force: boolean): void {
         const { name, element, value: currentValue } = this;
 
-        if (currentValue === value) {
+        if (!force && currentValue === value) {
             return;
         }
 
@@ -273,12 +273,12 @@ class ElementExpression implements Expression {
         this.value = undefined;
     }
 
-    update(value: any): void {
+    update(value: any, force: boolean): void {
         const { element } = this;
 
         if (value === undefined || value === null) {
             value = document.createTextNode('');
-        } else if (value === this.value) {
+        } else if (!force && value === this.value) {
             return;
         }
 
