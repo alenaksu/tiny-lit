@@ -253,7 +253,7 @@ class AttributeExpression implements Expression {
             element.hasAttribute(name) && element.removeAttribute(name);
         }
 
-        if (value) {
+        if (value !== undefined || (element as any)[name] !== '') {
             (element as any)[name] = value;
         }
 

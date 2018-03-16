@@ -156,6 +156,25 @@ describe('tiny-lit', () => {
             );
         });
 
+        it('should correctly unset attributes', () => {
+            const c = 'btn',
+                t = v => html`<input min=${v.a} custom=${v.b}  />`;
+
+            render(t({ a: 0 }), root);
+            expect(root.children[0].min).toBe('0');
+            render(t({ a: null }), root);
+            expect(root.children[0].min).toBe('null');
+            render(t({ a: undefined }), root);
+            expect(root.children[0].min).toBe('');
+
+            render(t({ b: 0 }), root);
+            expect(root.children[0].custom).toBe(0);
+            render(t({ b: null }), root);
+            expect(root.children[0].custom).toBe(null);
+            render(t({ b: undefined }), root);
+            expect(root.children[0].custom).toBe(undefined);
+        });
+
         it('should render nested templates', () => {
             const a = html`<b>pippo</b>`,
                 b = html`<div>${a}</div>`;
