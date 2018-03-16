@@ -87,7 +87,7 @@ describe('tiny-lit', () => {
                 t = html`<div onclick=${c}></div>`;
 
             render(t, root);
-            expect((<any>root.children[0]).onclick).toEqual(c);
+            expect((<any>root.children[0]).onclick).toBe(c);
         });
 
         it('should update property', () => {
@@ -132,7 +132,7 @@ describe('tiny-lit', () => {
 
             render(t(c), root);
             render(t(d), root);
-            expect((<any>root.children[0]).onclick).toEqual(d);
+            expect((<any>root.children[0]).onclick).toBe(d);
 
             render(t(c), root);
             expect((<any>root.children[0]).getAttribute('onclick')).toBe(c);
