@@ -9,7 +9,7 @@ export abstract class Element extends HTMLElement {
         return Scheduler;
     }
 
-    get children(): any {
+    get slot(): any {
         return collection(this._children, (node: Node) => html`${node}`);
     }
 
