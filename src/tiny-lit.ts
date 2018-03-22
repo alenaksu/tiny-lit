@@ -64,27 +64,33 @@ export interface TemplateInterface {
     create(): Node;
 }
 
+type OrderedExpression = [number, Expression];
+
 function attributesToExpressions(
     node: any,
     expressions: ExpressionMap
-): AttributeExpression[] {
+): OrderedExpression[] {
     return [].reduce.call(
         node.attributes,
-        (attributes: AttributeExpression[], attr: Attr) => {
+        (attributes: OrderedExpression[], attr: Attr): OrderedExpression[] => {
             attr.value in expressions &&
-                attributes.push(
-                    new AttributeExpression(<Element>node, attr.name)
-                );
+                attributes.push([
+                    Number(attr.value.replace(/\D+/g, '')),
+                    new AttributeExpression(
+                        <Element>node,
+                        attr.name
+                    ) as Expression,
+                ]);
             return attributes;
         },
         []
-    ) as AttributeExpression[];
+    );
 }
 
-function textsToExpressions(node: Text): Expression[] {
+function textsToExpressions(node: Text): OrderedExpression[] {
     const keys = node.data.match(/{{__\d+__}}/g) || [];
 
-    return keys.map((key: string) => {
+    return keys.map((key: string): OrderedExpression => {
         const keyNode: Text = document.createTextNode(key);
         (<any>keyNode).__skip = true;
         node = node.splitText(node.data.indexOf(key));
@@ -92,13 +98,16 @@ function textsToExpressions(node: Text): Expression[] {
 
         insertBefore(keyNode, node);
 
-        return new ElementExpression(keyNode);
+        return [
+            Number(key.replace(/\D+/g, '')),
+            new ElementExpression(keyNode) as Expression,
+        ];
     });
 }
 
 function linkExpressions(root: DocumentFragment, expressions: ExpressionMap) {
     const treeWalker = createTreeWalker(root);
-    const linkedExpressions: (Expression)[] = [];
+    let linkedExpressions: (OrderedExpression)[] = [];
 
     while (treeWalker.nextNode()) {
         const node: any = treeWalker.currentNode;
@@ -111,6 +120,11 @@ function linkExpressions(root: DocumentFragment, expressions: ExpressionMap) {
             );
         }
     }
+
+    // Sorting is needed for IE
+    linkedExpressions = linkedExpressions
+        .sort((a: any, b: any) => a[0] - b[0])
+        .map((a: any) => a[1]);
 
     return linkedExpressions;
 }
