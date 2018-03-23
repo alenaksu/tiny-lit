@@ -47,6 +47,14 @@ function isTemplateEqual(t1: Template, t2: Template) {
     );
 }
 
+function markerNumber(marker: string): number {
+    return Number(marker.replace(/\D+/g, ''));
+}
+
+function textNode(text: string = ''): Text {
+    return document.createTextNode(text);
+}
+
 /**
  * TEMPLATES
  */
@@ -75,7 +83,7 @@ function attributesToExpressions(
         (attributes: OrderedExpression[], attr: Attr): OrderedExpression[] => {
             attr.value in expressions &&
                 attributes.push([
-                    Number(attr.value.replace(/\D+/g, '')),
+                    markerNumber(attr.value),
                     new AttributeExpression(
                         <Element>node,
                         attr.name
@@ -91,7 +99,7 @@ function textsToExpressions(node: Text): OrderedExpression[] {
     const keys = node.data.match(/{{__\d+__}}/g) || [];
 
     return keys.map((key: string): OrderedExpression => {
-        const keyNode: Text = document.createTextNode(key);
+        const keyNode: Text = textNode(key);
         (<any>keyNode).__skip = true;
         node = node.splitText(node.data.indexOf(key));
         node.deleteData(0, key.length);
@@ -99,7 +107,7 @@ function textsToExpressions(node: Text): OrderedExpression[] {
         insertBefore(keyNode, node);
 
         return [
-            Number(key.replace(/\D+/g, '')),
+            markerNumber(key),
             new ElementExpression(keyNode) as Expression,
         ];
     });
@@ -152,14 +160,14 @@ function createElement(
         return html;
     }, strings[0]);
 
-    const wrapper = <DocumentFragment>document
+    const fragment = <DocumentFragment>document
         .createRange()
         .createContextualFragment(html);
 
-    const expressions: any = linkExpressions(wrapper, expressionsMap);
+    const expressions: any = linkExpressions(fragment, expressionsMap);
 
     return {
-        fragment: wrapper,
+        fragment,
         expressions,
     };
 }
@@ -235,7 +243,7 @@ export class TemplateCollection implements TemplateInterface {
 
     create(): Node {
         const fragment = document.createDocumentFragment();
-        this.rootNode = document.createTextNode('');
+        this.rootNode = textNode();
         fragment.appendChild(this.rootNode);
 
         this.update(this.values);
@@ -293,7 +301,7 @@ class ElementExpression implements Expression {
         const { element } = this;
 
         if (value === undefined || value === null) {
-            value = document.createTextNode('');
+            value = textNode();
         } else if (!force && value === this.value) {
             return;
         }
@@ -334,14 +342,9 @@ export function collection(
     return new TemplateCollection(items.map(<any>callback));
 }
 
-export function render(
-    template: Template,
-    container: any,
-    append: boolean = false
-) {
+export function render(template: Template, container: any) {
     if (!container.__template) {
         container.__template = template;
-        !append && (container.innerHTML = '');
         container.appendChild(template.create());
     } else {
         container.__template.update(template.values);
