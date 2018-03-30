@@ -82,3 +82,4 @@ typings/
 /test/**/*.js.map
 /demo/public/**/*.js.map
 /demo/public/**/*.js
+/lib/
