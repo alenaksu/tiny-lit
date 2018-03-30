@@ -72,33 +72,24 @@ export interface TemplateInterface {
     create(): Node;
 }
 
-type OrderedExpression = [number, Expression];
-
 function attributesToExpressions(
     node: any,
-    expressions: ExpressionMap
-): OrderedExpression[] {
-    return [].reduce.call(
-        node.attributes,
-        (attributes: OrderedExpression[], attr: Attr): OrderedExpression[] => {
-            attr.value in expressions &&
-                attributes.push([
-                    markerNumber(attr.value),
-                    new AttributeExpression(
-                        <Element>node,
-                        attr.name
-                    ) as Expression,
-                ]);
-            return attributes;
-        },
-        []
-    );
+    expressions: ExpressionMap,
+    linkedExpressions: Expression[]
+): void {
+    [].forEach.call(node.attributes, (attr: Attr) => {
+        if (attr.value in expressions) {
+            linkedExpressions[
+                markerNumber(attr.value)
+            ] = new AttributeExpression(<Element>node, attr.name) as Expression;
+        }
+    });
 }
 
-function textsToExpressions(node: Text): OrderedExpression[] {
+function textsToExpressions(node: Text, linkedExpressions: Expression[]): void {
     const keys = node.data.match(/{{__\d+__}}/g) || [];
 
-    return keys.map((key: string): OrderedExpression => {
+    keys.map((key: string) => {
         const keyNode: Text = textNode(key);
         (<any>keyNode).__skip = true;
         node = node.splitText(node.data.indexOf(key));
@@ -106,33 +97,27 @@ function textsToExpressions(node: Text): OrderedExpression[] {
 
         insertBefore(keyNode, node);
 
-        return [
-            markerNumber(key),
-            new ElementExpression(keyNode) as Expression,
-        ];
+        linkedExpressions[markerNumber(key)] = new ElementExpression(
+            keyNode
+        ) as Expression;
     });
 }
 
 function linkExpressions(root: DocumentFragment, expressions: ExpressionMap) {
     const treeWalker = createTreeWalker(root);
-    let linkedExpressions: (OrderedExpression)[] = [];
+    const linkedExpressions: (Expression)[] = Array(
+        Object.keys(expressions).length
+    );
 
     while (treeWalker.nextNode()) {
         const node: any = treeWalker.currentNode;
 
         if (node.nodeType === Node.TEXT_NODE) {
-            linkedExpressions.push(...textsToExpressions(node));
+            textsToExpressions(node, linkedExpressions);
         } else if (node.nodeType === Node.ELEMENT_NODE) {
-            linkedExpressions.push(
-                ...attributesToExpressions(node, expressions)
-            );
+            attributesToExpressions(node, expressions, linkedExpressions);
         }
     }
-
-    // Sorting is needed for IE
-    linkedExpressions = linkedExpressions
-        .sort((a: any, b: any) => a[0] - b[0])
-        .map((a: any) => a[1]);
 
     return linkedExpressions;
 }
@@ -184,8 +169,9 @@ export class Template implements TemplateInterface {
     }
 
     update(values: any[], force?: boolean) {
-        values.forEach((value: any, i: number) =>
-            this.expressions[i].update(value, force)
+        values.forEach(
+            (value: any, i: number) =>
+                this.expressions[i] && this.expressions[i].update(value, force)
         );
     }
 
