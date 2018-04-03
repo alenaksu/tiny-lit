@@ -1,4 +1,4 @@
 *
-!lib/*
+!lib/**
 !package.json
 !README.md
