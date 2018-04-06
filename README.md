@@ -57,11 +57,14 @@ import { Element, html } from 'tiny-lit';
 
 class Clock extends Element {
     connectedCallback() {
-        setInterval(this.render, 1000);
+        setInterval(() => 
+            this.setState({
+                time: new Date().toLocaleTimeString()
+            }), 1000);
     }
 
     getTemplate() {
-        return html`<div>${new Date().toLocaleTimeString()}</div>`;
+        return html`<div>${this.state.time}</div>`;
     }
 }
 customElement.define('my-clock', Clock);
