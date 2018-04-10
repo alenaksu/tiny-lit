@@ -70,6 +70,8 @@ export interface Expression {
 export interface TemplateInterface {
     update(values: any[], force?: boolean): void;
     create(): Node;
+    content: Node[];
+    values: any[];
 }
 
 function attributesToExpressions(
@@ -205,6 +207,19 @@ export class TemplateCollection implements TemplateInterface {
         this.templates.splice(from, to - from + 1);
     }
 
+    get content(): Node[] {
+        return <Node[]>[
+            this.rootNode,
+            ...this.templates.reduce(
+                (nodes: Node[], template: TemplateInterface) => {
+                    nodes.push(...template.content);
+                    return nodes;
+                },
+                []
+            ),
+        ];
+    }
+
     update(items: any[]) {
         const { rootNode, templates } = this;
         items.forEach((template, i) => {
@@ -328,7 +343,7 @@ export function collection(
     return new TemplateCollection(items.map(<any>callback));
 }
 
-export function render(template: Template, container: any) {
+export function render(template: TemplateInterface, container: any) {
     if (!container.__template) {
         container.__template = template;
         container.appendChild(template.create());
