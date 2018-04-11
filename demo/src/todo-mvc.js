@@ -98,11 +98,18 @@ class TodoMVC extends Element {
                         <!-- These are here just to show the structure of the list items -->
                         <!-- List items should get the class \`editing\` when editing and \`completed\` when marked as completed -->
                         ${collection(
-                            todos.filter(
-                                todo =>
-                                    filter === null || todo.completed === filter
-                            ),
-                            (todo, index) => html`
+                            todos
+                                .map(
+                                    (todo, index) => (
+                                        (todo.index = index), todo
+                                    )
+                                )
+                                .filter(
+                                    todo =>
+                                        filter === null ||
+                                        todo.completed === filter
+                                ),
+                            todo => html`
                             <li class=${todo.completed ? 'completed' : ''}>
                                 <div
                                     class="view"
@@ -112,11 +119,11 @@ class TodoMVC extends Element {
                                         type="checkbox"
                                         checked=${todo.completed}
                                         onClick=${prevented(() =>
-                                            this.switchCompleted(index)
+                                            this.switchCompleted(todo.index)
                                         )}
                                     />
                                     <label onClick=${prevented(() =>
-                                        this.switchCompleted(index)
+                                        this.switchCompleted(todo.index)
                                     )}>${todo.text}</label>
                                     <button class="destroy" onClick=${prevented(
                                         () => this.handleDeleteTodo(todo)
