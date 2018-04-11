@@ -182,9 +182,9 @@ export class Template implements TemplateInterface {
             this.strings,
             this.values
         );
-        this.content = [].slice.call(fragment.childNodes);
         this.expressions = expressions;
         this.update(this.values, true);
+        this.content = [].slice.call(fragment.childNodes);
 
         return fragment;
     }
