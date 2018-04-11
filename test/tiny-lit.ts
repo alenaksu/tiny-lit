@@ -248,6 +248,14 @@ describe('tiny-lit', () => {
                 );
             });
 
+            it('TemplateCollection.content returns all nodes', () => {
+                const t = collection(['a', 'b', 'c'], i => html`<li>${i}</li>`);
+
+                render(t, root);
+                // the array contains also the root node
+                expect(root.__template.content.length).toEqual(4);
+            });
+
             it('should update existing items', () => {
                 const t = items => html`
                     <ul>
