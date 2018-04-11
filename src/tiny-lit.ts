@@ -164,10 +164,16 @@ export class Template implements TemplateInterface {
     strings: string[];
     content: Node[] = [];
     expressions: Expression[] = [];
+    key: any = undefined;
 
     constructor(strings: string[], values: any[]) {
         this.values = values;
         this.strings = strings;
+    }
+
+    withKey(key: any) {
+        this.key = key;
+        return this;
     }
 
     update(values: any[], force?: boolean) {
@@ -190,56 +196,81 @@ export class Template implements TemplateInterface {
     }
 }
 
+function moveTemplate(template: Template, node: Node) {
+    let currentNode = node;
+    template.content.forEach(node => {
+        currentNode.parentNode!.insertBefore(node, currentNode.nextSibling);
+        currentNode = node;
+    });
+}
+
 export class TemplateCollection implements TemplateInterface {
     values: any[];
-    templates: Template[];
+    templates: any;
     rootNode?: Text;
 
     constructor(values: any[]) {
         this.values = values;
-        this.templates = [];
+        this.templates = Object.create(null);
     }
 
-    private _removeTemplates(from: number, to: number) {
-        for (let i: number = from; i <= to; i++) {
-            removeNodes(this.templates[i].content);
-        }
-        this.templates.splice(from, to - from + 1);
+    private _removeTemplates(keys: string[]) {
+        const { templates } = this;
+        keys.forEach(key => {
+            removeNodes(templates[key].content);
+            delete templates[key];
+        });
     }
 
     get content(): Node[] {
+        const { templates, rootNode } = this;
+
         return <Node[]>[
-            this.rootNode,
-            ...this.templates.reduce(
-                (nodes: Node[], template: TemplateInterface) => {
-                    nodes.push(...template.content);
-                    return nodes;
-                },
-                []
-            ),
+            rootNode,
+            ...Object.keys(templates).reduce((nodes: Node[], key: string) => {
+                nodes.push(...templates[key].content);
+                return nodes;
+            }, []),
         ];
     }
 
     update(items: any[]) {
         const { rootNode, templates } = this;
-        items.forEach((template, i) => {
-            if (templates[i] && !isTemplateEqual(templates[i], template)) {
-                replaceContent(templates[i].content, template.create());
-                templates[i] = template;
-            } else if (!templates[i]) {
-                // ADD
+
+        let currentNode: Node = <Node>rootNode;
+        const keys = items.reduce((keys, template, i) => {
+            const key: string = String(template.key || i);
+
+            if (!templates[key]) {
                 const node: Node = template.create();
-                insertBefore(node, rootNode!);
+                currentNode.nextSibling!
+                    ? insertBefore(node, currentNode.nextSibling!)
+                    : currentNode.parentNode!.appendChild(node);
 
-                templates[i] = template;
+                templates[key] = template;
+            } else if (!isTemplateEqual(templates[key], template)) {
+                replaceContent(templates[key].content, template.create());
+                templates[key] = template;
             } else {
-                // UPDATE
-                templates[i].update(template.values);
+                templates[key].update(template.values);
             }
-        });
 
-        // REMOVE
-        this._removeTemplates(items.length, templates.length - 1);
+            if (currentNode.nextSibling !== templates[key].content[0]) {
+                moveTemplate(templates[key], currentNode);
+            }
+            currentNode =
+                templates[key].content[templates[key].content.length - 1];
+
+            keys.push(key);
+
+            return keys;
+        }, []);
+
+        this._removeTemplates(
+            Object.keys(templates).filter(
+                (key: string) => keys.indexOf(key) === -1
+            )
+        );
     }
 
     create(): Node {
