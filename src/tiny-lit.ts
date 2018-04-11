@@ -55,6 +55,41 @@ function textNode(text: string = ''): Text {
     return document.createTextNode(text);
 }
 
+function isNode(obj: any) {
+    return typeCheck(obj, [Element, DocumentFragment, Text]);
+}
+
+function isTemplate(obj: any) {
+    return typeCheck(obj, [Template, TemplateCollection]);
+}
+
+function createElement(
+    strings: string[],
+    values: any[]
+): { fragment: DocumentFragment; expressions: Expression[] } {
+    const expressionsMap: ExpressionMap = {};
+
+    const html = values.reduce((html: string, value: any, i: number) => {
+        const marker = `{{__${i}__}}`;
+        expressionsMap[marker] = value;
+
+        html += marker + strings[i + 1];
+
+        return html;
+    }, strings[0]);
+
+    const fragment = <DocumentFragment>document
+        .createRange()
+        .createContextualFragment(html);
+
+    const expressions: any = linkExpressions(fragment, expressionsMap);
+
+    return {
+        fragment,
+        expressions,
+    };
+}
+
 /**
  * TEMPLATES
  */
@@ -122,41 +157,6 @@ function linkExpressions(root: DocumentFragment, expressions: ExpressionMap) {
     }
 
     return linkedExpressions;
-}
-
-function isNode(obj: any) {
-    return typeCheck(obj, [Element, DocumentFragment, Text]);
-}
-
-function isTemplate(obj: any) {
-    return typeCheck(obj, [Template, TemplateCollection]);
-}
-
-function createElement(
-    strings: string[],
-    values: any[]
-): { fragment: DocumentFragment; expressions: Expression[] } {
-    const expressionsMap: ExpressionMap = {};
-
-    const html = values.reduce((html: string, value: any, i: number) => {
-        const marker = `{{__${i}__}}`;
-        expressionsMap[marker] = value;
-
-        html += marker + strings[i + 1];
-
-        return html;
-    }, strings[0]);
-
-    const fragment = <DocumentFragment>document
-        .createRange()
-        .createContextualFragment(html);
-
-    const expressions: any = linkExpressions(fragment, expressionsMap);
-
-    return {
-        fragment,
-        expressions,
-    };
 }
 
 export class Template implements TemplateInterface {
