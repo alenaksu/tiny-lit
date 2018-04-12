@@ -33,7 +33,7 @@ render(
 import { html, render, collection } from 'tiny-lit';
 
 const listItem = item => (
-    html`<li>${item}</li>`
+    html`<li>${item}</li>`.withKey(item)
 );
 
 const list = items => (
