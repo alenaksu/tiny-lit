@@ -275,6 +275,26 @@ describe('tiny-lit', () => {
                 );
             });
 
+            it('should reorder items using key', () => {
+                const t = items => html`
+                    <ul>
+                        ${collection(items, i =>
+                            html`<li>${i}</li>`.withKey(i)
+                        )}
+                    </ul>`;
+
+                let list = ['a', 'b', 'c'];
+                render(t(list), root);
+
+                list = ['b', 'c', 'a'];
+                render(t(list), root);
+
+                const li = root.querySelectorAll('li');
+                list.forEach((i, index) =>
+                    expect(li[index].textContent).toEqual(i)
+                );
+            });
+
             it('should remove items', () => {
                 const t = items => html`
                     <ul>

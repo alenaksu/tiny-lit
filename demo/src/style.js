@@ -332,6 +332,10 @@ export default html`
         text-decoration: underline;
     }
 
+    .shuffle {
+        margin-right: 5px;
+    }
+
     .info {
         margin: 65px auto 0;
         color: #bfbfbf;
