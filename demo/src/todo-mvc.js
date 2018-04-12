@@ -19,6 +19,26 @@ function saveStorage(value) {
     );
 }
 
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
+
 class TodoMVC extends Element {
     constructor() {
         super();
@@ -48,6 +68,9 @@ class TodoMVC extends Element {
                 {
                     text: e.target.elements[0].value,
                     completed: false,
+                    id: Math.random()
+                        .toString()
+                        .substr(2),
                 },
             ],
         });
@@ -109,7 +132,8 @@ class TodoMVC extends Element {
                                         filter === null ||
                                         todo.completed === filter
                                 ),
-                            todo => html`
+                            todo =>
+                                html`
                             <li class=${todo.completed ? 'completed' : ''}>
                                 <div
                                     class="view"
@@ -131,7 +155,7 @@ class TodoMVC extends Element {
                                 </div>
                                 <input class="edit" value=${todo.text} />
                             </li>
-                        `
+                        `.withKey(todo.id)
                         )}
                     </ul>
                 </section>
@@ -178,6 +202,10 @@ class TodoMVC extends Element {
                     <button class="clear-completed" onClick=${prevented(() =>
                         this.handleClearCompleted()
                     )}>Clear completed</button>
+                    <button class="clear-completed shuffle" onClick=${prevented(
+                        () =>
+                            this.setState({ todos: shuffle(this.state.todos) })
+                    )}>Shuffle</button>
                 </footer>
             </section>
             <footer class="info">
