@@ -1,4 +1,4 @@
-import { Scheduler, ScheduledFunction } from '../src/Scheduler';
+import { Scheduler } from '../src/Scheduler';
 
 describe('Scheduler', () => {
     it('should prioritize frequent tasks', () => {
