@@ -27,11 +27,11 @@ export interface IdleDeadline {
     timeRemaining(): number;
 }
 
-export interface SchedulerInterface {
+export interface IScheduler {
     defer(fn: ScheduledFunction): Function;
 }
 
-export class Scheduler implements SchedulerInterface {
+export class Scheduler implements IScheduler {
     tasks: ScheduledFunction[] = [];
     private running: boolean = false;
 
