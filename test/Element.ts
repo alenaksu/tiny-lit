@@ -26,19 +26,19 @@ describe('Element', () => {
     afterEach(() => (root.innerHTML = ''));
 
     it('should throw an exception if not extended', () => {
-        const e = <Element>document.createElement('a-element');
+        const e = <any>document.createElement('a-element');
 
         expect(e.getTemplate).toThrow();
     });
 
     it('should init with empty state', () => {
-        const e = <Element>document.createElement('c-element');
+        const e = <any>document.createElement('c-element');
 
         expect(e.state).toEqual({});
     });
 
     it('state should be immutable', () => {
-        const e = <Element>document.createElement('c-element');
+        const e = <any>document.createElement('c-element');
         const s = e.state;
 
         e.setState({});
@@ -47,7 +47,7 @@ describe('Element', () => {
     });
 
     it('should render on setState', () => {
-        const e = <Element>document.createElement('c-element');
+        const e = <any>document.createElement('c-element');
         const r = e.render;
 
         let rendered = false;
@@ -61,7 +61,7 @@ describe('Element', () => {
     });
 
     it('should accept functions as setState argument', () => {
-        const e = <Element>document.createElement('c-element');
+        const e = <any>document.createElement('c-element');
         const increment = state => ({
             value: state.value + 1,
         });
@@ -76,7 +76,7 @@ describe('Element', () => {
     });
 
     it('should pass state and element as setState function arguments', () => {
-        const e = <Element>document.createElement('c-element');
+        const e = <any>document.createElement('c-element');
         const increment = (state, instance) => {
             expect(state).toEqual({});
             expect(instance).toBe(e);
