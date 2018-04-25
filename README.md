@@ -53,7 +53,7 @@ render(
 ### Custom element
 
 ```js
-import { Element, html } from 'tiny-lit';
+import { Element, html, withElement } from 'tiny-lit';
 
 class Clock extends Element {
     connectedCallback() {
@@ -68,6 +68,20 @@ class Clock extends Element {
     }
 }
 customElement.define('my-clock', Clock);
+
+class Select extends withElement(HTMLSelectElement) {
+    getTemplate() {
+        return html`
+            ${collection(this.state.options, 
+                option => html`
+                    <option value=${option.value}>
+                        ${option.label}
+                    </option>`.withKey(option.value)
+            )}
+        `;
+    }
+}
+customElement.define('my-select', Select);
 ```
 
 ```html
