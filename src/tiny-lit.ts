@@ -24,10 +24,10 @@ function replaceContent(content: Node[], node: Node) {
     return node;
 }
 
-function removeNodes(nodes: Node[] | Node): void {
-    []
-        .concat(<any>nodes)
-        .forEach((node: Node) => node.parentNode!.removeChild(node));
+function removeNodes(nodes: Node[]): void {
+    nodes.forEach((node: Node) => {
+        if (node.parentNode !== null) node.parentNode.removeChild(node);
+    });
 }
 
 function treeWalkerFilter(node: any) {
