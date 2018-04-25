@@ -1,6 +1,18 @@
 /**
  * UTILS
  */
+const parseTemplate = (function() {
+    const templateCache = new Map();
+    const range = document.createRange();
+    return (html: string): DocumentFragment => {
+        if (!templateCache.has(html)) {
+            templateCache.set(html, range.createContextualFragment(html));
+        }
+
+        return templateCache.get(html).cloneNode(true);
+    };
+})();
+
 function typeCheck(obj: any, types: any[]) {
     return types.some((type: any) => obj instanceof type);
 }
@@ -67,20 +79,18 @@ function createElement(
     strings: string[],
     values: any[]
 ): { fragment: DocumentFragment; expressions: Expression[] } {
-    const expressionsMap: ExpressionMap = {};
+    const expressionsMap: any = new Map();
 
     const html = values.reduce((html: string, value: any, i: number) => {
         const marker = `{{__${i}__}}`;
-        expressionsMap[marker] = value;
+        expressionsMap.set(marker, value);
 
         html += marker + strings[i + 1];
 
         return html;
     }, strings[0]);
 
-    const fragment = <DocumentFragment>document
-        .createRange()
-        .createContextualFragment(html);
+    const fragment = parseTemplate(html);
 
     const expressions: any = linkExpressions(fragment, expressionsMap);
 
@@ -94,9 +104,7 @@ function createElement(
  * TEMPLATES
  */
 
-interface ExpressionMap {
-    [marker: string]: HTMLElement | Function | string;
-}
+interface ExpressionMap extends Map<string, HTMLElement | Function | string> {}
 
 export interface Expression {
     update(value: any, force?: boolean): void;
@@ -115,7 +123,7 @@ function attributesToExpressions(
     linkedExpressions: Expression[]
 ): void {
     [].forEach.call(node.attributes, (attr: Attr) => {
-        if (attr.value in expressions) {
+        if (expressions.has(attr.value)) {
             linkedExpressions[
                 markerNumber(attr.value)
             ] = new AttributeExpression(<Element>node, attr.name) as Expression;
@@ -142,9 +150,7 @@ function textsToExpressions(node: Text, linkedExpressions: Expression[]): void {
 
 function linkExpressions(root: DocumentFragment, expressions: ExpressionMap) {
     const treeWalker = createTreeWalker(root);
-    const linkedExpressions: (Expression)[] = Array(
-        Object.keys(expressions).length
-    );
+    const linkedExpressions: (Expression)[] = Array(expressions.size);
 
     while (treeWalker.nextNode()) {
         const node: any = treeWalker.currentNode;
@@ -177,10 +183,10 @@ export class Template implements TemplateInterface {
     }
 
     update(values: any[], force?: boolean) {
-        values.forEach(
-            (value: any, i: number) =>
-                this.expressions[i] && this.expressions[i].update(value, force)
-        );
+        for (let i = 0; i < values.length; i++) {
+            if (this.expressions[i] !== undefined)
+                this.expressions[i].update(values[i], force);
+        }
     }
 
     create(): DocumentFragment {
@@ -206,71 +212,71 @@ function moveTemplate(template: Template, node: Node) {
 
 export class TemplateCollection implements TemplateInterface {
     values: any[];
-    templates: any;
+    templates: Map<string, Template>;
     rootNode?: Text;
 
     constructor(values: any[]) {
         this.values = values;
-        this.templates = Object.create(null);
+        this.templates = new Map();
     }
 
-    private _removeTemplates(keys: string[]) {
+    private _flushTemplates(keys: string[]) {
         const { templates } = this;
-        keys.forEach(key => {
-            removeNodes(templates[key].content);
-            delete templates[key];
+
+        templates.forEach((template, key, map) => {
+            if (keys.indexOf(key) === -1) {
+                removeNodes(template.content);
+                map.delete(key);
+            }
         });
     }
 
     get content(): Node[] {
         const { templates, rootNode } = this;
 
-        return <Node[]>[
-            rootNode,
-            ...Object.keys(templates).reduce((nodes: Node[], key: string) => {
-                nodes.push(...templates[key].content);
-                return nodes;
-            }, []),
-        ];
+        let nodes: any[] = [rootNode];
+        templates.forEach((template: Template) =>
+            nodes.push(...(<Template>template).content)
+        );
+
+        return nodes;
     }
 
     update(items: any[]) {
         const { rootNode, templates } = this;
 
         let currentNode: Node = <Node>rootNode;
-        const keys = items.reduce((keys, template, i) => {
-            const key: string = String(template.key || i);
+        const keys = items.reduce((keys, item, i) => {
+            const key: string = String(item.key || i);
+            let template = <Template>templates.get(key);
 
-            if (!templates[key]) {
-                const node: Node = template.create();
+            if (!template) {
+                const node: Node = item.create();
                 currentNode.nextSibling!
                     ? insertBefore(node, currentNode.nextSibling!)
                     : currentNode.parentNode!.appendChild(node);
 
-                templates[key] = template;
-            } else if (!isTemplateEqual(templates[key], template)) {
-                replaceContent(templates[key].content, template.create());
-                templates[key] = template;
+                templates.set(key, item);
+                template = item;
+            } else if (!isTemplateEqual(template, item)) {
+                replaceContent(template.content, item.create());
+                templates.set(key, item);
+                template = item;
             } else {
-                templates[key].update(template.values);
+                template.update(item.values);
             }
 
-            if (currentNode.nextSibling !== templates[key].content[0]) {
-                moveTemplate(templates[key], currentNode);
+            if (currentNode.nextSibling !== template.content[0]) {
+                moveTemplate(template, currentNode);
             }
-            currentNode =
-                templates[key].content[templates[key].content.length - 1];
+            currentNode = template.content[template.content.length - 1];
 
             keys.push(key);
 
             return keys;
         }, []);
 
-        this._removeTemplates(
-            Object.keys(templates).filter(
-                (key: string) => keys.indexOf(key) === -1
-            )
-        );
+        this._flushTemplates(keys);
     }
 
     create(): Node {
