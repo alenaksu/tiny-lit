@@ -1,3 +1,5 @@
+import { ScheduledFunction, IdleDeadline, IScheduler } from './types';
+
 const requestIdleCallback =
     (window as any).requestIdleCallback ||
     function(handler: Function, options: any = {}) {
@@ -16,20 +18,6 @@ const requestIdleCallback =
             1
         );
     };
-
-export interface ScheduledFunction extends Function {
-    _priority: number;
-    _scheduled: boolean;
-}
-
-export interface IdleDeadline {
-    didTimeout: boolean;
-    timeRemaining(): number;
-}
-
-export interface IScheduler {
-    defer(fn: ScheduledFunction): Function;
-}
 
 export class Scheduler implements IScheduler {
     tasks: ScheduledFunction[] = [];
@@ -60,7 +48,7 @@ export class Scheduler implements IScheduler {
         this.running = true;
     }
 
-    defer(fn: ScheduledFunction): Function {
+    defer(fn: ScheduledFunction): () => void {
         return () => {
             if (fn._scheduled === undefined) {
                 // Force first rendering
