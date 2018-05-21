@@ -15,7 +15,8 @@
         "noFallthroughCasesInSwitch": true,
         "types" : [
             "jasmine",
-        ]
+        ],
+        "removeComments": true
     },
     "include": ["src/index.ts"],
     "exclude": [

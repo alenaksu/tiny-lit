@@ -1,3 +1,5 @@
+import { TemplateInterface, Expression, ExpressionMap } from './types';
+
 /**
  * UTILS
  */
@@ -103,19 +105,6 @@ function createElement(
 /**
  * TEMPLATES
  */
-
-interface ExpressionMap extends Map<string, HTMLElement | Function | string> {}
-
-export interface Expression {
-    update(value: any, force?: boolean): void;
-}
-
-export interface TemplateInterface {
-    update(values: any[], force?: boolean): void;
-    create(): Node;
-    content: Node[];
-    values: any[];
-}
 
 function attributesToExpressions(
     node: any,
@@ -368,10 +357,6 @@ class ElementExpression implements Expression {
 /**
  * MAIN FUNCTIONS
  */
-
-export interface RenderContainer extends HTMLElement {
-    __template: TemplateInterface;
-}
 
 export function collection(
     items: any[],

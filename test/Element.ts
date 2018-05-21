@@ -82,4 +82,15 @@ describe('Element', () => {
             expect(instance).toBe(e);
         };
     });
+
+    it('should return child nodes with `slot` method', () => {
+        const e = <any>document.createElement('c-element'),
+            s = document.createElement('span');
+
+        e.appendChild(s);
+        e.render();
+
+        expect(e.slot.values.length).toBe(1);
+        expect(e.slot.values[0]).toBe(s);
+    });
 });
