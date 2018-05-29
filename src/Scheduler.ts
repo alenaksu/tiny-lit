@@ -1,4 +1,8 @@
-import { ScheduledFunction, IdleDeadline, IScheduler } from './types';
+import {
+    ScheduledFunction,
+    IdleDeadline,
+    Scheduler as SchedulerInterface,
+} from './types';
 
 const requestIdleCallback =
     (window as any).requestIdleCallback ||
@@ -19,7 +23,7 @@ const requestIdleCallback =
         );
     };
 
-export class Scheduler implements IScheduler {
+export class Scheduler implements SchedulerInterface {
     tasks: ScheduledFunction[] = [];
     private running: boolean = false;
 
@@ -59,7 +63,7 @@ export class Scheduler implements IScheduler {
                 fn._scheduled = true;
                 fn._priority = 0;
             } else {
-                fn._priority++;
+                fn._priority!++;
                 this.tasks.sort(
                     (a, b) => (b as any)._priority - (a as any)._priority
                 );

@@ -1,19 +1,18 @@
-export interface Type<T> extends Function {
-    new (): T;
-}
+export type Constructor<T> = new (...args: any[]) => T;
 
-export interface IElement {
+export interface Element {
     state: any;
-    slot: TemplateInterface;
-    readonly scheduler: IScheduler;
-    getTemplate(): TemplateInterface;
+    slot: Template[];
+    readonly scheduler: Scheduler;
+    getTemplate(): Template;
     render(): void;
-    setState(nextState: object | Function): void;
+    setState(nextState: object | Function, callback?: Function): void;
+    renderCallbacks: Array<Function>;
 }
 
 export interface ScheduledFunction extends Function {
-    _priority: number;
-    _scheduled: boolean;
+    _priority?: number;
+    _scheduled?: boolean;
 }
 
 export interface IdleDeadline {
@@ -21,7 +20,7 @@ export interface IdleDeadline {
     timeRemaining(): number;
 }
 
-export interface IScheduler {
+export interface Scheduler {
     defer(fn: ScheduledFunction): () => void;
 }
 
@@ -32,7 +31,7 @@ export interface Expression {
     update(value: any, force?: boolean): void;
 }
 
-export interface TemplateInterface {
+export interface Template {
     update(values: any[], force?: boolean): void;
     create(): Node;
     content: Node[];
@@ -40,5 +39,5 @@ export interface TemplateInterface {
 }
 
 export interface RenderContainer extends HTMLElement {
-    __template: TemplateInterface;
+    __template: Template;
 }

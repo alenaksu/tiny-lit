@@ -6,17 +6,14 @@
     "main": "lib/es5/index.js",
     "module": "lib/index.js",
     "license": "MIT",
-    "dependencies": {
-        "typescript": "^2.7.1"
-    },
+    "dependencies": {},
     "scripts": {
         "precommit": "lint-staged",
         "start": "tsc -w",
         "clear": "rm -rf lib/",
         "build": "npm run clear && tsc && tsc --target es5 --outDir lib/es5 --module commonjs",
         "lint": "tslint --project ./",
-        "checksize:commonjs": "npm run build && js-size lib/es5/tiny-lit.js",
-        "checksize": "npm run build && js-size lib/tiny-lit.js --es",
+        "size": "size-limit",
         "demo": "webpack-dev-server --config demo/webpack.config.js --host 0.0.0.0 --disable-host-check",
         "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
         "pub": "npm publish",
@@ -27,7 +24,6 @@
         "husky": "^0.14.3",
         "jasmine": "^3.0.0",
         "jasmine-core": "^3.1.0",
-        "js-size": "^2.1.7",
         "karma": "^2.0.0",
         "karma-chrome-launcher": "^2.2.0",
         "karma-coverage": "^1.1.1",
@@ -36,8 +32,10 @@
         "lint-staged": "^6.0.1",
         "npm-run-all": "^4.1.2",
         "prettier": "^1.10.2",
+        "size-limit": "^0.18.1",
         "ts-loader": "^4.0.1",
         "tslint": "^5.9.1",
+        "typescript": "^2.9.2",
         "uglify-es": "^3.3.8",
         "uglifyjs-webpack-plugin": "^1.1.8",
         "webpack": "^4.1.1",
@@ -50,5 +48,15 @@
             "git add"
         ]
     },
-    "typings": "lib/index.d.ts"
+    "typings": "lib/index.d.ts",
+    "size-limit": [
+        {
+            "limit": "1.6 KB",
+            "path": "lib/tiny-lit.js"
+        },
+        {
+            "limit": "2.3 KB",
+            "path": "lib/index.js"
+        }
+    ]
 }

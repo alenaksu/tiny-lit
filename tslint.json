@@ -2,7 +2,7 @@
     "rules": {
         "arrow-parens": false,
         "class-name": true,
-        "indent": [true, "spaces", 2],
+        "indent": [true, "spaces", 4],
         "prefer-const": true,
         "no-duplicate-variable": true,
         "no-eval": true,

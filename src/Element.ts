@@ -1,40 +1,33 @@
-import { render, Template, collection, TemplateCollection } from './tiny-lit';
+import { render, Template, html } from './tiny-lit';
 import Scheduler from './Scheduler';
-import { Type, IElement, IScheduler } from './types';
+import {
+    Constructor,
+    Element as ElementInterface,
+    Scheduler as SchedulerInterface,
+} from './types';
 
-export function withElement(Base: Type<any>): Type<IElement> {
-    return class extends Base implements IElement {
+export function withElement<T extends Constructor<{}>>(
+    Base: T
+): Constructor<ElementInterface> & T {
+    return class extends Base implements ElementInterface {
         state: any = {};
+        __childNodes: Node[] = [];
+        rendered: boolean = false;
+        renderCallbacks: Array<Function> = [];
 
-        get scheduler(): IScheduler {
+        get scheduler(): SchedulerInterface {
             return Scheduler;
         }
 
-        get slot(): TemplateCollection {
-            let { __template, childNodes } = this;
-
-            childNodes = [].slice.call(childNodes);
-
-            return collection(
-                __template
-                    ? childNodes.filter(
-                          (node: Node) => !~__template.content.indexOf(node)
-                      )
-                    : childNodes,
-                (node: Node) => node
-            );
-        }
-
-        constructor() {
-            super();
-            this.render = this.scheduler.defer(this.render.bind(this));
+        get slot(): Template[] {
+            return this.__childNodes.map((node: Node) => html`${node}`);
         }
 
         connectedCallback() {
             this.render();
         }
 
-        setState(nextState: object | Function): void {
+        setState(nextState: object | Function, callback?: Function): void {
             const state: any = this.state;
 
             this.state = {
@@ -44,6 +37,8 @@ export function withElement(Base: Type<any>): Type<IElement> {
                     : nextState),
             };
 
+            callback && this.renderCallbacks.push(callback);
+
             this.render();
         }
 
@@ -51,10 +46,53 @@ export function withElement(Base: Type<any>): Type<IElement> {
             throw 'Method not implemented';
         }
 
-        render() {
+        render = this.scheduler.defer(() => {
+            if (!this.rendered) {
+                this.__childNodes = [].slice.call((<any>this).childNodes);
+                this.rendered = true;
+            }
             render(this.getTemplate(), this as any);
+
+            while (this.renderCallbacks.length) {
+                this.renderCallbacks.shift()!();
+            }
+        });
+    };
+}
+
+function defineProps(instance: any) {
+    instance.__props = {};
+    const props = instance.constructor.properties;
+
+    if (props) {
+        Object.keys(props).forEach(key => {
+            instance.__props[key] = props[key];
+            Object.defineProperty(instance, key, {
+                get(): any {
+                    return (<any>this).__props[key];
+                },
+                set(newValue: any) {
+                    const oldValue = (<any>this).__props[key];
+                    (<any>this).__props[key] = newValue;
+
+                    (<any>this).rendered &&
+                        oldValue !== newValue &&
+                        !this.render._scheduled &&
+                        this.render();
+                },
+            });
+        });
+    }
+}
+
+export function withProps<T extends Constructor<{}>>(base: T): T {
+    return class extends base {
+        constructor(...args: any[]) {
+            super(...args);
+            defineProps(this);
         }
     };
 }
 
-export const Element = withElement(HTMLElement);
+export const Element: Constructor<ElementInterface> &
+    Constructor<HTMLElement> = withElement(HTMLElement);

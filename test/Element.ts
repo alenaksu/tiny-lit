@@ -1,4 +1,4 @@
-import { Element } from '../src/Element';
+import { Element, withProps } from '../src/Element';
 import { div } from './utils';
 import { html } from '../src/tiny-lit';
 
@@ -9,6 +9,35 @@ describe('Element', () => {
     customElements.define(
         'c-element',
         class extends Element {
+            getTemplate() {
+                return template(this.state.text);
+            }
+        }
+    );
+    customElements.define(
+        's-element',
+        class extends Element {
+            get scheduler() {
+                return {
+                    defer: render => render,
+                };
+            }
+            getTemplate() {
+                return template(this.state.text);
+            }
+        }
+    );
+
+    customElements.define(
+        'p-element',
+        class extends withProps(Element) {
+            static get properties() {
+                return {
+                    a: 'a',
+                    b: 1,
+                    c: false,
+                };
+            }
             getTemplate() {
                 return template(this.state.text);
             }
@@ -44,6 +73,16 @@ describe('Element', () => {
         e.setState({});
 
         expect(e.state).not.toBe(s);
+    });
+
+    it('setState should run callback after render', () => {
+        const callback = jasmine.createSpy('elem');
+        const e = <any>document.createElement('s-element');
+
+        e.setState({}, callback);
+        e.setState({}, callback);
+
+        expect(callback).toHaveBeenCalledTimes(2);
     });
 
     it('should render on setState', () => {
@@ -84,13 +123,44 @@ describe('Element', () => {
     });
 
     it('should return child nodes with `slot` method', () => {
-        const e = <any>document.createElement('c-element'),
+        const e = <any>document.createElement('s-element'),
             s = document.createElement('span');
-
         e.appendChild(s);
         e.render();
+        e.render();
+        e.render();
 
-        expect(e.slot.values.length).toBe(1);
-        expect(e.slot.values[0]).toBe(s);
+        expect(e.slot.length).toBe(1);
+        expect(e.slot[0].values[0]).toBe(s);
+    });
+
+    it('should initialize observed properties', () => {
+        const e = <any>document.createElement('p-element');
+
+        expect(e.__props).toBeDefined();
+        expect(e.__props).toEqual({
+            a: 'a',
+            b: 1,
+            c: false,
+        });
+
+        ['a', 'b', 'c'].forEach(key => {
+            const desc = Object.getOwnPropertyDescriptor(e, key);
+            expect(desc).toBeDefined();
+            expect(typeof desc.get).toBe('function');
+            expect(typeof desc.set).toBe('function');
+        });
+    });
+
+    it('should trigger update on when props changes', () => {
+        const e = <any>document.createElement('p-element');
+        const callback = jasmine.createSpy('elem');
+
+        e.render();
+        e.render = callback;
+
+        e.a = 1;
+
+        expect(callback).toHaveBeenCalled();
     });
 });

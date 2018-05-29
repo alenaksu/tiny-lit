@@ -11,6 +11,8 @@ describe('tiny-lit', () => {
     describe('html', () => {
         it('returns a Template', () => {
             expect(html``).toEqual(jasmine.any(Template));
+
+            expect(html('')).toEqual(jasmine.any(Template));
         });
 
         it('returns a TemplateCollection', () => {
@@ -135,7 +137,7 @@ describe('tiny-lit', () => {
             expect((<any>root.children[0]).onclick).toBe(d);
 
             render(t(c), root);
-            expect((<any>root.children[0]).getAttribute('onclick')).toBe(c);
+            expect((<any>root.children[0]).getAttribute('onclick')).toBe(null);
         });
 
         it('should escape attributes', () => {
@@ -156,7 +158,7 @@ describe('tiny-lit', () => {
             );
         });
 
-        it('should correctly unset attributes', () => {
+        it('should correctly set attributes', () => {
             const c = 'btn',
                 t = v => html`<input min=${v.a} custom=${v.b}  />`;
 
@@ -165,14 +167,19 @@ describe('tiny-lit', () => {
             render(t({ a: null }), root);
             expect(root.children[0].min).toBe('null');
             render(t({ a: undefined }), root);
-            expect(root.children[0].min).toBe('');
+            expect(root.children[0].min).toBe('undefined');
 
             render(t({ b: 0 }), root);
-            expect(root.children[0].custom).toBe(0);
+            expect(root.children[0].custom).toBe(undefined);
+            expect(root.children[0].getAttribute('custom')).toBe('0');
+
             render(t({ b: null }), root);
-            expect(root.children[0].custom).toBe(null);
+            expect(root.children[0].custom).toBe(undefined);
+            expect(root.children[0].getAttribute('custom')).toBe('null');
+
             render(t({ b: undefined }), root);
             expect(root.children[0].custom).toBe(undefined);
+            expect(root.children[0].getAttribute('custom')).toBe(null);
         });
 
         it('should render nested templates', () => {
@@ -233,6 +240,17 @@ describe('tiny-lit', () => {
             render(b(false), root);
 
             expect(root.contains(node)).toBe(false);
+        });
+
+        it('should manage arrays as collections', () => {
+            const l = ['a', 'b', 'c'].map(i => html`<li>${i}</li>`),
+                t = html`${l}`,
+                node = t.create();
+
+            expect(node).toEqual(jasmine.any(Node));
+
+            root.appendChild(node);
+            expect(root.innerHTML).toEqual('<li>a</li><li>b</li><li>c</li>');
         });
 
         describe('collection', () => {
