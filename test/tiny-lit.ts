@@ -165,9 +165,9 @@ describe('tiny-lit', () => {
             render(t({ a: 0 }), root);
             expect(root.children[0].min).toBe('0');
             render(t({ a: null }), root);
-            expect(root.children[0].min).toBe('null');
+            expect(root.children[0].min).toBe('');
             render(t({ a: undefined }), root);
-            expect(root.children[0].min).toBe('undefined');
+            expect(root.children[0].min).toBe('');
 
             render(t({ b: 0 }), root);
             expect(root.children[0].custom).toBe(undefined);
@@ -175,11 +175,11 @@ describe('tiny-lit', () => {
 
             render(t({ b: null }), root);
             expect(root.children[0].custom).toBe(undefined);
-            expect(root.children[0].getAttribute('custom')).toBe('null');
+            expect(root.children[0].hasAttribute('custom')).toBe(false);
 
             render(t({ b: undefined }), root);
             expect(root.children[0].custom).toBe(undefined);
-            expect(root.children[0].getAttribute('custom')).toBe(null);
+            expect(root.children[0].hasAttribute('custom')).toBe(false);
         });
 
         it('should render nested templates', () => {
