@@ -1,2 +1,2 @@
 export { render, html, collection } from './tiny-lit';
-export { Element, withElement } from './Element';
+export { Element, withElement, withProps } from './Element';

@@ -1,4 +1,4 @@
-import { html, Element } from '../../src/index.ts';
+import { html, Element, withProps } from '../../src/index.ts';
 
 const targetSize = 25;
 
@@ -14,21 +14,34 @@ function rafInterval(fn) {
 
     return () => (running = false);
 }
-class FiberDot extends Element {
-    static get observedAttributes() {
-        return ['x', 'y', 'size', 'text'];
-    }
 
+class FiberDot extends withProps(Element) {
     static get is() {
         return 'fiber-dot';
     }
 
-    propertyChangedCallback(name, oldValue, newValue) {
-        this.render();
+    static get properties() {
+        return {
+            x: 0,
+            y: 0,
+            size: 0,
+            text: '',
+            hover: false,
+        };
+    }
+
+    constructor() {
+        super();
+
+        // this.addEventListener('mouseover', () => this.setState({ hover: true }));
+        // this.addEventListener('mouseleave', () => this.setState({ hover: false }));
+        this.addEventListener('mouseover', () => (this.hover = true));
+        this.addEventListener('mouseleave', () => (this.hover = false));
     }
 
     getStyle() {
-        const { x, hover, y, size } = this;
+        const { x, y, size } = this;
+        const hover = this.hover;
         const s = size * 1.3;
 
         return `
@@ -55,19 +68,18 @@ class FiberDot extends Element {
     }
 }
 
-class FiberTriangle extends Element {
-    static get observedAttributes() {
-        return ['x', 'y', 's', 'seconds'];
-    }
-
-    propertyChangedCallback(name, oldValue, newValue) {
-        this.setState({
-            [name]: parseFloat(newValue),
-        });
-    }
-
+class FiberTriangle extends withProps(Element) {
     static get is() {
         return 'fiber-triangle';
+    }
+
+    static get properties() {
+        return {
+            x: 0,
+            y: 0,
+            s: 0,
+            seconds: 0,
+        };
     }
 
     getTemplate() {
@@ -102,16 +114,8 @@ class FiberTriangle extends Element {
 }
 
 class FiberDemo extends Element {
-    static get observedAttributes() {
-        return ['elapsed'];
-    }
-
     static get is() {
         return 'fiber-demo';
-    }
-
-    propertyChangedCallback(name, oldValue, newValue) {
-        this.render();
     }
 
     connectedCallback() {
@@ -130,7 +134,7 @@ class FiberDemo extends Element {
 
     tick() {
         this.setState({
-            seconds: this.state.seconds % 10 + 1,
+            seconds: (this.state.seconds % 10) + 1,
         });
     }
 

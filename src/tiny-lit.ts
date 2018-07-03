@@ -1,4 +1,8 @@
-import { TemplateInterface, Expression, ExpressionMap } from './types';
+import {
+    Template as TemplateInterface,
+    Expression,
+    ExpressionMap,
+} from './types';
 
 /**
  * UTILS
@@ -6,6 +10,8 @@ import { TemplateInterface, Expression, ExpressionMap } from './types';
 const parseTemplate = (function() {
     const templateCache = new Map();
     const range = document.createRange();
+    range.setStart(document.documentElement, 0);
+
     return (html: string): DocumentFragment => {
         if (!templateCache.has(html)) {
             templateCache.set(html, range.createContextualFragment(html));
@@ -28,7 +34,7 @@ function replaceContent(content: Node[], node: Node) {
 
 function removeNodes(nodes: Node[]): void {
     nodes.forEach((node: Node) => {
-        if (node.parentNode !== null) node.parentNode.removeChild(node);
+        node.parentNode && node.parentNode.removeChild(node);
     });
 }
 
@@ -38,21 +44,13 @@ function treeWalkerFilter(node: any) {
 // fix(IE11): expect filter to be a function and not an object
 (<any>treeWalkerFilter).acceptNode = treeWalkerFilter;
 
-function createTreeWalker(root: Node): TreeWalker {
-    return document.createTreeWalker(
-        root,
-        NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-        treeWalkerFilter as any,
-        false
-    );
-}
-
 function insertBefore(node: Node, before: Node) {
     before.parentNode!.insertBefore(node, before);
 }
 
 function isTemplateEqual(t1: Template, t2: Template) {
     return (
+        isTemplate(t1) &&
         t1.constructor === t2.constructor &&
         ((!t1.strings && !t2.strings) ||
             (t1.strings.length &&
@@ -70,7 +68,7 @@ function textNode(text: string = ''): Text {
 }
 
 function isNode(obj: any) {
-    return typeCheck(obj, [Element, DocumentFragment, Text]);
+    return !!obj && !!(<Node>obj).ownerDocument;
 }
 
 function isTemplate(obj: any) {
@@ -84,7 +82,7 @@ function createElement(
     const expressionsMap: any = new Map();
 
     const html = values.reduce((html: string, value: any, i: number) => {
-        const marker = `{{__${i}__}}`;
+        const marker = `__${i}__}}`;
         expressionsMap.set(marker, value);
 
         html += marker + strings[i + 1];
@@ -107,21 +105,27 @@ function createElement(
  */
 
 function attributesToExpressions(
-    node: any,
+    element: Element,
     expressions: ExpressionMap,
     linkedExpressions: Expression[]
 ): void {
-    [].forEach.call(node.attributes, (attr: Attr) => {
-        if (expressions.has(attr.value)) {
-            linkedExpressions[
-                markerNumber(attr.value)
-            ] = new AttributeExpression(<Element>node, attr.name) as Expression;
+    const attrs = element.attributes;
+    let i = attrs.length;
+
+    while (i--) {
+        const { name, value } = attrs.item(i) as Attr;
+        if (expressions.has(value)) {
+            attrs.removeNamedItem(name);
+            linkedExpressions[markerNumber(value)] = new AttributeExpression(
+                <Element>element,
+                name
+            ) as Expression;
         }
-    });
+    }
 }
 
 function textsToExpressions(node: Text, linkedExpressions: Expression[]): void {
-    const keys = node.data.match(/{{__\d+__}}/g) || [];
+    const keys = node.data.match(/__\d+__}}/g) || [];
 
     keys.map((key: string) => {
         const keyNode: Text = textNode(key);
@@ -138,7 +142,13 @@ function textsToExpressions(node: Text, linkedExpressions: Expression[]): void {
 }
 
 function linkExpressions(root: DocumentFragment, expressions: ExpressionMap) {
-    const treeWalker = createTreeWalker(root);
+    const treeWalker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+        treeWalkerFilter as any,
+        false
+    );
+
     const linkedExpressions: (Expression)[] = Array(expressions.size);
 
     while (treeWalker.nextNode()) {
@@ -223,7 +233,7 @@ export class TemplateCollection implements TemplateInterface {
     get content(): Node[] {
         const { templates, rootNode } = this;
 
-        let nodes: any[] = [rootNode];
+        const nodes: any[] = [rootNode];
         templates.forEach((template: Template) =>
             nodes.push(...(<Template>template).content)
         );
@@ -296,20 +306,13 @@ class AttributeExpression implements Expression {
             return;
         }
 
-        if (typeof value === 'string') {
+        if (name in element) {
+            (element as any)[name] = value;
+        } else if (value !== undefined) {
             element.setAttribute(name, value);
         } else {
             element.hasAttribute(name) && element.removeAttribute(name);
         }
-
-        if (value !== undefined || (element as any)[name] !== '') {
-            (element as any)[name] = value;
-        }
-
-        // ???
-        currentValue !== undefined &&
-            (<any>element).propertyChangedCallback &&
-            (<any>element).propertyChangedCallback(name, currentValue, value);
 
         this.value = value;
     }
@@ -333,11 +336,11 @@ class ElementExpression implements Expression {
             return;
         }
 
-        if (
-            isTemplate(element) &&
-            isTemplate(value) &&
-            isTemplateEqual(element as Template, value)
-        ) {
+        if (Array.isArray(value)) {
+            value = new TemplateCollection(value);
+        }
+
+        if (isTemplateEqual(element as Template, value)) {
             (element as Template).update(value.values);
         } else if (isNode(value) || isTemplate(value)) {
             replaceContent(
@@ -375,5 +378,5 @@ export function render(template: TemplateInterface, container: any) {
 }
 
 export function html(strings: any, ...values: any[]): Template {
-    return new Template(strings, values);
+    return new Template([].concat(strings), values);
 }

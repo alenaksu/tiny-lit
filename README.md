@@ -30,7 +30,7 @@ render(
 ### List of templates
 
 ```js
-import { html, render, collection } from 'tiny-lit';
+import { html, render } from 'tiny-lit';
 
 const listItem = item => (
     html`<li>${item}</li>`.withKey(item)
@@ -39,7 +39,7 @@ const listItem = item => (
 const list = items => (
     html`
         <ul>
-            ${collection(items, listItem)}
+            ${items.map(listItem)}
         </ul>
     `
 );
@@ -72,7 +72,7 @@ customElement.define('my-clock', Clock);
 class Select extends withElement(HTMLSelectElement) {
     getTemplate() {
         return html`
-            ${collection(this.state.options, 
+            ${this.state.options.map( 
                 option => html`
                     <option value=${option.value}>
                         ${option.label}
@@ -86,4 +86,45 @@ customElement.define('my-select', Select);
 
 ```html
 <my-clock></my-clock>
+```
+
+#### Observed props
+
+All observed props will trigger an update when they change
+
+```js
+import { Element, html, withProps } from 'tiny-lit';
+
+class Clock extends withProps(Element) {
+
+    static get properties() {
+        return {
+            title: 'My Clock'
+        };
+    }
+
+    connectedCallback() {
+        setInterval(() => 
+            this.setState({
+                time: new Date().toLocaleTimeString()
+            }), 1000);
+    }
+
+    getTemplate() {
+        return html`
+            <h1>${this.title}</h1>
+            <div>${this.state.time}</div>
+        `;
+    }
+}
+customElement.define('my-clock', Clock);
+```
+
+```html
+<my-clock id="clock"></my-clock>
+
+<script>
+    const clock = document.querySelector('#clock');
+    clock.title = 'The clock';
+</script>
 ```
