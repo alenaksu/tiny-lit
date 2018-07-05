@@ -308,14 +308,11 @@ class AttributeExpression implements Expression {
 
         if (name in element) {
             (element as any)[name] = value;
-        } else if (value !== undefined) {
+        } else if (value != null) {
             element.setAttribute(name, value);
         }
 
-        if (
-            value === undefined ||
-            (value === null && element.hasAttribute(name))
-        ) {
+        if (value == null && element.hasAttribute(name)) {
             element.removeAttribute(name);
         }
 
