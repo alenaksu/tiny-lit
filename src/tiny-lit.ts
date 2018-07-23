@@ -82,7 +82,7 @@ function createElement(
     const expressionsMap: any = new Map();
 
     const html = values.reduce((html: string, value: any, i: number) => {
-        const marker = `__${i}__}}`;
+        const marker = `__${i}__`;
         expressionsMap.set(marker, value);
 
         html += marker + strings[i + 1];
@@ -125,7 +125,7 @@ function attributesToExpressions(
 }
 
 function textsToExpressions(node: Text, linkedExpressions: Expression[]): void {
-    const keys = node.data.match(/__\d+__}}/g) || [];
+    const keys = node.data.match(/__\d+__/g) || [];
 
     keys.map((key: string) => {
         const keyNode: Text = textNode(key);

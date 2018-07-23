@@ -6,9 +6,11 @@ import {
     Scheduler as SchedulerInterface,
 } from './types';
 
-export function withElement<T extends Constructor<{}>>(
-    Base: T
-): Constructor<ElementInterface> & T {
+function toKebabCase(str: string): string {
+    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+export function withElement<T extends Constructor>(Base: T) {
     return class extends Base implements ElementInterface {
         state: any = {};
         __childNodes: Node[] = [];
@@ -60,39 +62,52 @@ export function withElement<T extends Constructor<{}>>(
     };
 }
 
-function defineProps(instance: any) {
-    instance.__props = {};
-    const props = instance.constructor.properties;
+function defineProps(constructor: any): string[] {
+    if (!constructor.hasOwnProperty('__attrsMap')) {
+        const props: { [key: string]: Function } = constructor.properties;
+        const attrsMap: { [key: string]: string } = Object.create(null);
 
-    if (props) {
-        Object.keys(props).forEach(key => {
-            instance.__props[key] = props[key];
-            Object.defineProperty(instance, key, {
-                get(): any {
-                    return (<any>this).__props[key];
-                },
-                set(newValue: any) {
-                    const oldValue = (<any>this).__props[key];
-                    (<any>this).__props[key] = newValue;
+        if (props) {
+            for (const name in props) {
+                attrsMap[toKebabCase(name)] = name;
 
-                    (<any>this).rendered &&
-                        oldValue !== newValue &&
-                        !this.render._scheduled &&
-                        this.render();
-                },
-            });
-        });
+                Object.defineProperty(constructor.prototype, name, {
+                    get(): any {
+                        return (<any>this).__props[name];
+                    },
+                    set(newValue: any) {
+                        const oldValue = (<any>this).__props[name];
+                        (<any>this).__props[name] = props[name](newValue);
+
+                        (<any>this).rendered &&
+                            oldValue !== newValue &&
+                            !this.render._scheduled &&
+                            this.render();
+                    },
+                });
+            }
+        }
+
+        constructor.__attrsMap = attrsMap;
+        constructor.__observedProperties = Object.keys(attrsMap);
     }
+
+    return constructor.__observedProperties;
 }
 
-export function withProps<T extends Constructor<{}>>(base: T): T {
-    return class extends base {
-        constructor(...args: any[]) {
-            super(...args);
-            defineProps(this);
+export function withProps<T extends Constructor>(Base: T) {
+    return class extends Base {
+        __props: object = Object.create(null);
+        [propName: string]: any;
+
+        static get observedAttributes(): string[] {
+            return defineProps(this);
+        }
+
+        attributeChangedCallback(name: string, _: string, newValue: string) {
+            this[(<any>this.constructor).__attrsMap[name]] = newValue;
         }
     };
 }
 
-export const Element: Constructor<ElementInterface> &
-    Constructor<HTMLElement> = withElement(HTMLElement);
+export const Element = withProps(withElement(HTMLElement));

@@ -96,10 +96,11 @@ All observed props will trigger an update when they change
 import { Element, html, withProps } from 'tiny-lit';
 
 class Clock extends withProps(Element) {
+    title = 'My clock';
 
     static get properties() {
         return {
-            title: 'My Clock'
+            title: String
         };
     }
 

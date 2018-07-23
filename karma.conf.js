@@ -7,18 +7,15 @@ module.exports = function(config) {
             '**/*.ts': 'karma-typescript',
         },
         karmaTypescriptConfig: {
-            compilerOptions: {
-                target: 'es2015',
-                allowJs: true,
-            },
+            tsconfig: "./tsconfig.karma.json"
         },
         reporters: ['progress', 'karma-typescript', 'coverage'],
         port: 9876, // karma web server port
         colors: true,
         logLevel: config.LOG_INFO,
         browsers: ['ChromeHeadless'],
-        autoWatch: false,
-        // singleRun: false, // Karma captures browsers, runs the tests and exits
+        autoWatch: true,
+        singleRun: false, // Karma captures browsers, runs the tests and exits
         concurrency: Infinity,
         coverageReporter: {
             reporters: [

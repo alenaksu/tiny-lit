@@ -1,0 +1,16 @@
+{
+    "extends": "./tsconfig",
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "noUnusedParameters": false,
+        "noUnusedLocals": false,
+        "sourceMap": true
+    },
+    "include": [
+        "src/**/*",
+        "test/**/*"
+    ]
+}

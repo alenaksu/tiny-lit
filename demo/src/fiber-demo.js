@@ -22,13 +22,19 @@ class FiberDot extends withProps(Element) {
 
     static get properties() {
         return {
-            x: 0,
-            y: 0,
-            size: 0,
-            text: '',
-            hover: false,
+            x: Number,
+            y: Number,
+            size: Number,
+            text: String,
+            hover: Boolean,
         };
     }
+
+    x = 0;
+    y = 0;
+    size = 0;
+    text = '';
+    hover = false;
 
     constructor() {
         super();
@@ -75,12 +81,16 @@ class FiberTriangle extends withProps(Element) {
 
     static get properties() {
         return {
-            x: 0,
-            y: 0,
-            s: 0,
-            seconds: 0,
+            x: Number,
+            y: Number,
+            s: Number,
+            seconds: Number,
         };
     }
+    x = 0;
+    y = 0;
+    s = 0;
+    seconds = 0;
 
     getTemplate() {
         let { s, seconds, x, y } = this;

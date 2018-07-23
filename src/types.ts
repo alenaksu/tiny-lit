@@ -1,4 +1,4 @@
-export type Constructor<T> = new (...args: any[]) => T;
+export type Constructor<T = {}> = new (...args: any[]) => T;
 
 export interface Element {
     state: any;
@@ -9,6 +9,20 @@ export interface Element {
     setState(nextState: object | Function, callback?: Function): void;
     renderCallbacks: Array<Function>;
 }
+
+export interface CustomElement {
+    connectedCallback?(): void;
+    disconnectedCallback?(): void;
+    adoptedCallback?(): void;
+    attributeChangedCallback?(
+        name: string,
+        oldValue: string,
+        newValue: string
+    ): void;
+    observedAttributes?: Array<string>;
+}
+
+export type ElementProperties<T> = { [P in keyof T]?: T[P] };
 
 export interface ScheduledFunction extends Function {
     _priority?: number;

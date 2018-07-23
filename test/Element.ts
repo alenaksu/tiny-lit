@@ -1,4 +1,4 @@
-import { Element, withProps } from '../src/Element';
+import { Element } from '../src/Element';
 import { div } from './utils';
 import { html } from '../src/tiny-lit';
 
@@ -30,14 +30,23 @@ describe('Element', () => {
 
     customElements.define(
         'p-element',
-        class extends withProps(Element) {
+        class extends Element {
             static get properties() {
                 return {
-                    a: 'a',
-                    b: 1,
-                    c: false,
+                    a: String,
+                    b: Number,
+                    c: Boolean,
+                    myProp: String,
+                    mySuperProp: Boolean,
                 };
             }
+
+            a = 'a';
+            b = 1;
+            c = false;
+            myProp = null;
+            mySuperProp = null;
+
             getTemplate() {
                 return template(this.state.text);
             }
@@ -51,8 +60,6 @@ describe('Element', () => {
     afterEach(() => {
         root.innerHTML = '';
     });
-
-    afterEach(() => (root.innerHTML = ''));
 
     it('should throw an exception if not extended', () => {
         const e = <any>document.createElement('a-element');
@@ -114,12 +121,16 @@ describe('Element', () => {
         expect(e.state.value).toBe(1);
     });
 
-    it('should pass state and element as setState function arguments', () => {
+    it('should pass state and element as setState function arguments', done => {
         const e = <any>document.createElement('c-element');
         const increment = (state, instance) => {
             expect(state).toEqual({});
             expect(instance).toBe(e);
+
+            done();
         };
+
+        e.setState(increment);
     });
 
     it('should return child nodes with `slot` method', () => {
@@ -134,33 +145,82 @@ describe('Element', () => {
         expect(e.slot[0].values[0]).toBe(s);
     });
 
-    it('should initialize observed properties', () => {
-        const e = <any>document.createElement('p-element');
+    describe('withProps', () => {
+        it('should reflect props to attributes', done => {
+            const e: any = document.createElement('p-element');
 
-        expect(e.__props).toBeDefined();
-        expect(e.__props).toEqual({
-            a: 'a',
-            b: 1,
-            c: false,
+            expect(e.constructor.observedAttributes).toEqual([
+                'a',
+                'b',
+                'c',
+                'my-prop',
+                'my-super-prop',
+            ]);
+
+            e.setAttribute('my-prop', 'true');
+            e.setAttribute('my-super-prop', 'true');
+
+            requestAnimationFrame(() => {
+                // expect(e.constructor.properties.mySuperProp).toHaveBeenCalled();
+                // expect(e.constructor.properties.myProp).toHaveBeenCalled();
+
+                expect(e.mySuperProp).toBe(true);
+                expect(e.myProp).toBe('true');
+
+                done();
+            });
         });
 
-        ['a', 'b', 'c'].forEach(key => {
-            const desc = Object.getOwnPropertyDescriptor(e, key);
-            expect(desc).toBeDefined();
-            expect(typeof desc.get).toBe('function');
-            expect(typeof desc.set).toBe('function');
+        it('should initialize observed properties', () => {
+            const e: any = document.createElement('p-element');
+
+            e.constructor.observedAttributes.forEach(attrName => {
+                const desc = Object.getOwnPropertyDescriptor(
+                    e.constructor.prototype,
+                    e.constructor.__attrsMap[attrName]
+                );
+
+                expect(desc).toBeDefined();
+                expect(typeof desc.get).toBe('function');
+                expect(typeof desc.set).toBe('function');
+            });
+
+            expect(e.__props).toBeDefined();
+            expect(e.__props).toEqual({
+                a: 'a',
+                b: 1,
+                c: false,
+                myProp: 'null',
+                mySuperProp: false,
+            });
         });
-    });
 
-    it('should trigger update on when props changes', () => {
-        const e = <any>document.createElement('p-element');
-        const callback = jasmine.createSpy('elem');
+        it('should trigger update when props changes', () => {
+            const e: any = document.createElement('p-element');
+            const callback = jasmine.createSpy('elem');
 
-        e.render();
-        e.render = callback;
+            e.render();
+            e.render = callback;
 
-        e.a = 1;
+            e.a = 1;
 
-        expect(callback).toHaveBeenCalled();
+            expect(callback).toHaveBeenCalled();
+        });
+
+        it('should coerce property value', () => {
+            const e: any = document.createElement('p-element');
+            const callback = jasmine.createSpy('elem');
+
+            e.render();
+            e.render = callback;
+
+            e.a = 1;
+            e.b = true;
+            e.c = '';
+
+            expect(e.a).toBe('1');
+            expect(e.b).toBe(1);
+            expect(e.c).toBe(false);
+        });
     });
 });
