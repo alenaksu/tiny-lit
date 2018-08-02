@@ -1,6 +1,6 @@
 {
     "name": "tiny-lit",
-    "version": "1.3.2",
+    "version": "1.4.0",
     "repository": "git@github.com:alenaksu/tiny-lit.git",
     "author": "alenaksu",
     "main": "lib/es5/index.js",
