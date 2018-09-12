@@ -352,6 +352,9 @@ class ElementExpression implements Expression {
                 isTemplate(value) ? value.create() : value
             );
             this.element = value;
+        } else if (isTemplate(element)) {
+            value = textNode(value);
+            replaceContent((<Template>element).content, value);
         } else {
             (<Node>element).nodeValue = value;
         }

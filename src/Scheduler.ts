@@ -29,13 +29,14 @@ export class Scheduler implements SchedulerInterface {
 
     private process = (deadline: IdleDeadline): void => {
         const tasks = this.tasks;
+
         while (
             (deadline.timeRemaining() > 0 || deadline.didTimeout) &&
             tasks.length > 0
         ) {
             const fn = tasks.shift();
-            fn!();
             (fn as any)._scheduled = false;
+            fn!();
         }
 
         if (tasks.length > 0) {

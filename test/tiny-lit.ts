@@ -210,6 +210,15 @@ describe('tiny-lit', () => {
             expect(root.innerHTML).toBe('<div><b>bold</b></div>');
         });
 
+        it('should replace template with primitive values', () => {
+            const t = content => html`<b>${content}</b>`;
+            const c = html`<span>normal</span>`;
+
+            render(t(c), root);
+            render(t('ciao'), root);
+            expect(root.innerHTML).toBe('<b>ciao</b>');
+        });
+
         it('should update nested template', () => {
             const a = c => html`<b>pippo ${c}</b>`,
                 b = c => html`<div>${a(c)}</div>`;
