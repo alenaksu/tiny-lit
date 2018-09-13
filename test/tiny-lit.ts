@@ -217,6 +217,8 @@ describe('tiny-lit', () => {
             render(t(c), root);
             render(t('ciao'), root);
             expect(root.innerHTML).toBe('<b>ciao</b>');
+            render(t(c), root);
+            expect(root.innerHTML).toBe('<b><span>normal</span></b>');
         });
 
         it('should update nested template', () => {

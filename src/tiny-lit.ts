@@ -344,17 +344,18 @@ class ElementExpression implements Expression {
 
         if (isTemplateEqual(element as Template, value)) {
             (element as Template).update(value.values);
-        } else if (isNode(value) || isTemplate(value)) {
+        } else if (isNode(value) || isTemplate(value) || isTemplate(element)) {
             replaceContent(
                 isTemplate(element)
                     ? (<Template>element).content
                     : [<Node>element],
-                isTemplate(value) ? value.create() : value
+                isTemplate(value)
+                    ? value.create()
+                    : isNode(value)
+                        ? value
+                        : (value = textNode(value))
             );
             this.element = value;
-        } else if (isTemplate(element)) {
-            value = textNode(value);
-            replaceContent((<Template>element).content, value);
         } else {
             (<Node>element).nodeValue = value;
         }
