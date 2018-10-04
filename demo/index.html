@@ -2,16 +2,31 @@
 <html>
 
 <head>
-    <title>Tiny-Lit TodoMVC</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.8/custom-elements.min.js"></script>
+    <title>Tiny-Lit Demo</title>
+    <script type="text/javascript" src="../node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
+    <script type="text/javascript" src="../node_modules/@webcomponents/custom-elements/src/native-shim.js"></script>
+    <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/webcomponents-bundle.js"></script> -->
 
     <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Roboto,"Helvetica Neue",sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         #menu {
-            position: fixed;
-            background: #999;
-            top: 0;
-            left: 0;
-            right: 0;
+            box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+            width: 100%;
+            background: #3f51b5;
+            color: white;
             padding: 15px;
             height: 50px;
             box-sizing: border-box;
@@ -26,34 +41,31 @@
             text-transform: uppercase;
             padding: 0 15px;
         }
+
+        #content {
+            padding: 2rem;
+            position: relative;
+            flex: 1;
+        }
     </style>
 </head>
 
 <body>
     <div id="menu">
-        <a class="menu-link todo" href="">Todo</a>
-        <a class="menu-link fiber" href="">Fiber</a>
+        <a class="menu-link" href="/todo">Todo</a>
+        <a class="menu-link" href="/karpinsky">Karpinsky</a>
+        <a class="menu-link" href="/store">Store</a>
     </div>
+
     <div id="content">
-        <!-- <todo-mvc></todo-mvc> -->
-        <!-- <fiber-demo></fiber-demo> -->
+       <demo-route path="/karpinsky" component="karpinsky-demo"></demo-route>
+       <demo-route path="/store" component="store-demo"></demo-route>
+       <demo-route path="/todo" component="todo-mvc"></demo-route>
     </div>
-    <script src="bundle.js" defer=""></script>
+
+    <demo-router></demo-router>
+
+    <script src="index.js" defer=""></script>
 </body>
-
-
-<script>
-    var content = document.getElementById('content');
-    document.querySelector('.menu-link.todo').addEventListener('click', function (e) {
-        e.preventDefault();
-        content.innerHTML = '';
-        content.appendChild(document.createElement('todo-mvc'));
-    });
-    document.querySelector('.menu-link.fiber').addEventListener('click', function (e) {
-        e.preventDefault();
-        content.innerHTML = '';
-        content.appendChild(document.createElement('fiber-demo'));
-    });
-</script>
 
 </html>

@@ -1,16 +1,17 @@
 {
     "extends": "./tsconfig",
     "compilerOptions": {
-        "target": "ES6",
+        "target": "es6",
         "module": "commonjs",
-        "noImplicitAny": false,
+        "moduleResolution": "node",
         "strictNullChecks": false,
         "noUnusedParameters": false,
         "noUnusedLocals": false,
-        "sourceMap": true
+        "sourceMap": true,
+        "types": ["jasmine", "callbag"],
     },
     "include": [
-        "src/**/*",
-        "test/**/*"
+        "packages/*/src/**/*",
+        "packages/*/__test__/**/*"
     ]
 }

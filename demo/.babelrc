@@ -1,0 +1,19 @@
+{
+    "presets": [
+       [ "@babel/preset-env",
+        {
+            "targets": {
+              "esmodules": true,
+              "chrome": 60
+            }
+          }]
+    ],
+    "plugins": [
+        [
+            "@babel/plugin-proposal-class-properties",
+            {
+                "loose": true
+            }
+        ]
+    ]
+}

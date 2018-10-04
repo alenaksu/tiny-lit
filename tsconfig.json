@@ -1,28 +1,26 @@
 {
     "compilerOptions": {
+        "noImplicitAny": false,
+        "allowSyntheticDefaultImports": true,
         "target": "es2017",
         "module": "es2015",
         "lib": ["es2017", "esnext.asynciterable", "dom"],
         "declaration": true,
         "sourceMap": false,
         "inlineSources": false,
-        "outDir": "./lib",
-        // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+        "moduleResolution": "node",
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "experimentalDecorators": true,
-        "types" : [
-            "jasmine",
-        ],
-        "removeComments": true
+        "removeComments": true,
+        "paths": {
+            "@tiny-lit/*": ["./*"]
+        },
+        "baseUrl": "./packages",
+        // "rootDir": ".",
     },
-    "include": ["src/index.ts"],
-    "exclude": [
-        "node_modules"
-    ]
+    "exclude": ["node_modules"]
 }
-
-
