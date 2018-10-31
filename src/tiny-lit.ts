@@ -375,7 +375,7 @@ export function collection(
 }
 
 export function render(template: TemplateInterface, container: any) {
-    if (render.instances.has(container)) {
+    if (!render.instances.has(container)) {
         render.instances.set(container, template);
         container.appendChild(template.create());
     } else {
