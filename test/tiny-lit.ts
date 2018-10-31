@@ -4,6 +4,7 @@ import {
     render,
     collection,
     TemplateCollection,
+    ElementExpression,
 } from '../src/tiny-lit';
 import { div } from './utils';
 
@@ -58,11 +59,11 @@ describe('tiny-lit', () => {
             expect(root.innerHTML).toEqual('<div>pippo</div>');
         });
 
-        it('should store template into __template', () => {
+        it('should store template into instances property', () => {
             const t = html`<div>pippo</div>`;
 
             render(t, root);
-            expect(root.__template).toBeDefined();
+            expect(render.instances.get(root)).toBe(t);
         });
 
         it('should update the template', () => {
@@ -229,7 +230,7 @@ describe('tiny-lit', () => {
 
             let updated = false;
 
-            const elementExpression = root.__template.expressions[0].element;
+            const elementExpression: Template = <any> (<ElementExpression>(<Template>render.instances.get(root)!).expressions[0]).element;
             const update = elementExpression.update.bind(elementExpression);
             elementExpression.update = values => {
                 update(values);
@@ -282,7 +283,7 @@ describe('tiny-lit', () => {
 
                 render(t, root);
                 // the array contains also the root node
-                expect(root.__template.content.length).toEqual(4);
+                expect(render.instances.get(root)!.content.length).toEqual(4);
             });
 
             it('should update existing items', () => {
