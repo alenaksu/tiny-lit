@@ -289,7 +289,7 @@ export class TemplateCollection implements TemplateInterface {
     }
 }
 
-class AttributeExpression implements Expression {
+export class AttributeExpression implements Expression {
     name: string;
     value?: any;
     element: Element;
@@ -320,7 +320,7 @@ class AttributeExpression implements Expression {
     }
 }
 
-class ElementExpression implements Expression {
+export class ElementExpression implements Expression {
     element: Node | TemplateInterface;
     value: any;
 
@@ -375,13 +375,14 @@ export function collection(
 }
 
 export function render(template: TemplateInterface, container: any) {
-    if (!container.__template) {
-        container.__template = template;
+    if (render.instances.has(container)) {
+        render.instances.set(container, template);
         container.appendChild(template.create());
     } else {
-        container.__template.update(template.values);
+        render.instances.get(container)!.update(template.values);
     }
 }
+render.instances = new WeakMap<HTMLElement, TemplateInterface>();
 
 export function html(strings: any, ...values: any[]): Template {
     return new Template([].concat(strings), values);
