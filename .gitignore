@@ -85,4 +85,3 @@ typings/
 packages/*/lib
 **/.cache
 **/dist
-!demo/dist

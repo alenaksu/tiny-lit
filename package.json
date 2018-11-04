@@ -8,8 +8,8 @@
         "test": "lerna run test",
         "build": "lerna run build",
         "size-limit": "lerna run size-limit",
-        "demo": "yarn build && parcel demo/index.html",
-        "build-demo": "rm -rf demo/dist && cd demo && parcel build index.html"
+        "demo": "yarn build && parcel packages/demo/index.html",
+        "build-demo": "rm -rf docs/demo && parcel build packages/demo/index.html --public-url https://alenaksu.github.io/tiny-lit/demo/ -d docs/demo"
     },
     "lint-staged": {
         "@(src|test|demo)/**/*.@(ts|js)": [
