@@ -25,5 +25,8 @@
                 "@tiny-lit/element"
             ]
         }
-    ]
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }

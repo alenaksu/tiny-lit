@@ -16,7 +16,7 @@ import { RouterOptions } from './types';
  * /:param{test1,test2}?
  * @param {*} path
  */
-const ParamsRegex: RegExp = /(?:\/:(?<name>[\w]+)(?:(?<hasList>{(?<values>[\w,]+)}))?(?<optional>\?)?)/g;
+const ParamsRegex: RegExp = /\/:([\w]+)(?:{([\w,]+)})?(\?)?/g;
 
 function pathToRegex(path: string): RegExp {
     let m,
@@ -27,14 +27,14 @@ function pathToRegex(path: string): RegExp {
     }
 
     while ((m = ParamsRegex.exec(path))) {
-        const paramRegex = m.groups.hasList
-            ? `${m.groups.values.split(',').join('|')}`
+        const paramRegex = m.groups[2]
+            ? `${m.groups[2].split(',').join('|')}`
             : '[^/]+';
 
         pattern = pattern.replace(
             m[0],
-            `(?:\\/(?<${m.groups.name}>${paramRegex}))${
-            m.groups.optional ? '?' : ''
+            `(?:\\/(?<${m.groups[1]}>${paramRegex}))${
+            m.groups[3] ? '?' : ''
             }`
         );
     }

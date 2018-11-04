@@ -19,5 +19,8 @@
             "limit": "0.8 KB",
             "path": "lib/esm/index.js"
         }
-    ]
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }
