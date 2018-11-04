@@ -2,13 +2,13 @@ import { Element } from '../src/Element';
 import { html } from '@tiny-lit/core';
 
 describe('Element', () => {
-    const root = document.createElement('div');;
+    const root = document.createElement('div');
     const template = text => html`<div>${text}</div>`;
     customElements.define('a-element', Element);
     customElements.define(
         'c-element',
         class extends Element {
-            getTemplate() {
+            render() {
                 return template(this.state.text);
             }
         }
@@ -18,10 +18,10 @@ describe('Element', () => {
         class extends Element {
             get scheduler() {
                 return {
-                    defer: render => render,
+                    defer: update => update,
                 };
             }
-            getTemplate() {
+            render() {
                 return template(this.state.text);
             }
         }
@@ -46,7 +46,7 @@ describe('Element', () => {
             myProp = null;
             mySuperProp = null;
 
-            getTemplate() {
+            render() {
                 return template(this.state.text);
             }
         }
@@ -63,7 +63,7 @@ describe('Element', () => {
     it('should throw an exception if not extended', () => {
         const e = <any>document.createElement('a-element');
 
-        expect(e.getTemplate).toThrow();
+        expect(e.render).toThrow();
     });
 
     it('should init with empty state', () => {
@@ -91,18 +91,18 @@ describe('Element', () => {
         expect(callback).toHaveBeenCalledTimes(2);
     });
 
-    it('should render on setState', () => {
+    it('should update on setState', () => {
         const e = <any>document.createElement('c-element');
-        const r = e.render;
+        const r = e.update;
 
-        let rendered = false;
-        e.render = function() {
-            rendered = true;
+        let updated = false;
+        e.update = function() {
+            updated = true;
             r();
         };
         e.setState({});
 
-        expect(rendered).toBe(true);
+        expect(updated).toBe(true);
     });
 
     it('should accept functions as setState argument', () => {
@@ -136,9 +136,9 @@ describe('Element', () => {
         const e = <any>document.createElement('s-element'),
             s = document.createElement('span');
         e.appendChild(s);
-        e.render();
-        e.render();
-        e.render();
+        e.update();
+        e.update();
+        e.update();
 
         expect(e.slot.length).toBe(1);
         expect(e.slot[0].values[0]).toBe(s);
@@ -194,12 +194,12 @@ describe('Element', () => {
             });
         });
 
-        it('should trigger update when props changes', () => {
+        it('should trigger update when props changing', () => {
             const e: any = document.createElement('p-element');
             const callback = jasmine.createSpy('elem');
 
-            e.render();
-            e.render = callback;
+            e.update();
+            e.update = callback;
 
             e.a = 1;
 
@@ -210,8 +210,8 @@ describe('Element', () => {
             const e: any = document.createElement('p-element');
             const callback = jasmine.createSpy('elem');
 
-            e.render();
-            e.render = callback;
+            e.update();
+            e.update = callback;
 
             e.a = 1;
             e.b = true;

@@ -4,8 +4,8 @@ export interface Element {
     state: any;
     slot: Template[];
     readonly scheduler: Scheduler;
-    getTemplate(): Template;
-    render(): void;
+    render(): Template;
+    update(): void;
     setState(nextState: object | Function, callback?: Function): void;
     renderCallbacks: Array<Function>;
 }

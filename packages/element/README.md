@@ -16,14 +16,14 @@ class Clock extends Element {
             }), 1000);
     }
 
-    getTemplate() {
+    render() {
         return html`<div>${this.state.time}</div>`;
     }
 }
 customElement.define('my-clock', Clock);
 
 class Select extends withElement(HTMLSelectElement) {
-    getTemplate() {
+    render() {
         return html`
             ${this.state.options.map( 
                 option => html`
@@ -65,7 +65,7 @@ class Clock extends withProps(Element) {
             }), 1000);
     }
 
-    getTemplate() {
+    render() {
         return html`
             <h1>${this.title}</h1>
             <div>${this.state.time}</div>

@@ -3,12 +3,8 @@ import Scheduler from './Scheduler';
 import {
     Constructor,
     Element as ElementInterface,
-    Scheduler as SchedulerInterface,
+    Scheduler as SchedulerInterface
 } from './types';
-
-function toKebabCase(str: string): string {
-    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-}
 
 export function withElement<T extends Constructor>(Base: T) {
     return class extends Base implements ElementInterface {
@@ -26,7 +22,7 @@ export function withElement<T extends Constructor>(Base: T) {
         }
 
         connectedCallback() {
-            this.render();
+            this.update();
         }
 
         setState(nextState: object | Function, callback?: Function): void {
@@ -36,40 +32,41 @@ export function withElement<T extends Constructor>(Base: T) {
                 ...state,
                 ...(typeof nextState === 'function'
                     ? nextState(state, this)
-                    : nextState),
+                    : nextState)
             };
 
             callback && this.renderCallbacks.push(callback);
 
-            this.render();
+            this.update();
         }
 
-        getTemplate(): Template {
+        render(): Template {
             throw 'Method not implemented';
         }
 
-        render = this.scheduler.defer(() => {
+        update = this.scheduler.defer(() => {
             if (!this.rendered) {
                 this.__childNodes = [].slice.call((<any>this).childNodes);
                 this.rendered = true;
             }
-            render(this.getTemplate(), this as any);
 
-            while (this.renderCallbacks.length) {
-                this.renderCallbacks.shift()!();
-            }
+            render(this.render(), this as any);
+
+            while (this.renderCallbacks.length) this.renderCallbacks.shift()!();
         });
     };
 }
 
 function defineProps(constructor: any): string[] {
-    if (!constructor.hasOwnProperty('__attrsMap')) {
+    if (!constructor.__attrsMap) {
         const props: { [key: string]: Function } = constructor.properties;
         const attrsMap: { [key: string]: string } = Object.create(null);
 
         if (props) {
             for (const name in props) {
-                attrsMap[toKebabCase(name)] = name;
+                attrsMap[
+                    name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+                ] = name;
 
                 Object.defineProperty(constructor.prototype, name, {
                     get(): any {
@@ -81,18 +78,18 @@ function defineProps(constructor: any): string[] {
 
                         (<any>this).rendered &&
                             oldValue !== newValue &&
-                            !this.render._scheduled &&
-                            this.render();
-                    },
+                            !this.update._scheduled &&
+                            this.update();
+                    }
                 });
             }
         }
 
         constructor.__attrsMap = attrsMap;
-        constructor.__observedProperties = Object.keys(attrsMap);
+        constructor.__observedProps = Object.keys(attrsMap);
     }
 
-    return constructor.__observedProperties;
+    return constructor.__observedProps;
 }
 
 export function withProps<T extends Constructor>(Base: T) {

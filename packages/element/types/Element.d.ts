@@ -10,8 +10,8 @@ export declare function withElement<T extends Constructor>(Base: T): {
         readonly slot: Template[];
         connectedCallback(): void;
         setState(nextState: object | Function, callback?: Function | undefined): void;
-        getTemplate(): Template;
-        render: () => void;
+        render(): Template;
+        update: () => void;
     };
 } & T;
 export declare function withProps<T extends Constructor>(Base: T): {
@@ -39,8 +39,8 @@ export declare const Element: {
         readonly slot: Template[];
         connectedCallback(): void;
         setState(nextState: object | Function, callback?: Function | undefined): void;
-        getTemplate(): Template;
-        render: () => void;
+        render(): Template;
+        update: () => void;
     };
 } & {
     new (): HTMLElement;
