@@ -50,7 +50,7 @@ export class Router implements RouterInterface {
         window.addEventListener('popstate', this.resolve);
 
         if (interceptLocal) {
-            document.addEventListener('click', this.handleLocalClick, true);
+            document.addEventListener('click', this.handleLocalClick);
         }
     }
 
@@ -61,7 +61,6 @@ export class Router implements RouterInterface {
             target.href.indexOf(location.origin) === 0
         ) {
             e.preventDefault();
-            e.stopImmediatePropagation();
 
             this.goTo(target.getAttribute('href'));
         }
