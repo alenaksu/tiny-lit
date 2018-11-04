@@ -1,5 +1,11 @@
-import { RouteLifecycle, Route, Router as RouterInterface } from './types';
+import {
+    RouteLifecycle,
+    Route,
+    Router as RouterInterface,
+    HistoryInterface
+} from './types';
 import { RouterOptions } from './types';
+import { createPathHistory, createHashHistory } from './history';
 
 /**
  * Valid paths:
@@ -33,9 +39,7 @@ function pathToRegex(path: string): RegExp {
 
         pattern = pattern.replace(
             m[0],
-            `(?:\\/(?<${m.groups[1]}>${paramRegex}))${
-            m.groups[3] ? '?' : ''
-            }`
+            `(?:\\/(?<${m.groups[1]}>${paramRegex}))${m.groups[3] ? '?' : ''}`
         );
     }
 
@@ -43,15 +47,18 @@ function pathToRegex(path: string): RegExp {
 }
 
 export class Router implements RouterInterface {
+    history: HistoryInterface;
     routes: Map<string, Route> = new Map();
     current?: Route;
 
-    constructor({ interceptLocal }: RouterOptions) {
-        window.addEventListener('popstate', this.resolve);
+    constructor({ interceptLocals, useHash }: RouterOptions) {
+        if (useHash) this.history = createHashHistory();
+        else this.history = createPathHistory();
 
-        if (interceptLocal) {
+        this.history.listen(this.resolve);
+
+        if (interceptLocals)
             document.addEventListener('click', this.handleLocalClick);
-        }
     }
 
     handleLocalClick = e => {
@@ -73,18 +80,15 @@ export class Router implements RouterInterface {
             onLeave,
             onUpdate
         });
-
-        return this;
     }
 
     off(path: string) {
         this.routes.delete(path);
-        return this;
     }
 
     resolve = () => {
-        const path = location.pathname,
-            current = this.current;
+        const path = this.history.path();
+        const current = this.current;
 
         this.routes.forEach(route => {
             const match: any = path.match(route.regex);
@@ -92,7 +96,8 @@ export class Router implements RouterInterface {
                 if (current !== route) {
                     this.current = route;
 
-                    if (current && current.onLeave) current.onLeave(match.groups);
+                    if (current && current.onLeave)
+                        current.onLeave(match.groups);
 
                     route.onEnter && route.onEnter(match.groups);
                 } else {
@@ -100,13 +105,9 @@ export class Router implements RouterInterface {
                 }
             }
         });
-
-        return this;
     }
 
     goTo(path) {
-        history.pushState(null, document.title, path);
-        this.resolve();
-        return this;
+        this.history.go(path);
     }
 }

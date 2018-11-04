@@ -1,10 +1,6 @@
 import { Router, RouteComponent } from './types';
 import { requestRouter } from './events';
 
-function updateComponentParams(component, params) {
-    for (const key in params) component.setAttribute(key, params[key]);
-}
-
 export class RouteElement extends HTMLElement {
     router?: Router;
 
@@ -21,14 +17,12 @@ export class RouteElement extends HTMLElement {
 
             this.router.on(path, {
                 onEnter: params => {
-                    updateComponentParams(component, params);
 
                     this.appendChild(component);
 
                     if (component.onRouteEnter) component.onRouteEnter(params);
                 },
                 onUpdate: params => {
-                    updateComponentParams(component, params);
 
                     if (component.onRouteUpdate) component.onRouteUpdate(params);
                 },
@@ -43,6 +37,6 @@ export class RouteElement extends HTMLElement {
 
     disconnectedCallback() {
         const path = this.getAttribute('path');
-        if (this.router &&  path) this.router.off(path);
+        if (this.router && path) this.router.off(path);
     }
 }

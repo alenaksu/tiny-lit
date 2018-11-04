@@ -2,13 +2,7 @@ import { Router } from './router';
 import { RouterEvents, RequestRouterEvent } from './types';
 
 export class RouterProvider extends HTMLElement {
-    router: Router;
-
-    constructor() {
-        super();
-
-        this.router = new Router({ interceptLocal: true });
-    }
+    router?: Router;
 
     onRouterRequest = (e: RequestRouterEvent) => {
         e.detail.router = this.router;
@@ -17,7 +11,14 @@ export class RouterProvider extends HTMLElement {
     connectedCallback() {
         document.body.addEventListener(RouterEvents.Request, <any>this.onRouterRequest, true);
 
-        requestAnimationFrame(() => this.router.resolve());
+        if (!this.router) {
+            this.router = new Router({
+                interceptLocals: this.hasAttribute('intercept-locals'),
+                useHash: this.hasAttribute('use-hash')
+             });
+        }
+
+        requestAnimationFrame(() => this.router!.resolve());
     }
 
     disconnectedCallback() {

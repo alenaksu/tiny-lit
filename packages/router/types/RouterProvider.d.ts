@@ -1,7 +1,6 @@
 import { Router } from './router';
 export declare class RouterProvider extends HTMLElement {
-    router: Router;
-    constructor();
+    router?: Router;
     onRouterRequest: (e: CustomEvent<{
         router?: import("./types").Router | undefined;
     }>) => void;

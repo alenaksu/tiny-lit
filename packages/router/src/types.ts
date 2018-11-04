@@ -31,5 +31,12 @@ export interface Router {
 export type RequestRouterEvent = CustomEvent<{ router?: Router }>;
 
 export type RouterOptions = {
-    interceptLocal?: boolean;
+    interceptLocals?: boolean;
+    useHash?: Boolean;
+};
+
+export type HistoryInterface = {
+    path(): string;
+    go(path: string): void;
+    listen(callback: () => void): Function;
 };
