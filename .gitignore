@@ -82,4 +82,7 @@ typings/
 /test/**/*.js.map
 /demo/public/**/*.js.map
 /demo/public/**/*.js
-/lib/
+packages/*/lib
+**/.cache
+**/dist
+!demo/dist

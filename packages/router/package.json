@@ -1,0 +1,24 @@
+{
+    "name": "@tiny-lit/router",
+    "version": "1.0.0",
+    "main": "lib/cjs/index.js",
+    "module": "lib/esm/index.js",
+    "license": "MIT",
+    "dependencies": {},
+    "scripts": {
+        "start": "tsc -w",
+        "clear": "rm -rf lib/",
+        "build": "npm run clear && tsc --outDir lib/esm && tsc --target es5 --outDir lib/cjs --module commonjs",
+        "lint": "tslint --project ./",
+        "size": "npm run build && size-limit",
+        "test": "karma start --single-run --browsers ChromeHeadless ../../karma.conf.js",
+        "release": "npm-run-all build test"
+    },
+    "typings": "./types/index.d.ts",
+    "size-limit": [
+        {
+            "limit": "0.8 KB",
+            "path": "lib/esm/index.js"
+        }
+    ]
+}

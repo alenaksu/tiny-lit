@@ -1,9 +1,13 @@
-module.exports = function(config) {
+module.exports = function (config) {
     config.set({
+        baseDir: '.',
         frameworks: ['jasmine', 'karma-typescript'],
-        files: ['src/**/*.ts', 'test/**/*.ts'],
+        files: [
+            '/src/**/*.ts',
+            '/__test__/**/*.ts'
+        ].map(path => process.cwd() + '/' + path),
         preprocessors: {
-            'src/**/*.ts': 'coverage',
+            '**/src/**/*.ts': 'coverage',
             '**/*.ts': 'karma-typescript',
         },
         karmaTypescriptConfig: {
