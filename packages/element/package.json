@@ -1,11 +1,11 @@
 {
     "name": "@tiny-lit/element",
-    "version": "1.0.0",
+    "version": "1.0.0-alpha.0",
     "main": "lib/cjs/index.js",
     "module": "lib/esm/index.js",
     "license": "MIT",
     "dependencies": {
-        "@tiny-lit/core": "^1.0.0"
+        "@tiny-lit/core": "^1.0.0-alpha.0"
     },
     "scripts": {
         "start": "tsc -w",
@@ -21,7 +21,9 @@
         {
             "limit": "2.20 KB",
             "path": "lib/esm/index.js",
-            "ignore": ["@tiny-lit/element"]
+            "ignore": [
+                "@tiny-lit/element"
+            ]
         }
     ]
 }
