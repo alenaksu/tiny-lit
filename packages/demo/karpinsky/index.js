@@ -66,7 +66,7 @@ class KarpinskyDot extends Element {
         `;
     }
 
-    getTemplate() {
+    render() {
         const { hover, text } = this;
 
         return html`<span style=${this.getStyle()}>
@@ -93,7 +93,7 @@ class KarpinskyTriangle extends Element {
     s = 0;
     seconds = 0;
 
-    getTemplate() {
+    render() {
         let { s, seconds, x, y } = this;
 
         if (s <= targetSize) {
@@ -132,7 +132,7 @@ class KarpinskyDemo extends Element {
     connectedCallback() {
         this.start = Date.now();
         this.timerInterval = setInterval(this.tick.bind(this), 1000);
-        this.renderInterval = rafInterval(this.render);
+        this.renderInterval = rafInterval(this.update);
         this.setState({
             seconds: 0,
         });
@@ -166,7 +166,7 @@ class KarpinskyDemo extends Element {
         `;
     }
 
-    getTemplate() {
+    render() {
         const { seconds } = this.state;
 
         return html`

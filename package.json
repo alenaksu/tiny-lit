@@ -7,7 +7,7 @@
         "precommit": "lint-staged",
         "test": "lerna run test",
         "build": "lerna run build",
-        "size-limit": "lerna run size-limit",
+        "size": "size-limit",
         "demo": "yarn build && parcel packages/demo/index.html",
         "build-demo": "rm -rf docs/demo && parcel build packages/demo/index.html --public-url https://alenaksu.github.io/tiny-lit/demo/ -d docs/demo"
     },
@@ -17,6 +17,12 @@
             "git add"
         ]
     },
+    "size-limit": [
+        {
+            "limit": "4 KB",
+            "path": "packages/**/lib/esm/index.js"
+        }
+    ],
     "devDependencies": {
         "@babel/core": "^7.1.2",
         "@babel/plugin-proposal-class-properties": "^7.1.0",

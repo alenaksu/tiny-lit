@@ -4,6 +4,7 @@ import style from './style.js';
 
 function prevented(f) {
     return e => {
+        e.stopPropagation();
         e.preventDefault();
         f(e);
     };
@@ -99,7 +100,7 @@ class TodoMVC extends Element {
         });
     }
 
-    getTemplate() {
+    render() {
         const { filter, todos } = this.state;
 
         return html`

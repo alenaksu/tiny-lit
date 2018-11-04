@@ -14,10 +14,6 @@ const parseTemplate = (function() {
     };
 })();
 
-function typeCheck(obj: any, types: any[]) {
-    return types.some((type: any) => obj instanceof type);
-}
-
 function replaceContent(content: Node[], node: Node) {
     insertBefore(node, content[0]);
     removeNodes(content);
@@ -67,7 +63,9 @@ function isNode(obj: any) {
 }
 
 function isTemplate(obj: any) {
-    return typeCheck(obj, [Template, TemplateCollection]);
+    return [Template, TemplateCollection].some(
+        (type: any) => obj instanceof type
+    );
 }
 
 function createElement(
@@ -105,6 +103,7 @@ function attributesToExpressions(
 
     while (i--) {
         const { name, value } = attrs.item(i) as Attr;
+
         if (expressions.has(value)) {
             element.removeAttribute(name);
             linkedExpressions[markerNumber(value)] = new AttributeExpression(
@@ -210,9 +209,7 @@ export class TemplateCollection implements TemplateInterface {
     }
 
     private _flushTemplates(keys: string[]) {
-        const { templates } = this;
-
-        templates.forEach((template, key, map) => {
+        this.templates.forEach((template, key, map) => {
             if (keys.indexOf(key) === -1) {
                 removeNodes(template.content);
                 map.delete(key);
@@ -245,12 +242,10 @@ export class TemplateCollection implements TemplateInterface {
                     ? insertBefore(node, currentNode.nextSibling!)
                     : currentNode.parentNode!.appendChild(node);
 
-                templates.set(key, item);
-                template = item;
+                templates.set(key, (template = item));
             } else if (!isTemplateEqual(template, item)) {
                 replaceContent(template.content, item.create());
-                templates.set(key, item);
-                template = item;
+                templates.set(key, (template = item));
             } else {
                 template.update(item.values);
             }
@@ -270,8 +265,7 @@ export class TemplateCollection implements TemplateInterface {
 
     create(): Node {
         const fragment = document.createDocumentFragment();
-        this.rootNode = textNode();
-        fragment.appendChild(this.rootNode);
+        fragment.appendChild((this.rootNode = textNode()));
 
         this.update(this.values);
 

@@ -3,6 +3,7 @@
 
 <head>
     <title>Tiny-Lit Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
     <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/src/native-shim.js"></script>
     <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/webcomponents-bundle.js"></script> -->
@@ -20,6 +21,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         #menu {
@@ -63,7 +65,7 @@
        <demo-route path="/todo" component="todo-mvc"></demo-route>
     </div>
 
-    <demo-router></demo-router>
+    <demo-router intercept-locals use-hash></demo-router>
 
     <script src="index.js" defer=""></script>
 </body>

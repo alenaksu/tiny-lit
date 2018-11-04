@@ -8,7 +8,7 @@
         "noUnusedParameters": false,
         "noUnusedLocals": false,
         "sourceMap": true,
-        "types": ["jasmine", "callbag"],
+        "types": ["jasmine"],
     },
     "include": [
         "packages/*/src/**/*",

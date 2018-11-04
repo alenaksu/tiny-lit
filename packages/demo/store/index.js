@@ -191,7 +191,7 @@ class Basket extends ElementWithStore {
         this.dispatch('removeAllFromCart');
     }
 
-    getTemplate() {
+    render() {
         return html`
             <style>
                 .basket {
@@ -248,7 +248,7 @@ class Item extends ElementWithStore {
         this.dispatch('addToCart', this.item);
     };
 
-    getTemplate() {
+    render() {
         return html`
             <div class="detail" has-content="">
                 <img
@@ -277,7 +277,7 @@ class StoreDemo extends Element {
         return 'store-demo';
     }
 
-    getTemplate() {
+    render() {
         return html`
             <style>
                 h1 {
@@ -324,6 +324,12 @@ class StoreDemo extends Element {
                     flex: 1 1;
                     flex-basis: 33%;
                     max-width: 33%;
+                }
+                @media (max-width: 767px) {
+                    shop-item {
+                        flex-basis: 100%;
+                        max-width: 100%;
+                    }
                 }
             </style>
             <my-store>
