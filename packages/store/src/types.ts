@@ -18,8 +18,6 @@ export interface StoreEvent {
 export type Action = StoreEvent;
 export type Mutation = StoreEvent;
 
-export type Reducer = (state: any, action: Action) => any;
-
 export type SubcribeCallback = (state: any, mutation?: Mutation) => void;
 
 export interface UpdateEvent extends CustomEvent {
@@ -45,16 +43,22 @@ export interface StoreConnectedElement {
 
 export interface StoreInterface {
     state: any;
+    mutations: Map<string, MutationHandler>;
+    actions: Map<string, ActionHandler>;
     dispatch(action: string | Action, payload?: any);
     subscribe(callback: Function);
     commit(mutation: string);
 }
 
+export type MutationHandler = (state?: any, data?: any) => void;
+export type ActionHandler = (store: StoreInterface, payload: any) => void;
+export type PluginHandler = (store: StoreInterface) => void;
+
 export type StoreConfig = {
-    actions?: { [name: string]: (store: StoreInterface, payload: any) => void };
-    mutations?: { [name: string]: (state?: any, data?: any) => void };
+    actions?: { [name: string]: ActionHandler };
+    mutations?: { [name: string]: MutationHandler };
     initialState?: any;
-    plugins?: Array<(store: StoreInterface) => void>;
+    plugins?: Array<PluginHandler>;
 };
 
 export enum StoreEvents {

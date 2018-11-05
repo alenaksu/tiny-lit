@@ -4,32 +4,35 @@ import {
     StoreInterface,
     Mutation,
     SubcribeCallback,
+    MutationHandler,
+    ActionHandler
 } from './types';
 
 import { normalizeEvent } from './events';
 
 const StateProp = Symbol();
 
+const objToMap = (obj: any, map: Map<any, any>) => {
+    for (const key in obj) map.set(key, obj[key]);
+};
+
 export class Store<S = any> implements StoreInterface {
     [StateProp]: S = {} as S;
-    config: StoreConfig;
-    listeners: Set<Function> = new Set();
+    readonly mutations: Map<string, MutationHandler> = new Map();
+    readonly actions: Map<string, ActionHandler> = new Map();
+    private listeners: Set<Function> = new Set();
 
-    constructor(store: StoreConfig) {
-        this.config = {
-            mutations: {},
-            actions: {},
-            initialState: {},
-            plugins: [],
-            ...store
-        };
-        this[StateProp] = this.config.initialState;
+    constructor(store: StoreConfig = {}) {
+        objToMap(store.mutations, this.mutations);
+        objToMap(store.actions, this.actions);
 
-        this.config.plugins!.forEach(plugin => plugin(this));
+        this[StateProp] = { ...store.initialState };
+
+        store.plugins!.forEach(plugin => plugin(this));
     }
 
     dispatch = normalizeEvent((action: Action) => {
-        const actions = this.config.actions!;
+        const actions = this.actions!;
         if (action.type in actions) actions[action.type](this, action.data);
     });
 
@@ -49,7 +52,7 @@ export class Store<S = any> implements StoreInterface {
     }
 
     commit = normalizeEvent((mutation: Mutation) => {
-        const mutations = this.config.mutations!;
+        const mutations = this.mutations!;
         if (mutation.type in mutations)
             mutations[mutation.type](this.state, mutation.data);
 

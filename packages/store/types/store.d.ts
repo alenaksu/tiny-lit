@@ -1,10 +1,11 @@
-import { StoreConfig, StoreInterface, SubcribeCallback } from './types';
+import { StoreConfig, StoreInterface, SubcribeCallback, MutationHandler, ActionHandler } from './types';
 declare const StateProp: unique symbol;
 export declare class Store<S = any> implements StoreInterface {
     [StateProp]: S;
-    config: StoreConfig;
+    readonly mutations: Map<string, MutationHandler>;
+    readonly actions: Map<string, ActionHandler>;
     listeners: Set<Function>;
-    constructor(store: StoreConfig);
+    constructor(store?: StoreConfig);
     dispatch: (event: string | import("./types").StoreEvent, data?: any) => any;
     readonly state: S;
     subscribe(callback: SubcribeCallback): () => boolean;
