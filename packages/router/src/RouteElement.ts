@@ -17,19 +17,16 @@ export class RouteElement extends HTMLElement {
 
             this.router.on(path, {
                 onEnter: params => {
-
-                    this.appendChild(component);
-
                     if (component.onRouteEnter) component.onRouteEnter(params);
+                    this.appendChild(component);
                 },
                 onUpdate: params => {
 
                     if (component.onRouteUpdate) component.onRouteUpdate(params);
                 },
                 onLeave: () => {
-                    this.removeChild(component);
-
                     if (component.onRouteLeave) component.onRouteLeave();
+                    this.removeChild(component);
                 }
             });
         }
