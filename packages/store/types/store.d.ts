@@ -4,7 +4,7 @@ export declare class Store<S = any> implements StoreInterface {
     [StateProp]: S;
     readonly mutations: Map<string, MutationHandler>;
     readonly actions: Map<string, ActionHandler>;
-    listeners: Set<Function>;
+    private listeners;
     constructor(store?: StoreConfig);
     dispatch: (event: string | import("./types").StoreEvent, data?: any) => any;
     readonly state: S;
