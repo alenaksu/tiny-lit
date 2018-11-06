@@ -22,18 +22,18 @@ export class Store<S = any> implements StoreInterface {
     readonly actions: Map<string, ActionHandler> = new Map();
     private listeners: Set<Function> = new Set();
 
-    constructor(store: StoreConfig = {}) {
-        objToMap(store.mutations, this.mutations);
-        objToMap(store.actions, this.actions);
+    constructor(config: StoreConfig = {}) {
+        objToMap(config.mutations, this.mutations);
+        objToMap(config.actions, this.actions);
 
-        this[StateProp] = { ...store.initialState };
+        this[StateProp] = { ...config.initialState };
 
-        store.plugins!.forEach(plugin => plugin(this));
+        config.plugins!.forEach(plugin => plugin(this));
     }
 
     dispatch = normalizeEvent((action: Action) => {
-        const actions = this.actions!;
-        if (action.type in actions) actions[action.type](this, action.data);
+        const actions = this.actions;
+        if (actions.has(action.type)) actions.get(action.type)!(this, action.data);
     });
 
     get state() {
@@ -52,9 +52,9 @@ export class Store<S = any> implements StoreInterface {
     }
 
     commit = normalizeEvent((mutation: Mutation) => {
-        const mutations = this.mutations!;
-        if (mutation.type in mutations)
-            mutations[mutation.type](this.state, mutation.data);
+        const mutations = this.mutations;
+        if (mutations.has(mutation.type))
+            mutations.get(mutation.type)!(this.state, mutation.data);
 
         this.listeners.forEach(listener => listener(mutation));
     });

@@ -22,8 +22,7 @@ A store uses **actions** and **mutations** to bring changes to the state.
 
 ### Actions
 
-Action handlers receive as first parameter the store class and the data in the second.
-They can contain async operations and should not mutate the state directly but by committing mutations.
+Action handlers are pure functions that accepts the store class and data as arguments. They can contain async operations and MUST NOT directly mutate the state, but they may commit mutations.
 
 ```ts
 type ActionHandler = (store: StoreInterface, data: any) => void;

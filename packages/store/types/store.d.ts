@@ -5,7 +5,7 @@ export declare class Store<S = any> implements StoreInterface {
     readonly mutations: Map<string, MutationHandler>;
     readonly actions: Map<string, ActionHandler>;
     private listeners;
-    constructor(store?: StoreConfig);
+    constructor(config?: StoreConfig);
     dispatch: (event: string | import("./types").StoreEvent, data?: any) => any;
     readonly state: S;
     subscribe(callback: SubcribeCallback): () => boolean;
