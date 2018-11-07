@@ -50,7 +50,7 @@ export interface StoreInterface {
     commit(mutation: string);
 }
 
-export type MutationHandler = (state?: any, data?: any) => void;
+export type MutationHandler = (state?: any, data?: any) => object;
 export type ActionHandler = (store: StoreInterface, payload: any) => void;
 export type PluginHandler = (store: StoreInterface) => void;
 

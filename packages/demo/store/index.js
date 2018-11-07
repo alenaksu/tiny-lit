@@ -143,16 +143,31 @@ class MyStore extends StoreProvider {
             },
             mutations: {
                 addItem(state, data) {
-                    state.cart.push(data);
+                    return{
+                        ...state,
+                        cart: [
+                            ...state.cart,
+                            data
+                        ]
+                    };
                 },
                 removeItemByIndex(state, data) {
-                    state.cart.splice(data, 1);
+                    return{
+                        ...state,
+                        cart: state.cart.filter((a, i) => i !== data)
+                    };
                 },
                 removeItem(state, item) {
-                    state.cart = state.cart.filter(i => i !== item);
+                    return {
+                        ...state,
+                        cart: state.cart.filter(i => i !== item)
+                    };
                 },
                 updateCount(state) {
-                    state.count = state.cart.length;
+                    return {
+                        ...state,
+                        count: state.cart.length
+                    };
                 }
             }
         };

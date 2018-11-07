@@ -30,10 +30,10 @@ type ActionHandler = (store: StoreInterface, data: any) => void;
 
 ### Mutations
 
-Like actions also mutations handlers are pure function. The first parameter is the state object and the second is the data.
+Mutations handlers area responsible of muting the state. The first parameter is the state object and the second is the data. The returned object is the new state.
 
 ```ts
-type MutationHandler = (state?: any, data?: any) => void;
+type MutationHandler = (state?: any, data?: any) => object;
 ```
 
 ### Plugins
@@ -66,11 +66,11 @@ subscribe(callback: (state: any, mutation?: Mutation) => void) => Function
 ```
 - `commit` Applies the mutation provided.
 ```ts
-commit(type: string, data:any) => void
+commit(type: string, data:any) => object
 commit(mutation: {
     type: string;
     data: any;
-}) => void
+}) => object
 ```
 
 ### Properties
@@ -108,7 +108,9 @@ const myStore = createStore({
         },
         mutations: {
             setCount(state, data) {
-                state.count = data
+                return {
+                    count: data
+                };
             }
         },
         initialState: {

@@ -16,7 +16,7 @@ const objToMap = (obj: any, map: Map<any, any>) => {
     for (const key in obj) map.set(key, obj[key]);
 };
 
-export class Store<S = any> implements StoreInterface {
+export class Store<S> implements StoreInterface {
     [StateProp]: S = {} as S;
     readonly mutations: Map<string, MutationHandler> = new Map();
     readonly actions: Map<string, ActionHandler> = new Map();
@@ -36,7 +36,7 @@ export class Store<S = any> implements StoreInterface {
         if (actions.has(action.type)) actions.get(action.type)!(this, action.data);
     });
 
-    get state() {
+    get state(): S {
         return this[StateProp];
     }
 
@@ -53,8 +53,9 @@ export class Store<S = any> implements StoreInterface {
 
     commit = normalizeEvent((mutation: Mutation) => {
         const mutations = this.mutations;
-        if (mutations.has(mutation.type))
-            mutations.get(mutation.type)!(this.state, mutation.data);
+        if (mutations.has(mutation.type)) {
+            this[StateProp] = <any>mutations.get(mutation.type)!(this.state, mutation.data);
+        }
 
         this.listeners.forEach(listener => listener(mutation));
     });

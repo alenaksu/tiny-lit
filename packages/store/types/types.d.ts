@@ -39,7 +39,7 @@ export interface StoreInterface {
     subscribe(callback: Function): any;
     commit(mutation: string): any;
 }
-export declare type MutationHandler = (state?: any, data?: any) => void;
+export declare type MutationHandler = (state?: any, data?: any) => object;
 export declare type ActionHandler = (store: StoreInterface, payload: any) => void;
 export declare type PluginHandler = (store: StoreInterface) => void;
 export declare type StoreConfig = {
