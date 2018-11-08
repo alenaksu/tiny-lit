@@ -28,7 +28,8 @@ export class Store<S> implements StoreInterface {
 
         this[StateProp] = { ...config.initialState };
 
-        config.plugins!.forEach(plugin => plugin(this));
+        if (config.plugins)
+            config.plugins!.forEach(plugin => plugin(this));
     }
 
     dispatch = normalizeEvent((action: Action) => {

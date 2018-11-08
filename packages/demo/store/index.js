@@ -120,6 +120,7 @@ class MyStore extends StoreProvider {
     get config() {
         return {
             initialState: {
+                ...JSON.parse(this.getAttribute('initial-state')),
                 cart: [],
                 count: 0
             },

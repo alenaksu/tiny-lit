@@ -13,7 +13,10 @@ describe('super-mega-store', () => {
             },
             mutations: {
                 increment(state) {
-                    state.count++;
+                    return {
+                        ...state,
+                        count: state.count + 1
+                    }
                 }
             }
         });
