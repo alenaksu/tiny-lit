@@ -9,3 +9,12 @@ export interface TemplateInterface {
     content: Node[];
     values: any[];
 }
+export declare type LinkSymbol = {
+    type: new (...args: any[]) => void;
+    name: string;
+    nodePath: Array<number>;
+};
+export declare type CacheEntry = {
+    expressions: Array<LinkSymbol>;
+    template: HTMLTemplateElement;
+};

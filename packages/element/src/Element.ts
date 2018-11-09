@@ -1,4 +1,4 @@
-import { render, Template, html } from '@tiny-lit/core';
+import { render, Template } from '@tiny-lit/core';
 import Scheduler from './Scheduler';
 import {
     Constructor,
@@ -9,16 +9,11 @@ import {
 export function withElement<T extends Constructor>(Base: T) {
     return class extends Base implements ElementInterface {
         state: any = {};
-        __childNodes: Node[] = [];
         rendered: boolean = false;
         renderCallbacks: Array<Function> = [];
 
         get scheduler(): SchedulerInterface {
             return Scheduler;
-        }
-
-        get slot(): Template[] {
-            return this.__childNodes.map((node: Node) => html`${node}`);
         }
 
         connectedCallback() {
@@ -45,10 +40,7 @@ export function withElement<T extends Constructor>(Base: T) {
         }
 
         update = this.scheduler.defer(() => {
-            if (!this.rendered) {
-                this.__childNodes = [].slice.call((<any>this).childNodes);
-                this.rendered = true;
-            }
+            this.rendered = true;
 
             render(this.render(), this as any);
 
