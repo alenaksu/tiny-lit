@@ -1,4 +1,4 @@
-export interface RouteLifecycle {
+export interface RouteCallbacks {
     onEnter?(matches: any);
     onLeave?(matches: any);
     onUpdate?(matches: any);
@@ -12,7 +12,7 @@ export interface RouteComponent extends HTMLElement {
 
 export type Route = {
     regex: RegExp;
-} & RouteLifecycle;
+} & RouteCallbacks;
 
 export enum RouterEvents {
     Request = 'router::request',
@@ -22,7 +22,7 @@ export enum RouterEvents {
 export interface Router {
     routes: Map<string, Route>;
     current?: Route;
-    on(path: string, { onEnter, onLeave, onUpdate }: RouteLifecycle);
+    on(path: string, callbacks: RouteCallbacks);
     off(path: string);
     resolve();
     goTo(path);

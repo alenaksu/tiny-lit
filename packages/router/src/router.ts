@@ -1,5 +1,5 @@
 import {
-    RouteLifecycle,
+    RouteCallbacks,
     Route,
     Router as RouterInterface,
     HistoryInterface
@@ -48,7 +48,7 @@ function pathToRegex(path: string): RegExp {
 
 export class Router implements RouterInterface {
     history: HistoryInterface;
-    routes: Map<string, Route> = new Map();
+    routes: Map<string, Route> =new Map();
     current?: Route;
 
     constructor({ interceptLocals, useHash }: RouterOptions) {
@@ -73,12 +73,10 @@ export class Router implements RouterInterface {
         }
     }
 
-    on(path: string, { onEnter, onLeave, onUpdate }: RouteLifecycle) {
+    on(path: string, callbacks: RouteCallbacks) {
         this.routes.set(path, {
-            regex: pathToRegex(path),
-            onEnter,
-            onLeave,
-            onUpdate
+            ...callbacks,
+            regex: pathToRegex(path)
         });
     }
 
