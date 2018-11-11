@@ -1,4 +1,4 @@
-import { RouteLifecycle, Route, Router as RouterInterface, HistoryInterface } from './types';
+import { RouteCallbacks, Route, Router as RouterInterface, HistoryInterface } from './types';
 import { RouterOptions } from './types';
 export declare class Router implements RouterInterface {
     history: HistoryInterface;
@@ -6,7 +6,7 @@ export declare class Router implements RouterInterface {
     current?: Route;
     constructor({ interceptLocals, useHash }: RouterOptions);
     handleLocalClick: (e: any) => void;
-    on(path: string, { onEnter, onLeave, onUpdate }: RouteLifecycle): void;
+    on(path: string, callbacks: RouteCallbacks): void;
     off(path: string): void;
     resolve: () => void;
     goTo(path: any): void;
