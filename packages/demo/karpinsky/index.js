@@ -130,12 +130,18 @@ class KarpinskyDemo extends Element {
     }
 
     connectedCallback() {
+        const rendered = this.rendered;
+
+        if (!rendered) console.time('render');
+
         this.start = Date.now();
         this.timerInterval = setInterval(this.tick.bind(this), 1000);
         this.renderInterval = rafInterval(this.update);
         this.setState({
             seconds: 0,
         });
+
+        if (!rendered) console.timeEnd('render');
     }
 
     disconnectedCallback() {

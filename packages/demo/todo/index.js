@@ -86,11 +86,13 @@ class TodoMVC extends Element {
     }
 
     switchCompleted(index) {
-        const todos = this.state.todos;
+        return prevented(() => {
+            const todos = this.state.todos;
 
-        todos[index].completed = !todos[index].completed;
-        this.setState({
-            todos: [...todos],
+            todos[index].completed = !todos[index].completed;
+            this.setState({
+                todos: [...todos],
+            });
         });
     }
 
@@ -98,6 +100,14 @@ class TodoMVC extends Element {
         this.setState({
             todos: [...this.state.todos.filter(todo => !todo.completed)],
         });
+    }
+
+    connectedCallback() {
+        const rendered = this.rendered;
+
+        if (!rendered) console.time('render');
+        this.update();
+        if (!rendered) console.timeEnd('render');
     }
 
     render() {
@@ -144,13 +154,9 @@ class TodoMVC extends Element {
                                         class="toggle"
                                         type="checkbox"
                                         checked=${todo.completed}
-                                        onClick=${prevented(() =>
-                                            this.switchCompleted(todo.index)
-                                        )}
+                                        onClick=${this.switchCompleted(todo.index)}
                                     />
-                                    <label onClick=${prevented(() =>
-                                        this.switchCompleted(todo.index)
-                                    )}>${todo.text}</label>
+                                    <label onClick=${this.switchCompleted(todo.index)}>${todo.text}</label>
                                     <button class="destroy" onClick=${prevented(
                                         () => this.handleDeleteTodo(todo)
                                     )}></button>

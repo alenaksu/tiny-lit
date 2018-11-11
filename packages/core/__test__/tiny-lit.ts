@@ -2,9 +2,9 @@ import {
     html,
     Template,
     render,
-    TemplateCollection,
-    NodeExpression
-} from '../src/tiny-lit';
+    TemplateCollection
+} from '../src/index';
+import { NodeExpression } from '../src/expressions';
 
 describe('tiny-lit', () => {
     describe('html', () => {

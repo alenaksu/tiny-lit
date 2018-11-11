@@ -3,11 +3,9 @@ import { Constructor, Scheduler as SchedulerInterface } from './types';
 export declare function withElement<T extends Constructor>(Base: T): {
     new (...args: any[]): {
         state: any;
-        __childNodes: Node[];
         rendered: boolean;
         renderCallbacks: Function[];
         readonly scheduler: SchedulerInterface;
-        readonly slot: Template[];
         connectedCallback(): void;
         setState(nextState: object | Function, callback?: Function | undefined): void;
         render(): Template;
@@ -32,11 +30,9 @@ export declare const Element: {
 } & {
     new (...args: any[]): {
         state: any;
-        __childNodes: Node[];
         rendered: boolean;
         renderCallbacks: Function[];
         readonly scheduler: SchedulerInterface;
-        readonly slot: Template[];
         connectedCallback(): void;
         setState(nextState: object | Function, callback?: Function | undefined): void;
         render(): Template;

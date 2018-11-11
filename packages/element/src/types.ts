@@ -4,7 +4,6 @@ export type Constructor<T = {}> = new (...args: any[]) => T;
 
 export interface Element {
     state: any;
-    slot: Template[];
     readonly scheduler: Scheduler;
     render(): Template;
     update(): void;
