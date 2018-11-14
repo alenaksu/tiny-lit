@@ -1,9 +1,5 @@
 import { TemplateInterface } from './types';
 
-export function textNode(text: string = ''): Text {
-    return document.createTextNode(text);
-}
-
 export function isNode(obj: any) {
     return !!obj && !!(<Node>obj).ownerDocument;
 }
@@ -42,13 +38,17 @@ export function getNodeIndex(node: Node): number {
 }
 
 export function getNodePath(node: Node): Array<number> {
-    return node.parentNode
-        ? getNodePath(node.parentNode).concat(getNodeIndex(node))
-        : [];
+    const path: number[] = [];
+    while (node.parentNode) {
+        path.unshift(getNodeIndex(node));
+        node = node.parentNode;
+    }
+    return path;
 }
 
-export function getNodeByPath(root: Node, path: Array<number>): Node {
-    return path.length
-        ? getNodeByPath(root.childNodes[path[0]], path.slice(1))
-        : root;
+export function getNodeByPath(node: Node, path: Array<number>): Node {
+    for (let i = 0, l = path.length; i < l; i++)
+        node = node.childNodes[path[i]];
+
+    return node;
 }

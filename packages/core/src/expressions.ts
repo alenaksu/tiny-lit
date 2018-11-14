@@ -1,6 +1,11 @@
 import { Expression, TemplateInterface } from './types';
-import { TemplateCollection, isTemplate, isTemplateEqual, Template } from './template';
-import { textNode, isNode, replaceContent } from './utils';
+import {
+    TemplateCollection,
+    isTemplate,
+    isTemplateEqual,
+    Template
+} from './template';
+import { isNode, replaceContent } from './utils';
 
 export class AttributeExpression implements Expression {
     name: string;
@@ -46,7 +51,7 @@ export class NodeExpression implements Expression {
         const { element } = this;
 
         if (value === undefined || value === null) {
-            value = textNode();
+            value = document.createTextNode('');
         } else if (!force && value === this.value) {
             return;
         }
@@ -66,7 +71,7 @@ export class NodeExpression implements Expression {
                     ? value.create()
                     : isNode(value)
                         ? value
-                        : (value = textNode(value))
+                        : (value = document.createTextNode(value))
             );
             this.element = value;
         }

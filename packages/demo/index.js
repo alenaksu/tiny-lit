@@ -1,6 +1,7 @@
 import './todo';
 import './karpinsky';
 import './store';
+import './counter';
 
 import { RouterProvider, RouteElement } from '@tiny-lit/router';
 

@@ -1,6 +1,13 @@
 import { TemplateInterface, Expression } from './types';
 import { createElement } from './parser';
-import { insertBefore, replaceContent, textNode, removeNodes, moveTemplate } from './utils';
+import {
+    insertBefore,
+    replaceContent,
+    removeNodes,
+    moveTemplate
+} from './utils';
+
+const TemplateSymbol = Symbol();
 
 export function isTemplateEqual(t1: Template, t2: Template) {
     return (
@@ -14,12 +21,11 @@ export function isTemplateEqual(t1: Template, t2: Template) {
 }
 
 export function isTemplate(obj: any) {
-    return [Template, TemplateCollection].some(
-        (type: any) => obj instanceof type
-    );
+    return obj && obj[TemplateSymbol];
 }
 
 export class Template implements TemplateInterface {
+    [TemplateSymbol] = true;
     values: any[];
     strings: TemplateStringsArray;
     content: Node[] = [];
@@ -57,6 +63,7 @@ export class Template implements TemplateInterface {
 }
 
 export class TemplateCollection implements TemplateInterface {
+    [TemplateSymbol] = true;
     values: any[];
     templates: Map<string, Template>;
     rootNode?: Text;
@@ -123,7 +130,7 @@ export class TemplateCollection implements TemplateInterface {
 
     create(): Node {
         const fragment = document.createDocumentFragment();
-        fragment.appendChild(this.rootNode = textNode());
+        fragment.appendChild((this.rootNode = document.createTextNode('')));
 
         this.update(this.values);
 
