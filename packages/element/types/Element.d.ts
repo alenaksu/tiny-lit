@@ -13,7 +13,7 @@ export declare const Element: {
         readonly scheduler: import("./types").Scheduler;
         connectedCallback(): void;
         setState(nextState: object | Function, callback?: Function | undefined): void;
-        render(): import("../../core/types/template").Template;
+        render(): import("../../core/types/template").Template | null;
         update: () => void;
     };
 } & {

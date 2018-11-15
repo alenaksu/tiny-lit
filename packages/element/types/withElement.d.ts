@@ -8,7 +8,7 @@ export declare function withElement<T extends Constructor>(Base: T): {
         readonly scheduler: SchedulerInterface;
         connectedCallback(): void;
         setState(nextState: object | Function, callback?: Function | undefined): void;
-        render(): Template;
+        render(): Template | null;
         update: () => void;
     };
 } & T;

@@ -3,7 +3,7 @@ export declare type Constructor<T = {}> = new (...args: any[]) => T;
 export interface Element {
     state: any;
     readonly scheduler: Scheduler;
-    render(): Template;
+    render(): Template | null;
     update(): void;
     setState(nextState: object | Function, callback?: Function): void;
     renderCallbacks: Array<Function>;
