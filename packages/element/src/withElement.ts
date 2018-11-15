@@ -35,14 +35,15 @@ export function withElement<T extends Constructor>(Base: T) {
             this.update();
         }
 
-        render(): Template {
-            throw 'Method not implemented';
+        render(): Template | null {
+            return null;
         }
 
         update = this.scheduler.defer(() => {
             this.rendered = true;
 
-            render(this.render(), this as any);
+            const template = this.render();
+            template && render(template, this as any);
 
             while (this.renderCallbacks.length) this.renderCallbacks.shift()!();
         });

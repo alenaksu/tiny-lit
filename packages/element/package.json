@@ -19,11 +19,8 @@
     "typings": "./types/index.d.ts",
     "size-limit": [
         {
-            "limit": "2.20 KB",
-            "path": "lib/esm/index.js",
-            "ignore": [
-                "@tiny-lit/element"
-            ]
+            "limit": "1 KB",
+            "path": "lib/esm/index.js"
         }
     ],
     "publishConfig": {

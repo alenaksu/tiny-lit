@@ -6,7 +6,7 @@ import {
 
 const requestIdleCallback =
     (window as any).requestIdleCallback ||
-    function(handler: Function, options: any = {}) {
+    function(handler: Function) {
         const start = Date.now();
         return setTimeout(
             () =>
@@ -15,7 +15,7 @@ const requestIdleCallback =
                     timeRemaining: () => {
                         return Math.max(
                             0,
-                            (options.timeout || 50) - (Date.now() - start)
+                            50 - (Date.now() - start)
                         );
                     },
                 }),
@@ -48,7 +48,7 @@ export class Scheduler implements SchedulerInterface {
 
     private start() {
         requestIdleCallback(this.process, {
-            timeout: 100,
+            timeout: 50,
         });
         this.running = true;
     }
