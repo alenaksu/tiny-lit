@@ -1,31 +1,59 @@
-import { Router, RouteComponent } from './types';
+import { Router, RouteComponent, RouteComponentCallbacks } from './types';
 import { requestRouter } from './events';
+
+const callCallback = (
+    route: RouteElement,
+    component: HTMLElement,
+    name: RouteComponentCallbacks,
+    params?: any
+) =>
+    component[name] &&
+    Promise.resolve(
+        route.moduleLoaded ||
+            !route.hasAttribute('module') ||
+            (import(route.getAttribute('module')!) &&
+                (route.moduleLoaded = true))
+    ).then(() => component[name](params));
 
 export class RouteElement extends HTMLElement {
     router?: Router;
+    moduleLoaded?: boolean;
 
     connectedCallback() {
+        const path = this.getAttribute('path'),
+            componentName = this.getAttribute('component');
+
+        if (!path || !componentName) return;
+
         if ((this.router = requestRouter(this))) {
-            const path = this.getAttribute('path'),
-                componentName = this.getAttribute('component');
-
-            if (!path || !componentName) return;
-
             const component: RouteComponent = document.createElement(
                 componentName
             );
 
             this.router.on(path, {
                 onEnter: params => {
-                    if (component.onRouteEnter) component.onRouteEnter(params);
+                    callCallback(
+                        this,
+                        component,
+                        RouteComponentCallbacks.onRouteEnter,
+                        params
+                    );
                     this.appendChild(component);
                 },
                 onUpdate: params => {
-
-                    if (component.onRouteUpdate) component.onRouteUpdate(params);
+                    callCallback(
+                        this,
+                        component,
+                        RouteComponentCallbacks.onRouteUpdate,
+                        params
+                    );
                 },
                 onLeave: () => {
-                    if (component.onRouteLeave) component.onRouteLeave();
+                    callCallback(
+                        this,
+                        component,
+                        RouteComponentCallbacks.onRouteLeave
+                    );
                     this.removeChild(component);
                 }
             });
@@ -33,7 +61,6 @@ export class RouteElement extends HTMLElement {
     }
 
     disconnectedCallback() {
-        const path = this.getAttribute('path');
-        if (this.router && path) this.router.off(path);
+        if (this.router) this.router.off(this.getAttribute('path')!);
     }
 }

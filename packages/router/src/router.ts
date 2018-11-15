@@ -33,13 +33,13 @@ function pathToRegex(path: string): RegExp {
     }
 
     while ((m = ParamsRegex.exec(path))) {
-        const paramRegex = m.groups[2]
-            ? `${m.groups[2].split(',').join('|')}`
+        const paramRegex = m[2]
+            ? `${m[2].split(',').join('|')}`
             : '[^/]+';
 
         pattern = pattern.replace(
             m[0],
-            `(?:\\/(?<${m.groups[1]}>${paramRegex}))${m.groups[3] ? '?' : ''}`
+            `(?:\\/(?<${m[1]}>${paramRegex}))${m[3] ? '?' : ''}`
         );
     }
 
@@ -48,7 +48,7 @@ function pathToRegex(path: string): RegExp {
 
 export class Router implements RouterInterface {
     history: HistoryInterface;
-    routes: Map<string, Route> =new Map();
+    routes: Map<string, Route> = new Map();
     current?: Route;
 
     constructor({ interceptLocals, useHash }: RouterOptions) {

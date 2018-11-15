@@ -4,10 +4,16 @@ export interface RouteCallbacks {
     onUpdate?(matches: any);
 }
 
+export const enum RouteComponentCallbacks {
+    onRouteUpdate = 'onRouteUpdate',
+    onRouteEnter = 'onRouteEnter',
+    onRouteLeave = 'onRouteLeave'
+}
+
 export interface RouteComponent extends HTMLElement {
-    onRouteUpdate?(matches: any);
-    onRouteEnter?(matches: any);
-    onRouteLeave?();
+    [RouteComponentCallbacks.onRouteEnter]?(matches: any);
+    [RouteComponentCallbacks.onRouteUpdate]?(matches: any);
+    [RouteComponentCallbacks.onRouteLeave]?();
 }
 
 export type Route = {

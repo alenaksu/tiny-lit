@@ -3,10 +3,15 @@ export interface RouteCallbacks {
     onLeave?(matches: any): any;
     onUpdate?(matches: any): any;
 }
+export declare const enum RouteComponentCallbacks {
+    onRouteUpdate = "onRouteUpdate",
+    onRouteEnter = "onRouteEnter",
+    onRouteLeave = "onRouteLeave"
+}
 export interface RouteComponent extends HTMLElement {
-    onRouteUpdate?(matches: any): any;
-    onRouteEnter?(matches: any): any;
-    onRouteLeave?(): any;
+    [RouteComponentCallbacks.onRouteEnter]?(matches: any): any;
+    [RouteComponentCallbacks.onRouteUpdate]?(matches: any): any;
+    [RouteComponentCallbacks.onRouteLeave]?(): any;
 }
 export declare type Route = {
     regex: RegExp;

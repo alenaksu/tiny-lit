@@ -16,7 +16,7 @@
     "typings": "./types/index.d.ts",
     "size-limit": [
         {
-            "limit": "1.1 KB",
+            "limit": "1.2 KB",
             "path": "lib/esm/index.js"
         }
     ],
