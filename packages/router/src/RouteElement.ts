@@ -7,13 +7,12 @@ const callCallback = (
     name: RouteComponentCallbacks,
     params?: any
 ) =>
-    component[name] &&
     Promise.resolve(
         route.moduleLoaded ||
             !route.hasAttribute('module') ||
             (import(route.getAttribute('module')!) &&
                 (route.moduleLoaded = true))
-    ).then(() => component[name](params));
+    ).then(() => component[name] && component[name](params));
 
 export class RouteElement extends HTMLElement {
     router?: Router;
