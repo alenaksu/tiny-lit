@@ -18,7 +18,9 @@ export interface RouteComponent extends HTMLElement {
 
 export type Route = {
     regex: RegExp;
-} & RouteCallbacks;
+    callbacks: RouteCallbacks;
+    path: string
+};
 
 export enum RouterEvents {
     Request = 'router::request',
@@ -26,10 +28,9 @@ export enum RouterEvents {
 }
 
 export interface Router {
-    routes: Map<string, Route>;
+    routes: Array<Route>;
     current?: Route;
-    on(path: string, callbacks: RouteCallbacks);
-    off(path: string);
+    on(path: string, callbacks: RouteCallbacks): Function;
     resolve();
     goTo(path);
 }

@@ -33,9 +33,7 @@ function pathToRegex(path: string): RegExp {
     }
 
     while ((m = ParamsRegex.exec(path))) {
-        const paramRegex = m[2]
-            ? `${m[2].split(',').join('|')}`
-            : '[^/]+';
+        const paramRegex = m[2] ? `${m[2].split(',').join('|')}` : '[^/]+';
 
         pattern = pattern.replace(
             m[0],
@@ -48,7 +46,7 @@ function pathToRegex(path: string): RegExp {
 
 export class Router implements RouterInterface {
     history: HistoryInterface;
-    routes: Map<string, Route> = new Map();
+    routes: Array<Route> = [];
     current?: Route;
 
     constructor({ interceptLocals, useHash }: RouterOptions) {
@@ -71,17 +69,17 @@ export class Router implements RouterInterface {
 
             this.goTo(target.getAttribute('href'));
         }
-    }
+    };
 
-    on(path: string, callbacks: RouteCallbacks) {
-        this.routes.set(path, {
-            ...callbacks,
+    on(path: string, callbacks: RouteCallbacks = {}) {
+        const route = {
+            path,
+            callbacks,
             regex: pathToRegex(path)
-        });
-    }
+        };
+        this.routes.push(route);
 
-    off(path: string) {
-        this.routes.delete(path);
+        return () => (this.routes = this.routes.filter(r => r !== route));
     }
 
     resolve = () => {
@@ -90,20 +88,22 @@ export class Router implements RouterInterface {
 
         this.routes.forEach(route => {
             const match: any = path.match(route.regex);
+            const { onEnter, onUpdate } = route.callbacks;
+
             if (match) {
                 if (current !== route) {
                     this.current = route;
 
-                    if (current && current.onLeave)
-                        current.onLeave(match.groups);
+                    if (current && current.callbacks.onLeave)
+                        current.callbacks.onLeave(match.groups);
 
-                    route.onEnter && route.onEnter(match.groups);
+                    onEnter && onEnter(match.groups);
                 } else {
-                    route.onUpdate && route.onUpdate(match.groups);
+                    onUpdate && onUpdate(match.groups);
                 }
             }
         });
-    }
+    };
 
     goTo(path) {
         this.history.go(path);

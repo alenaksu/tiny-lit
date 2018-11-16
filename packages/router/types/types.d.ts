@@ -15,16 +15,17 @@ export interface RouteComponent extends HTMLElement {
 }
 export declare type Route = {
     regex: RegExp;
-} & RouteCallbacks;
+    callbacks: RouteCallbacks;
+    path: string;
+};
 export declare enum RouterEvents {
     Request = "router::request",
     Change = "router::change"
 }
 export interface Router {
-    routes: Map<string, Route>;
+    routes: Array<Route>;
     current?: Route;
-    on(path: string, callbacks: RouteCallbacks): any;
-    off(path: string): any;
+    on(path: string, callbacks: RouteCallbacks): Function;
     resolve(): any;
     goTo(path: any): any;
 }

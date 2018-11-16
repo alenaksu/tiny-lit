@@ -17,6 +17,7 @@ const callCallback = (
 export class RouteElement extends HTMLElement {
     router?: Router;
     moduleLoaded?: boolean;
+    dispose?: Function;
 
     connectedCallback() {
         const path = this.getAttribute('path'),
@@ -29,7 +30,7 @@ export class RouteElement extends HTMLElement {
                 componentName
             );
 
-            this.router.on(path, {
+            this.dispose = this.router.on(path, {
                 onEnter: params => {
                     callCallback(
                         this,
@@ -60,6 +61,6 @@ export class RouteElement extends HTMLElement {
     }
 
     disconnectedCallback() {
-        if (this.router) this.router.off(this.getAttribute('path')!);
+        if (this.dispose) this.dispose();
     }
 }
