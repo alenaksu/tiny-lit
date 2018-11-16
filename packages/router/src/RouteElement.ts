@@ -13,10 +13,10 @@ const callCallback = (
         import(route.getAttribute('module')!)
     )
         .then(() => customElements.whenDefined(component.localName))
-        .then(() => {
+        .then(() =>
+            (route.moduleLoaded = true),
             component[name] && component[name](params)
-            route.moduleLoaded = true;
-        });
+        );
 
 export class RouteElement extends HTMLElement {
     router?: Router;
@@ -41,8 +41,9 @@ export class RouteElement extends HTMLElement {
                         component,
                         RouteComponentCallbacks.onRouteEnter,
                         params
+                    ).then(() =>
+                        this.appendChild(component)
                     );
-                    this.appendChild(component);
                 },
                 onUpdate: params => {
                     callCallback(
@@ -57,8 +58,9 @@ export class RouteElement extends HTMLElement {
                         this,
                         component,
                         RouteComponentCallbacks.onRouteLeave
+                    ).then(() =>
+                        this.removeChild(component)
                     );
-                    this.removeChild(component);
                 }
             });
         }
