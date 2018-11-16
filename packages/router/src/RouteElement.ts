@@ -10,9 +10,11 @@ const callCallback = (
     Promise.resolve(
         route.moduleLoaded ||
             !route.hasAttribute('module') ||
-            (import(route.getAttribute('module')!) &&
-                (route.moduleLoaded = true))
-    ).then(() => component[name] && component[name](params));
+            import(route.getAttribute('module')!)
+    ).then(
+        () => (route.moduleLoaded = true),
+        component[name] && component[name](params)
+    );
 
 export class RouteElement extends HTMLElement {
     router?: Router;

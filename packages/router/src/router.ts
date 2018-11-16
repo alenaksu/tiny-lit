@@ -69,7 +69,7 @@ export class Router implements RouterInterface {
 
             this.goTo(target.getAttribute('href'));
         }
-    };
+    }
 
     on(path: string, callbacks: RouteCallbacks = {}) {
         const route = {
@@ -86,7 +86,7 @@ export class Router implements RouterInterface {
         const path = this.history.path();
         const current = this.current;
 
-        this.routes.forEach(route => {
+        this.routes.some((route: Route) => {
             const match: any = path.match(route.regex);
             const { onEnter, onUpdate } = route.callbacks;
 
@@ -102,8 +102,10 @@ export class Router implements RouterInterface {
                     onUpdate && onUpdate(match.groups);
                 }
             }
+
+            return match;
         });
-    };
+    }
 
     goTo(path) {
         this.history.go(path);

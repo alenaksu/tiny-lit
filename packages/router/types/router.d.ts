@@ -6,7 +6,7 @@ export declare class Router implements RouterInterface {
     current?: Route;
     constructor({ interceptLocals, useHash }: RouterOptions);
     handleLocalClick: (e: any) => void;
-    on(path: string, callbacks: RouteCallbacks): () => Route[];
+    on(path: string, callbacks?: RouteCallbacks): () => Route[];
     resolve: () => void;
     goTo(path: any): void;
 }
