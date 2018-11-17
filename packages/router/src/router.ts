@@ -100,8 +100,9 @@ export class Router implements RouterInterface {
 
             if (match) {
                 match = match
+                    .filter(m => m !== undefined)
                     .reduce((map, m, i) => {
-                        if (i && m !== undefined) map[route.params[i - 1]] = m
+                        if (i) map[route.params[i - 1]] = m;
                         return map;
                     }, {});
 
