@@ -2,7 +2,7 @@ import { HistoryInterface } from '../types';
 
 export default (): HistoryInterface => ({
     path() {
-        return location.hash ? location.hash.substring(1) : '';
+        return location.hash ? location.hash.substring(1) : '/';
     },
     go(path: string) {
         location.hash = `#${path}`;
