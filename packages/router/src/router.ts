@@ -24,24 +24,32 @@ import { createPathHistory, createHashHistory } from './history';
  */
 const ParamsRegex: RegExp = /\/:([\w]+)(?:{([\w,]+)})?(\?)?/g;
 
-function pathToRegex(path: string): RegExp {
+function parsePath(path: string) {
     let m,
+        params: Array<string> = [],
         pattern = path;
 
     if (path === '*') {
-        return /.*/;
+        return {
+            regex: /.*/,
+            params: []
+        };
     }
 
     while ((m = ParamsRegex.exec(path))) {
-        const paramRegex = m[2] ? `${m[2].split(',').join('|')}` : '[^/]+';
+        const paramRegex = m[2] ? `${m[2].replace(',', '|')}` : '[^/]+';
 
+        params.push(m[1]);
         pattern = pattern.replace(
             m[0],
-            `(?:\\/(?<${m[1]}>${paramRegex}))${m[3] ? '?' : ''}`
+            `(\\/${paramRegex})${m[3] ? '?' : ''}`
         );
     }
 
-    return new RegExp(`^${pattern}$`);
+    return {
+        regex: new RegExp(`^${pattern}$`),
+        params
+    }
 }
 
 export class Router implements RouterInterface {
@@ -75,7 +83,7 @@ export class Router implements RouterInterface {
         const route = {
             path,
             callbacks,
-            regex: pathToRegex(path)
+            ...parsePath(path)
         };
         this.routes.push(route);
 
@@ -87,19 +95,25 @@ export class Router implements RouterInterface {
         const current = this.current;
 
         this.routes.some((route: Route) => {
-            const match: any = path.match(route.regex);
+            let match: any = path.match(route.regex);
             const { onEnter, onUpdate } = route.callbacks;
 
             if (match) {
+                match = match
+                    .reduce((map, m, i) => {
+                        if (i && m !== undefined) map[route.params[i - 1]] = m
+                        return map;
+                    }, {});
+
                 if (current !== route) {
                     this.current = route;
 
                     if (current && current.callbacks.onLeave)
-                        current.callbacks.onLeave(match.groups);
+                        current.callbacks.onLeave(match);
 
-                    onEnter && onEnter(match.groups);
+                    onEnter && onEnter(match);
                 } else {
-                    onUpdate && onUpdate(match.groups);
+                    onUpdate && onUpdate(match);
                 }
             }
 

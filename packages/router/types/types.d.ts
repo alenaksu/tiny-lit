@@ -15,6 +15,7 @@ export interface RouteComponent extends HTMLElement {
 }
 export declare type Route = {
     regex: RegExp;
+    params: Array<string>;
     callbacks: RouteCallbacks;
     path: string;
 };
