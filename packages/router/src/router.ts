@@ -37,7 +37,7 @@ function parsePath(path: string) {
     }
 
     while ((m = ParamsRegex.exec(path))) {
-        const paramRegex = m[2] ? `${m[2].replace(',', '|')}` : '[^/]+';
+        const paramRegex = m[2] ? `${m[2].split(',').join('|')}` : '[^/]+';
 
         params.push(m[1]);
         pattern = pattern.replace(
@@ -47,7 +47,7 @@ function parsePath(path: string) {
     }
 
     return {
-        regex: new RegExp(`^${pattern}$`),
+        regex: new RegExp(`^${pattern}\\/?$`),
         params
     }
 }
