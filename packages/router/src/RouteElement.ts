@@ -1,26 +1,19 @@
-import { Router, RouteComponent, RouteComponentCallbacks } from './types';
+import { Router, RouteComponent } from './types';
 import { requestRouter } from './events';
 
-const callCallback = (
+const waitComponent = (
     route: RouteElement,
-    component: HTMLElement,
-    name: RouteComponentCallbacks,
-    params?: any
+    component: HTMLElement
 ) =>
     Promise.resolve(
-        route.moduleLoaded ||
         !route.hasAttribute('module') ||
         import(route.getAttribute('module')!)
     )
-        .then(() => customElements.whenDefined(component.localName))
-        .then(() =>
-            (route.moduleLoaded = true),
-            component[name] && component[name](params)
-        );
+        // TODO check element upgrade
+        .then(() => customElements.whenDefined(component.localName));
 
 export class RouteElement extends HTMLElement {
     router?: Router;
-    moduleLoaded?: boolean;
     dispose?: Function;
 
     connectedCallback() {
@@ -36,31 +29,28 @@ export class RouteElement extends HTMLElement {
 
             this.dispose = this.router.on(path, {
                 onEnter: params => {
-                    callCallback(
+                    waitComponent(
                         this,
-                        component,
-                        RouteComponentCallbacks.onRouteEnter,
-                        params
+                        component
                     ).then(() =>
                         this.appendChild(component)
-                    );
+                    ).then(() => component.onRouteEnter && component.onRouteEnter(params));
                 },
                 onUpdate: params => {
-                    callCallback(
+                    waitComponent(
                         this,
-                        component,
-                        RouteComponentCallbacks.onRouteUpdate,
-                        params
-                    );
+                        component
+                    ).then(() => component.onRouteUpdate && component.onRouteUpdate(params));
                 },
                 onLeave: () => {
-                    callCallback(
+                    waitComponent(
                         this,
-                        component,
-                        RouteComponentCallbacks.onRouteLeave
-                    ).then(() =>
-                        this.removeChild(component)
-                    );
+                        component
+                    )
+                        .then(() => component.onRouteLeave && component.onRouteLeave())
+                        .then(() =>
+                            this.removeChild(component)
+                        );
                 }
             });
         }

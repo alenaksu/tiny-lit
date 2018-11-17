@@ -42,7 +42,7 @@ function parsePath(path: string) {
         params.push(m[1]);
         pattern = pattern.replace(
             m[0],
-            `(\\/${paramRegex})${m[3] ? '?' : ''}`
+            `(?:\\/(${paramRegex}))${m[3] ? '?' : ''}`
         );
     }
 
@@ -108,12 +108,12 @@ export class Router implements RouterInterface {
                 if (current !== route) {
                     this.current = route;
 
-                    if (current && current.callbacks.onLeave)
-                        current.callbacks.onLeave(match);
+                    if (current)
+                        current.callbacks.onLeave!(match);
 
-                    onEnter && onEnter(match);
+                    onEnter!(match);
                 } else {
-                    onUpdate && onUpdate(match);
+                    onUpdate!(match);
                 }
             }
 
