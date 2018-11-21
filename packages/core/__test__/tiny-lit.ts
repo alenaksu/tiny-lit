@@ -148,9 +148,9 @@ describe('tiny-lit', () => {
             render(t({ a: 0 }), root);
             expect((<any>root.children[0]).min).toBe('0');
             render(t({ a: null }), root);
-            expect((<any>root.children[0]).min).toBe('');
+            expect((<any>root.children[0]).min).toBe('null');
             render(t({ a: undefined }), root);
-            expect((<any>root.children[0]).min).toBe('');
+            expect((<any>root.children[0]).min).toBe('undefined');
 
             render(t({ b: 0 }), root);
             expect((<any>root.children[0]).custom).toBe(undefined);
@@ -158,7 +158,7 @@ describe('tiny-lit', () => {
 
             render(t({ b: null }), root);
             expect((<any>root.children[0]).custom).toBe(undefined);
-            expect((<any>root.children[0]).hasAttribute('custom')).toBe(false);
+            expect((<any>root.children[0]).getAttribute('custom')).toBe('null');
 
             render(t({ b: undefined }), root);
             expect((<any>root.children[0]).custom).toBe(undefined);

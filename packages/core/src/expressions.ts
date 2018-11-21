@@ -26,13 +26,12 @@ export class AttributeExpression implements Expression {
 
         if (name in element) {
             (element as any)[name] = value;
-        } else if (value != null) {
+        } else if (typeof value !== 'undefined') {
             element.setAttribute(name, value);
+        } else {
+            element.hasAttribute(name) && element.removeAttribute(name);
         }
 
-        if (value == null && element.hasAttribute(name)) {
-            element.removeAttribute(name);
-        }
 
         this.value = value;
     }
