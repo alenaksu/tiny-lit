@@ -83,5 +83,5 @@ export function linkExpressions(
 export function resolve(fragment: Node, symbols: LinkSymbol[]) {
     return symbols.map(symbol =>
         new symbol.type(getNodeByPath(fragment, symbol.nodePath), symbol.name)
-    )
+    );
 }

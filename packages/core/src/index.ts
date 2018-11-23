@@ -1,4 +1,5 @@
-export { Template, TemplateCollection } from './template';
+export { Template } from './template';
+export { TemplateCollection } from './template-collection';
 
 import { TemplateInterface } from './types';
 import { Template } from './template';

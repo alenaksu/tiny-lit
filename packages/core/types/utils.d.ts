@@ -7,3 +7,6 @@ export declare function moveTemplate(template: TemplateInterface, node: Node): v
 export declare function getNodeIndex(node: Node): number;
 export declare function getNodePath(node: Node): Array<number>;
 export declare function getNodeByPath(node: Node, path: Array<number>): Node;
+export declare const TemplateSymbol: unique symbol;
+export declare function isTemplateEqual(t1: TemplateInterface, t2: TemplateInterface): boolean | 0;
+export declare function isTemplate(obj: any): any;

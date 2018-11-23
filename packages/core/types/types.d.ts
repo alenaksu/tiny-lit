@@ -8,6 +8,7 @@ export interface TemplateInterface {
     create(): Node;
     content: Node[];
     values: any[];
+    strings?: TemplateStringsArray;
 }
 export declare type LinkSymbol = {
     type: new (...args: any[]) => void;

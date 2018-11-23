@@ -10,6 +10,7 @@ export interface TemplateInterface {
     create(): Node;
     content: Node[];
     values: any[];
+    strings?: TemplateStringsArray;
 }
 
 export type LinkSymbol = {

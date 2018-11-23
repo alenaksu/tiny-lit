@@ -1,11 +1,6 @@
 import { Expression, TemplateInterface } from './types';
-import {
-    TemplateCollection,
-    isTemplate,
-    isTemplateEqual,
-    Template
-} from './template';
-import { isNode, replaceContent } from './utils';
+import { TemplateCollection } from './template-collection';
+import { isNode, replaceContent, isTemplate, isTemplateEqual } from './utils';
 
 export class AttributeExpression implements Expression {
     name: string;
@@ -32,7 +27,6 @@ export class AttributeExpression implements Expression {
             element.hasAttribute(name) && element.removeAttribute(name);
         }
 
-
         this.value = value;
     }
 }
@@ -50,7 +44,7 @@ export class NodeExpression implements Expression {
         const { element } = this;
 
         if (value === undefined || value === null) {
-            value = document.createTextNode('');
+            value = '';
         } else if (!force && value === this.value) {
             return;
         }
@@ -59,12 +53,12 @@ export class NodeExpression implements Expression {
 
         if (!isNode(value) && !isTemplate(value) && !isTemplate(element)) {
             (<Node>element).nodeValue = value;
-        } else if (isTemplateEqual(element as Template, value)) {
-            (element as Template).update(value.values);
+        } else if (isTemplateEqual(element as TemplateInterface, value)) {
+            (element as TemplateInterface).update(value.values);
         } else {
             replaceContent(
                 isTemplate(element)
-                    ? (<Template>element).content
+                    ? (<TemplateInterface>element).content
                     : [<Node>element],
                 isTemplate(value)
                     ? value.create()

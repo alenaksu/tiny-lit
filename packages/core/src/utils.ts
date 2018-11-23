@@ -52,3 +52,20 @@ export function getNodeByPath(node: Node, path: Array<number>): Node {
 
     return node;
 }
+
+export const TemplateSymbol = Symbol();
+
+export function isTemplateEqual(t1: TemplateInterface, t2: TemplateInterface) {
+    return (
+        isTemplate(t1) &&
+        t1.constructor === t2.constructor &&
+        ((!t1.strings && !t2.strings) ||
+            (t1.strings!.length &&
+                t2.strings!.length &&
+                t1.strings!.every((s, i) => t2.strings![i] === s)))
+    );
+}
+
+export function isTemplate(obj: any) {
+    return obj && obj[TemplateSymbol];
+}

@@ -1,7 +1,5 @@
 import { TemplateInterface, Expression } from './types';
-declare const TemplateSymbol: unique symbol;
-export declare function isTemplateEqual(t1: Template, t2: Template): boolean | 0;
-export declare function isTemplate(obj: any): any;
+import { TemplateSymbol } from './utils';
 export declare class Template implements TemplateInterface {
     [TemplateSymbol]: boolean;
     values: any[];
@@ -14,15 +12,3 @@ export declare class Template implements TemplateInterface {
     update(values: any[], force?: boolean): void;
     create(): DocumentFragment;
 }
-export declare class TemplateCollection implements TemplateInterface {
-    [TemplateSymbol]: boolean;
-    values: any[];
-    templates: Map<string, Template>;
-    rootNode?: Text;
-    constructor(values: any[]);
-    private _flushTemplates;
-    readonly content: Node[];
-    update(items: any[]): void;
-    create(): Node;
-}
-export {};
