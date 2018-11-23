@@ -9,7 +9,7 @@
         "clear": "rm -rf lib/",
         "build": "npm run clear && tsc --outDir lib/esm && tsc --target es5 --outDir lib/cjs --module commonjs",
         "lint": "tslint --project ./",
-        "size": "npm run build && size-limit",
+        "size": "size-limit",
         "test": "karma start --single-run --browsers ChromeHeadless ../../karma.conf.js",
         "release": "npm-run-all build test"
     },
