@@ -7,6 +7,7 @@ export interface Element {
     update(): void;
     setState(nextState: object | Function, callback?: Function): void;
     renderCallbacks: Array<Function>;
+    renderRoot: HTMLElement | ShadowRoot;
 }
 export interface CustomElement {
     connectedCallback?(): void;

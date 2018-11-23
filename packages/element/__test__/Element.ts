@@ -144,6 +144,23 @@ describe('Element', () => {
         expect(e.slot[0].values[0]).toBe(s);
     });
 
+    it('should save shadowRoot when attaching', () => {
+        const e: any = document.createElement('c-element');
+        const shadowRoot = e.attachShadow({ mode: 'open' });
+
+        expect(shadowRoot).toBe(e.renderRoot);
+    });
+
+    it('should render inside shado dom', done => {
+        const e: any = document.createElement('c-element');
+        const shadowRoot = e.attachShadow({ mode: 'open' });
+
+        e.setState({ text: 'ciaone' }, () => {
+            expect(shadowRoot.innerHTML).toBe('<div>ciaone</div>');
+            done();
+        });
+    });
+
     describe('withProps', () => {
         it('should reflect props to attributes', done => {
             const e: any = document.createElement('p-element');

@@ -6,11 +6,19 @@ import {
     Scheduler as SchedulerInterface
 } from './types';
 
-export function withElement<T extends Constructor>(Base: T) {
+export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
     return class extends Base implements ElementInterface {
         state: any = {};
         rendered: boolean = false;
         renderCallbacks: Array<Function> = [];
+        renderRoot: HTMLElement | ShadowRoot = this;
+
+        attachShadow() {
+            return (this.renderRoot = super.attachShadow.apply(
+                this,
+                arguments
+            ));
+        }
 
         get scheduler(): SchedulerInterface {
             return Scheduler;
