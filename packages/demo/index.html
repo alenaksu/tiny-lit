@@ -7,7 +7,7 @@
     <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
     <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/src/native-shim.js"></script>
     <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/webcomponents-bundle.js"></script> -->
-
+    <link rel="stylesheet" href="index.css" />
     <style>
         body, html {
             margin: 0;
@@ -25,23 +25,21 @@
         }
 
         #menu {
-            box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+            border-bottom: 5px solid rgb(var(--primary));
+            background: rgb(var(--background));
             width: 100%;
-            background: #3f51b5;
             color: white;
-            padding: 15px;
             height: 50px;
             box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         .menu-link {
-            display: inline-block;
-            cursor: pointer;
-            text-decoration: none;
-            color: white;
             font-weight: bold;
             text-transform: uppercase;
-            padding: 0 15px;
+            padding: 15px;
         }
 
         #content {

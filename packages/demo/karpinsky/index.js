@@ -1,7 +1,7 @@
 import { html } from '@tiny-lit/core/lib/cjs';
 import { Element } from '@tiny-lit/element/lib/cjs';
-
-const targetSize = 25;
+import './Dot';
+import './Triangle';
 
 function rafInterval(fn) {
     let running = true;
@@ -16,117 +16,16 @@ function rafInterval(fn) {
     return () => (running = false);
 }
 
-class KarpinskyDot extends Element {
-    static get is() {
-        return 'karpinsky-dot';
-    }
-
-    static get properties() {
-        return {
-            x: Number,
-            y: Number,
-            size: Number,
-            text: String,
-            hover: Boolean,
-        };
-    }
-
-    x = 0;
-    y = 0;
-    size = 0;
-    text = '';
-    hover = false;
-
-    constructor() {
-        super();
-
-        // this.addEventListener('mouseover', () => this.setState({ hover: true }));
-        // this.addEventListener('mouseleave', () => this.setState({ hover: false }));
-        this.addEventListener('mouseover', () => (this.hover = true));
-        this.addEventListener('mouseleave', () => (this.hover = false));
-    }
-
-    getStyle() {
-        const { x, y, size } = this;
-        const hover = this.hover;
-        const s = size * 1.3;
-
-        return `
-            position: absolute;
-            font: normal 15px sans-serif;
-            text-align: center;
-            cursor: pointer;
-            width: ${s}px;
-            height: ${s}px;
-            left: ${x}px;
-            top: ${y}px;
-            border-radius: ${s / 2}px;
-            line-height: ${s}px;
-            background: ${hover ? '#ff0' : '#61dafb'};
-        `;
-    }
-
-    render() {
-        const { hover, text } = this;
-
-        return html`<span style=${this.getStyle()}>
-                        ${hover ? '**' + text + '**' : text}
-                    </span>`;
-    }
-}
-
-class KarpinskyTriangle extends Element {
-    static get is() {
-        return 'karpinsky-triangle';
-    }
-
-    static get properties() {
-        return {
-            x: Number,
-            y: Number,
-            s: Number,
-            seconds: Number,
-        };
-    }
-    x = 0;
-    y = 0;
-    s = 0;
-    seconds = 0;
-
-    render() {
-        let { s, seconds, x, y } = this;
-
-        if (s <= targetSize) {
-            return html`
-                <karpinsky-dot x=${x - targetSize / 2} y=${y -
-                targetSize / 2} size=${targetSize} text=${seconds} />
-            `;
-        }
-
-        s = s / 2;
-
-        let slowDown = true;
-        if (slowDown) {
-            let e = performance.now() + 0.8;
-            while (performance.now() < e) {
-                // Artificially long execution time.
-            }
-        }
-
-        return html`
-            <karpinsky-triangle x=${x} y=${y -
-            s / 2} s=${s} seconds=${seconds}></karpinsky-triangle>
-            <karpinsky-triangle x=${x - s} y=${y +
-            s / 2} s=${s} seconds=${seconds}></karpinsky-triangle>
-            <karpinsky-triangle x=${x + s} y=${y +
-            s / 2} s=${s} seconds=${seconds}></karpinsky-triangle>
-        `;
-    }
-}
 
 class KarpinskyDemo extends Element {
     static get is() {
         return 'karpinsky-demo';
+    }
+
+    constructor() {
+        super();
+
+        this.attachShadow({ mode: 'closed' });
     }
 
     connectedCallback() {
@@ -176,6 +75,11 @@ class KarpinskyDemo extends Element {
         const { seconds } = this.state;
 
         return html`
+            <style>
+                :host {
+                    color: black;
+                }
+            </style>
             <div style=${this.getStyle()}>
                 <karpinsky-triangle x=${0} y=${0} s=${1000} seconds=${seconds} />
             </div>
@@ -183,6 +87,4 @@ class KarpinskyDemo extends Element {
     }
 }
 
-customElements.define(KarpinskyTriangle.is, KarpinskyTriangle);
-customElements.define(KarpinskyDot.is, KarpinskyDot);
 customElements.define(KarpinskyDemo.is, KarpinskyDemo);

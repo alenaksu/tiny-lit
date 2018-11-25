@@ -48,6 +48,8 @@ class TodoMVC extends Element {
             todos: [],
             filter: null,
         });
+
+        this.attachShadow({ mode: 'open' });
     }
 
     static get is() {

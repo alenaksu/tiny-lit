@@ -181,6 +181,9 @@ class Basket extends ElementWithStore {
         super();
         this.count = 0;
         this.items = [];
+        this.state = {
+            open: false
+        };
     }
 
     static get properties() {
@@ -213,34 +216,112 @@ class Basket extends ElementWithStore {
                 .basket {
                     position: fixed;
                     bottom: 0;
-                    right: 0;
-                    padding: 20px 50px;
-                    background: rgba(0,0,0,0.8);
+                    right: 10px;
                     color: white;
+                    z-index: 100;
+                }
+
+                .basket__list {
+                    z-index: 100;
+                    overflow-y: scroll;
+                    max-height: 150px;
+                    margin: 0;
+                }
+
+                .basket__listItem  {
+                    margin-bottom: 5px;
+                }
+
+                .basket__listItemButton {
+                    padding: 3px 5px;
+                }
+
+                .basket__dropdown {
+                    position: absolute;
+                    bottom: calc(100% + 10px);
+                    background-color: rgb(var(--background));
+                    width: 300px;
+                    right: 0;
+                    padding: 10px;
+                    border: 1px solid rgb(var(--primary));
+                }
+
+                .basket__toggle {
+                    position: relative;
+                }
+
+                .basket__badge {
+                    background: rgb(var(--primary));
+                    border-radius: 50%;
+                    padding: 2px;
+                    color: rgb(var(--background));
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    width: 15px;
+                    height: 15px;
+                    font-size: 12px;
+                    line-height: 15px;
+                    margin: 5px 10px 0;
+                }
+
+                .basket__clear {
+                    float:right;
+                    margin-top: 20px;
                 }
             </style>
             <div class="basket">
-                Basket<br />
-                Total: ${this.count}
+                <button class="basket__toggle" onClick=${() => this.setState({ open: !this.state.open })}>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 576 512"
+                        width="24"
+                    >
+                        <path
+                            fill="currentColor"
+                            d="M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"
+                        ></path>
+                    </svg>
+                    <span class="basket__badge">${this.count}</span>
+                </button>
+                <div class="basket__dropdown" hidden=${!this.state.open}>
+                    Total: ${this.count} items
 
-                <ul>
-                    ${this.items.map(
-                        (item, index) => html`
-                        <li>
-                            <button onCLick=${() =>
-                                this.handleRemove(index)}>X</button>
-                            ${item.title}
-                        </li>
-                    `
-                    )}
-                </ul>
 
-                ${
-                    this.items.length
-                        ? html`<button onClick=${() =>
-                              this.handleRemoveAll()}>remove all</button>`
-                        : null
-                }
+                    <table class="basket__list">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${this.items.map(
+                                (item, index) => html`
+                                <tr>
+                                    <td>${item.title}</td>
+                                    <td>1</td>
+                                    <td>
+                                        <button
+                                            class="basket__listItemButton"
+                                            onCLick=${() => this.handleRemove(index)}
+                                        >
+                                            X
+                                        </button>
+                                    </td>
+                                </tr>
+                            `)}
+                        </tbody>
+                    </table>
+
+                    ${
+                        this.items.length
+                            ? html`<button class="basket__clear" onClick=${() =>
+                                this.handleRemoveAll()}>remove all</button>`
+                            : null
+                    }
+                </div>
             </div>
         `;
     }
@@ -309,32 +390,15 @@ class StoreDemo extends Element {
                 .price {
                     margin: 0px 0 10px;
                     font-size: 13px;
-                    color: rgb(117, 117, 117);
                 }
                 .image {
                     max-width: 100%;
                     background: rgb(117, 117, 117);
                 }
-                .button {
-                    display: inline-block;
-                    box-sizing: border-box;
-                    border: 2px solid #000;
-                    background-color: #FFF;
-                    font-size: 14px;
-                    font-weight: 500;
-                    color: var(--app-primary-color);
-                    margin: 0;
-                    padding: 8px 44px;
-                    text-align: center;
-                    text-decoration: none;
-                    text-transform: uppercase;
-                    border-radius: 0;
-                    outline: none;
-                    -webkit-appearance: none;
-                }
                 my-store {
                     display: flex;
                     flex-wrap: wrap;
+                    position: relative;
                 }
                 shop-item {
                     flex: 1 1;
