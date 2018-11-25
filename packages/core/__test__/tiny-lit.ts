@@ -179,7 +179,7 @@ describe('tiny-lit', () => {
             render(t(true), root);
             expect(root.innerHTML).toBe('<div>pippo</div>');
             render(t(false), root);
-            expect(root.innerHTML).toBe('<div></div>');
+            expect(root.innerHTML).toBe('<div><!----></div>');
         });
 
         it('should replace different templates', () => {
@@ -200,6 +200,7 @@ describe('tiny-lit', () => {
             render(t(c), root);
             render(t('ciao'), root);
             expect(root.innerHTML).toBe('<b>ciao</b>');
+
             render(t(c), root);
             expect(root.innerHTML).toBe('<b><span>normal</span></b>');
         });
@@ -248,7 +249,18 @@ describe('tiny-lit', () => {
             expect(node).toEqual(jasmine.any(Node));
 
             root.appendChild(node);
-            expect(root.innerHTML).toEqual('<li>a</li><li>b</li><li>c</li>');
+            expect(root.innerHTML).toEqual('<!----><li>a</li><li>b</li><li>c</li>');
+        });
+
+        it('should render partial tables', () => {
+            const l = ['a', 'b', 'c'].map(i => html`<tr><td>${i}</td></tr>`),
+            t = l => html`<table>${l}</table>`;
+
+            render(t(null), root);
+
+            expect(root.innerHTML).toEqual('<table><!----></table>');
+            render(t(l), root);
+            expect(root.innerHTML).toEqual('<table><!----><tr><td>a</td></tr><tr><td>b</td></tr><tr><td>c</td></tr></table>');
         });
 
         describe('collection', () => {
@@ -262,7 +274,7 @@ describe('tiny-lit', () => {
 
                 root.appendChild(node);
                 expect(root.innerHTML).toEqual(
-                    '<li>a</li><li>b</li><li>c</li>'
+                    '<!----><li>a</li><li>b</li><li>c</li>'
                 );
             });
 

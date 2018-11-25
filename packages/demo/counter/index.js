@@ -1,5 +1,6 @@
 import { html, render } from "@tiny-lit/core";
 import { Element } from "@tiny-lit/element";
+import { request } from "https";
 
 const t = (c) => html`
   <div>${c}</div>
@@ -19,13 +20,17 @@ class Counter extends HTMLElement {
     }
 
     start = () => {
-        this.c = 0;
-        console.clear();
-        console.time("duration");
-        while (this.c <= 1000000) {
-          render(t(this.c++), this.content);
-        }
-        console.timeEnd("duration");
+        render(t(null), this.content);
+
+        requestAnimationFrame(() => {
+            this.c = 0;
+            console.clear();
+            console.time("duration");
+            while (this.c <= 1000000) {
+                render(t(this.c++), this.content);
+            }
+            console.timeEnd("duration");
+        });
     }
 }
 customElements.define(Counter.is, Counter);

@@ -5,14 +5,15 @@ import {
     isTemplateEqual,
     replaceContent,
     moveTemplate,
-    removeNodes
+    removeNodes,
+    comment
 } from './utils';
 
 export class TemplateCollection implements TemplateInterface {
     [TemplateSymbol] = true;
     values: any[];
     templates: Map<string, TemplateInterface>;
-    rootNode?: Text;
+    rootNode?: Node;
 
     constructor(values: any[]) {
         this.values = values;
@@ -76,7 +77,7 @@ export class TemplateCollection implements TemplateInterface {
 
     create(): Node {
         const fragment = document.createDocumentFragment();
-        fragment.appendChild((this.rootNode = document.createTextNode('')));
+        fragment.appendChild((this.rootNode = comment()));
 
         this.update(this.values);
 

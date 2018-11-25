@@ -4,7 +4,7 @@ export declare class TemplateCollection implements TemplateInterface {
     [TemplateSymbol]: boolean;
     values: any[];
     templates: Map<string, TemplateInterface>;
-    rootNode?: Text;
+    rootNode?: Node;
     constructor(values: any[]);
     private _flushTemplates;
     readonly content: Node[];

@@ -1,6 +1,6 @@
 import { ExpressionMap, LinkSymbol } from './types';
 import { AttributeExpression, NodeExpression } from './expressions';
-import { insertBefore, getNodePath, getNodeByPath } from './utils';
+import { getNodePath, getNodeByPath } from './utils';
 
 function markerNumber(marker: string): number {
     return Number(marker.replace(/\D+/g, ''));
@@ -36,23 +36,36 @@ export function linkAttributes(
     }
 }
 
-export function linkTexts(node: Text, linkedExpressions: LinkSymbol[]): void {
-    const keys = node.data.match(/__\d+__/g) || [];
-
-    keys.forEach((key: string) => {
-        const keyNode: Node = node.ownerDocument!.createTextNode('');
-        (<any>keyNode).__skip = true;
-        node = node.splitText(node.data.indexOf(key));
-        node.deleteData(0, key.length);
-
-        insertBefore(keyNode, node);
-
-        linkedExpressions[markerNumber(key)] = {
+export function linkTexts(node: Node, linkedExpressions: LinkSymbol[]): void {
+    let key;
+    if (node.nodeValue && (key = node.nodeValue.match(/__\d+__/))) {
+        linkedExpressions[markerNumber(key[0])] = {
             type: NodeExpression,
             name,
-            nodePath: getNodePath(keyNode)
+            nodePath: getNodePath(node)
         };
-    });
+    }
+    // const keys = node.data.match(/__\d+__/g) || [];
+
+    // keys.forEach((key: string) => {
+    //     let keyNode: Node = node.ownerDocument!.createTextNode('');
+    //     (<any>keyNode).__skip = true;
+
+    //     if (node instanceof Comment) {
+    //         keyNode = node as any;
+    //     } else {
+    //         node = node.splitText(node.data.indexOf(key));
+    //         node.deleteData(0, key.length);
+
+    //         insertBefore(keyNode, node);
+    //     }
+
+    //     linkedExpressions[markerNumber(key)] = {
+    //         type: NodeExpression,
+    //         name,
+    //         nodePath: getNodePath(keyNode)
+    //     };
+    // });
 }
 
 export function linkExpressions(
@@ -61,7 +74,7 @@ export function linkExpressions(
 ) {
     const treeWalker = document.createTreeWalker(
         root,
-        NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT,
         treeWalkerFilter as any,
         false
     );
@@ -71,7 +84,7 @@ export function linkExpressions(
     while (treeWalker.nextNode()) {
         const node: any = treeWalker.currentNode;
 
-        if (node.nodeType === Node.TEXT_NODE)
+        if (node.nodeType === Node.COMMENT_NODE)
             linkTexts(node, linkedExpressions);
         else if (node.nodeType === Node.ELEMENT_NODE)
             linkAttributes(node, expressions, linkedExpressions);

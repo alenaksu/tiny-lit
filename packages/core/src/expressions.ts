@@ -1,6 +1,6 @@
 import { Expression, TemplateInterface } from './types';
 import { TemplateCollection } from './template-collection';
-import { isNode, replaceContent, isTemplate, isTemplateEqual } from './utils';
+import { isNode, replaceContent, isTemplate, isTemplateEqual, comment } from './utils';
 
 export class AttributeExpression implements Expression {
     name: string;
@@ -43,15 +43,19 @@ export class NodeExpression implements Expression {
     update(value: any, force: boolean): void {
         const { element } = this;
 
-        if (value === undefined || value === null) {
-            value = '';
-        } else if (!force && value === this.value) {
+        if (!force && value === this.value) {
             return;
         }
 
-        if (Array.isArray(value)) value = new TemplateCollection(value);
+        if (value == null) {
+            value = comment();
+        } else if (Array.isArray(value)) {
+            value = new TemplateCollection(value);
+        }
 
-        if (!isNode(value) && !isTemplate(value) && !isTemplate(element)) {
+        this.value = value;
+
+        if (typeof value !== 'object' && isNode(element) && (<Node>element).nodeType !== Node.COMMENT_NODE) {
             (<Node>element).nodeValue = value;
         } else if (isTemplateEqual(element as TemplateInterface, value)) {
             (element as TemplateInterface).update(value.values);
@@ -68,7 +72,5 @@ export class NodeExpression implements Expression {
             );
             this.element = value;
         }
-
-        this.value = value;
     }
 }
