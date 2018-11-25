@@ -51,7 +51,7 @@ export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
             this.rendered = true;
 
             const template = this.render();
-            template && render(template, this as any);
+            template && render(template, this.renderRoot as any);
 
             while (this.renderCallbacks.length) this.renderCallbacks.shift()!();
         });
