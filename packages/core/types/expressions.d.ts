@@ -1,4 +1,4 @@
-import { Expression, TemplateInterface } from './types';
+import { Expression, TemplateInterface, TemplateArray } from './types';
 export declare class AttributeExpression implements Expression {
     name: string;
     value?: any;
@@ -8,7 +8,10 @@ export declare class AttributeExpression implements Expression {
 }
 export declare class NodeExpression implements Expression {
     element: Node | TemplateInterface;
-    value?: Node | TemplateInterface;
+    placeholder: Node;
+    value?: Node | TemplateInterface | TemplateArray;
     constructor(element: Node);
+    updateArray(items: TemplateInterface[]): Map<any, any>;
+    replaceWith(newValue: Node | TemplateInterface | TemplateArray): void;
     update(value: any, force: boolean): void;
 }

@@ -27,10 +27,12 @@
     "devDependencies": {
         "@babel/core": "^7.1.2",
         "@babel/plugin-proposal-class-properties": "^7.1.0",
+        "@babel/plugin-syntax-dynamic-import": "^7.0.0",
         "@babel/preset-env": "^7.1.0",
         "@babel/preset-stage-2": "^7.0.0",
         "@types/jasmine": "^2.8.6",
         "@webcomponents/custom-elements": "^1.2.1",
+        "@webcomponents/webcomponentsjs": "^2.2.1",
         "babel-core": "^6.26.3",
         "husky": "^0.14.3",
         "jasmine": "^3.0.0",

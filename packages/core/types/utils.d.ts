@@ -1,8 +1,9 @@
-import { TemplateInterface } from './types';
+import { TemplateInterface, NodeRange } from './types';
 export declare function range(nodes: Node[]): Range;
 export declare function comment(data?: string): Comment;
+export declare function text(data?: string): Text;
 export declare function isNode(obj: any): boolean;
-export declare function replaceContent(content: Node[], node: Node): void;
+export declare function replaceRange(newNode: Node, [startNode, endNode]: NodeRange): void;
 export declare function removeNodes(nodes: Node[]): void;
 export declare function insertBefore(node: Node, before: Node): void;
 export declare function moveTemplate(template: TemplateInterface, node: Node): void;
@@ -11,4 +12,4 @@ export declare function getNodePath(node: Node): Array<number>;
 export declare function getNodeByPath(node: Node, path: Array<number>): Node;
 export declare const TemplateSymbol: unique symbol;
 export declare function isTemplateEqual(t1: TemplateInterface, t2: TemplateInterface): boolean;
-export declare function isTemplate(obj: any): any;
+export declare function isTemplate(obj: any): boolean;

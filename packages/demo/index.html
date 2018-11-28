@@ -4,9 +4,10 @@
 <head>
     <title>Tiny-Lit Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
-    <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/src/native-shim.js"></script>
-    <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/webcomponents-bundle.js"></script> -->
+    <!-- <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script> -->
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script type="module" src="../../node_modules/@webcomponents/custom-elements/src/native-shim.js"></script>
+    <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script> -->
     <link rel="stylesheet" href="index.css" />
     <style>
         body, html {
@@ -51,6 +52,8 @@
 </head>
 
 <body>
+    <demo-router intercept-locals use-hash></demo-router>
+
     <div id="menu">
         <a class="menu-link" href="/todo">Todo</a>
         <a class="menu-link" href="/karpinsky">Karpinsky</a>
@@ -64,8 +67,6 @@
        <demo-route path="/todo" component="todo-mvc"></demo-route>
        <demo-route path="/counter" component="test-counter"></demo-route>
     </div>
-
-    <demo-router intercept-locals use-hash></demo-router>
 
     <script src="index.js" defer=""></script>
 </body>

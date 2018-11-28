@@ -1,5 +1,4 @@
 export { Template } from './template';
-export { TemplateCollection } from './template-collection';
 import { TemplateInterface } from './types';
 import { Template } from './template';
 export declare function render(template: TemplateInterface, container: HTMLElement): void;
