@@ -39,33 +39,13 @@ export function linkAttributes(
 export function linkTexts(node: Node, linkedExpressions: LinkSymbol[]): void {
     let key;
     if (node.nodeValue && (key = node.nodeValue.match(/__\d+__/))) {
+        node.nodeValue = '';
         linkedExpressions[markerNumber(key[0])] = {
             type: NodeExpression,
             name,
             nodePath: getNodePath(node)
         };
     }
-    // const keys = node.data.match(/__\d+__/g) || [];
-
-    // keys.forEach((key: string) => {
-    //     let keyNode: Node = node.ownerDocument!.createTextNode('');
-    //     (<any>keyNode).__skip = true;
-
-    //     if (node instanceof Comment) {
-    //         keyNode = node as any;
-    //     } else {
-    //         node = node.splitText(node.data.indexOf(key));
-    //         node.deleteData(0, key.length);
-
-    //         insertBefore(keyNode, node);
-    //     }
-
-    //     linkedExpressions[markerNumber(key)] = {
-    //         type: NodeExpression,
-    //         name,
-    //         nodePath: getNodePath(keyNode)
-    //     };
-    // });
 }
 
 export function linkExpressions(

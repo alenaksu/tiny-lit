@@ -1,5 +1,6 @@
 import { Expression, ExpressionMap, CacheEntry } from './types';
 import { linkExpressions, resolve } from './linker';
+import { text } from './utils';
 
 const TemplateCache: Map<string, CacheEntry> = new Map();
 
@@ -8,9 +9,14 @@ function createCacheEntry(html, expressionsMap): CacheEntry {
     template.innerHTML = html;
     template.normalize();
 
+    // HACK ie11 doesn't import empty text node
+    const content = template.content;
+    content.insertBefore(text(' '), content.firstChild);
+    content.appendChild(text(' '));
+
     return {
         template,
-        expressions: linkExpressions(template.content, expressionsMap)
+        expressions: linkExpressions(content, expressionsMap)
     };
 }
 
@@ -20,6 +26,7 @@ const parseTemplate = (html: string, expressionsMap: ExpressionMap): any => {
 
     const cacheEntry: CacheEntry = TemplateCache.get(html)!;
     const fragment = document.importNode(cacheEntry.template.content, true);
+    fragment.firstChild!.nodeValue = fragment.lastChild!.nodeValue = '';
 
     return {
         fragment,

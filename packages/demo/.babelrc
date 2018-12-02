@@ -1,12 +1,15 @@
 {
     "presets": [
-       [ "@babel/preset-env",
-        {
-            "targets": {
-              "esmodules": true,
-              "chrome": 60
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "esmodules": false,
+                    "ie": 11
+                },
+                "modules": "cjs"
             }
-          }]
+        ]
     ],
     "plugins": [
         [
@@ -14,6 +17,7 @@
             {
                 "loose": true
             }
-        ]
+        ],
+        "@babel/plugin-syntax-dynamic-import"
     ]
 }

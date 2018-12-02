@@ -1,9 +1,4 @@
-import {
-    html,
-    Template,
-    render,
-    TemplateCollection
-} from '../src/index';
+import { html, Template, render } from '../src/index';
 import { NodeExpression } from '../src/expressions';
 
 describe('tiny-lit', () => {
@@ -67,7 +62,7 @@ describe('tiny-lit', () => {
             const t = name => html`<div>${name}</div>`;
 
             render(t('pippo'), root);
-            const children = [].slice.call(root.childNodes);
+            const children = [].slice.call(root.children);
             render(t('pluto'), root);
 
             expect([].slice.call(root.children)).toEqual(<any[]>children);
@@ -241,7 +236,7 @@ describe('tiny-lit', () => {
             expect(root.contains(node)).toBe(false);
         });
 
-        it('should manage arrays as collections', () => {
+        it('should manage arrays as array of templates', () => {
             const l = ['a', 'b', 'c'].map(i => html`<li>${i}</li>`),
                 t = html`${l}`,
                 node = t.create();
@@ -249,25 +244,29 @@ describe('tiny-lit', () => {
             expect(node).toEqual(jasmine.any(Node));
 
             root.appendChild(node);
-            expect(root.innerHTML).toEqual('<!----><li>a</li><li>b</li><li>c</li>');
+            expect(root.innerHTML).toEqual(
+                '<!----><li>a</li><li>b</li><li>c</li>'
+            );
         });
 
         it('should render partial tables', () => {
             const l = ['a', 'b', 'c'].map(i => html`<tr><td>${i}</td></tr>`),
-            t = l => html`<table>${l}</table>`;
+                t = l => html`<table>${l}</table>`;
 
             render(t(null), root);
 
             expect(root.innerHTML).toEqual('<table><!----></table>');
             render(t(l), root);
-            expect(root.innerHTML).toEqual('<table><!----><tr><td>a</td></tr><tr><td>b</td></tr><tr><td>c</td></tr></table>');
+            expect(root.innerHTML).toEqual(
+                '<table><!----><tr><td>a</td></tr><tr><td>b</td></tr><tr><td>c</td></tr></table>'
+            );
         });
 
-        describe('collection', () => {
-            it('TemplateCollection.create returns the rendered dom', () => {
-                const t = new TemplateCollection(
-                        ['a', 'b', 'c'].map(i => html`<li>${i}</li>`)
-                    ),
+        describe('arrays', () => {
+            it('should render the array', () => {
+                const t = html`${['a', 'b', 'c'].map(
+                        i => html`<li>${i}</li>`
+                    )}`,
                     node = t.create();
 
                 expect(node).toEqual(jasmine.any(Node));
@@ -278,14 +277,39 @@ describe('tiny-lit', () => {
                 );
             });
 
-            it('TemplateCollection.content returns all nodes', () => {
-                const t = new TemplateCollection(
-                    ['a', 'b', 'c'].map(i => html`<li>${i}</li>`)
-                );
+            it('should return boundaries nodes', () => {
+                const t = l => html`${l.map(i => html`<li>${i}</li>`)}`;
 
-                render(t, root);
+                render(t(['a', 'b', 'c']), root);
+                render(t(['a', 'd', 'c', 'b']), root);
+
+                const range = render.instances.get(root)!.range;
+                let node = range![0];
+                let count = 0;
+
+                while (node && node.nextSibling !== range![1]) {
+                    count++;
+                    node = node.nextSibling!;
+                }
+
                 // the array contains also the root node
-                expect(render.instances.get(root)!.content.length).toEqual(4);
+                expect(count).toEqual(13);
+            });
+
+            it('should remove everything within boundaries', () => {
+                const a = a => html`${a ? 'a' : null}`;
+                const b = b => html`${b ? a(!b) : null}`;
+                const c = c => html`${c ? b(c) : null} ${!c ? a(c) : null}`;
+
+                render(c(true), root);
+                render(c(false), root);
+                render(c(true), root);
+                render(c(false), root);
+
+                render.instances.get(root)!.delete();
+
+                // the array contains also the root node
+                expect(root.innerHTML).toEqual('');
             });
 
             it('should update existing items', () => {
@@ -340,7 +364,6 @@ describe('tiny-lit', () => {
                     </ul>`;
 
                 render(t(['a', 'b', 'c']), root);
-                const li = root.querySelectorAll('li');
                 render(t(['a', 'b']), root);
 
                 expect(root.querySelectorAll('li').length).toBe(2);

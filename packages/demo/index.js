@@ -1,9 +1,9 @@
-import './todo';
-import './karpinsky';
-import './store';
-import './counter';
+import './src/todo';
+import './src/karpinsky';
+import './src/store';
+import './src/counter';
 
-import { RouterProvider, RouteElement } from '@tiny-lit/router/lib/cjs';
+import { RouterProvider, RouteElement } from '@tiny-lit/router';
 
 customElements.define('demo-router', RouterProvider);
 customElements.define('demo-route', RouteElement);

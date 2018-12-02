@@ -1,6 +1,6 @@
-import { StoreProvider, withStore, createStore } from '@tiny-lit/store/lib/cjs';
-import { html } from '@tiny-lit/core/lib/cjs';
-import { Element } from '@tiny-lit/element/lib/cjs';
+import { StoreProvider, withStore, createStore } from '@tiny-lit/store';
+import { html } from '@tiny-lit/core';
+import { Element } from '@tiny-lit/element';
 
 const JSONObject = value => {
     if (typeof value !== object) {
@@ -210,6 +210,12 @@ class Basket extends ElementWithStore {
         this.dispatch('removeAllFromCart');
     }
 
+    toggleCart = () => {
+        this.setState({
+            open: !this.state.open
+        })
+    }
+
     render() {
         return html`
             <style>
@@ -271,7 +277,7 @@ class Basket extends ElementWithStore {
                 }
             </style>
             <div class="basket">
-                <button class="basket__toggle" onClick=${() => this.setState({ open: !this.state.open })}>
+                <button class="basket__toggle" onClick=${this.toggleCart}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 576 512"
@@ -285,7 +291,7 @@ class Basket extends ElementWithStore {
                     <span class="basket__badge">${this.count}</span>
                 </button>
                 <div class="basket__dropdown" hidden=${!this.state.open}>
-                    Total: ${this.count} items
+                    <span>Total: ${this.count}${html`<span>items</span>`}</span>
 
 
                     <table class="basket__list">

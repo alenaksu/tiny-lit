@@ -1,9 +1,13 @@
-import { TemplateInterface } from './types';
+import { TemplateInterface, NodeRange } from './types';
 
 export function range(nodes: Node[]): Range {
     const range = document.createRange();
-    range.setStartBefore(nodes[0]);
-    range.setEndAfter(nodes[nodes.length - 1]);
+    if (nodes.length > 1) {
+        range.setStartBefore(nodes[0]);
+        range.setEndAfter(nodes[nodes.length - 1]);
+    } else if (nodes.length) {
+        range.selectNode(nodes[0]);
+    }
 
     return range;
 }
@@ -12,13 +16,19 @@ export function comment(data: string = ''): Comment {
     return document.createComment(data);
 }
 
+export function text(data: string = ''): Text {
+    return document.createTextNode(data);
+}
+
 export function isNode(obj: any): boolean {
     return !!obj && !!(<Node>obj).nodeType;
 }
 
-export function replaceContent(content: Node[], node: Node) {
-    content[0].parentNode!.replaceChild(node, content[0]);
-    content.length > 1 && removeNodes(content.slice(1));
+export function replaceRange(newNode: Node, [startNode, endNode]: NodeRange) {
+    if (endNode && startNode.nextSibling !== endNode)
+        removeNodes([startNode.nextSibling!, endNode]);
+
+    startNode.parentNode!.replaceChild(newNode, startNode);
 }
 
 export function removeNodes(nodes: Node[]): void {
@@ -30,10 +40,8 @@ export function insertBefore(node: Node, before: Node): void {
 }
 
 export function moveTemplate(template: TemplateInterface, node: Node): void {
-    const content = template.content;
-
     node.parentNode!.insertBefore(
-        range(content).extractContents(),
+        range(<Node[]>template.range).extractContents(),
         node.nextSibling
     );
 }
@@ -68,7 +76,7 @@ export function isTemplateEqual(
 ): boolean {
     return (
         isTemplate(t1) &&
-        isTemplate(t2) &&
+        t1.constructor === t2.constructor &&
         ((!t1.strings && !t2.strings) ||
             (t1.strings!.length === t2.strings!.length &&
                 t1.strings!.every((s, i) => t2.strings![i] === s)))

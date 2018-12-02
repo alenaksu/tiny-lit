@@ -1,5 +1,5 @@
-import { html } from '@tiny-lit/core/lib/cjs';
-import { Element } from '@tiny-lit/element/lib/cjs';
+import { html } from '@tiny-lit/core';
+import { Element } from '@tiny-lit/element';
 
 const targetSize = 25;
 

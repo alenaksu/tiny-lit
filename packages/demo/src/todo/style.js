@@ -1,4 +1,4 @@
-import { html } from '@tiny-lit/core/lib/cjs';
+import { html } from '@tiny-lit/core';
 
 export default html`
 <style>

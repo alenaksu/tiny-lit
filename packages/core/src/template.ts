@@ -1,13 +1,13 @@
-import { TemplateInterface, Expression } from './types';
+import { TemplateInterface, Expression, NodeRange } from './types';
 import { createElement } from './parser';
-import { TemplateSymbol } from './utils';
+import { TemplateSymbol, removeNodes } from './utils';
 
 export class Template implements TemplateInterface {
     [TemplateSymbol] = true;
     values: any[];
     strings: TemplateStringsArray;
-    content: Node[] = [];
-    expressions: Expression[] = [];
+    range?: NodeRange;
+    expressions?: Expression[];
     key: any = undefined;
 
     constructor(strings: TemplateStringsArray, values: any[]) {
@@ -22,9 +22,15 @@ export class Template implements TemplateInterface {
 
     update(values: any[], force?: boolean) {
         for (let i = 0; i < values.length; i++) {
-            if (this.expressions[i] !== undefined)
-                this.expressions[i].update(values[i], force);
+            if (this.expressions![i] !== undefined)
+                this.expressions![i].update(values[i], force);
         }
+    }
+
+    delete() {
+        removeNodes(<Node[]>this.range!);
+        this.range = undefined;
+        this.expressions = [];
     }
 
     create(): DocumentFragment {
@@ -33,8 +39,9 @@ export class Template implements TemplateInterface {
             this.values
         );
         this.expressions = expressions;
+        this.range = [fragment.firstChild!, fragment.lastChild!];
+
         this.update(this.values, true);
-        this.content = [].slice.call(fragment.childNodes);
 
         return fragment;
     }
