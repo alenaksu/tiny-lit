@@ -21,7 +21,6 @@ function defineProps(constructor: any): string[] {
 
                         (<any>this).rendered &&
                             oldValue !== newValue &&
-                            !this.update._scheduled &&
                             this.update();
                     }
                 });

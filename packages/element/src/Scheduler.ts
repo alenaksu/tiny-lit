@@ -56,9 +56,19 @@ export class Scheduler implements SchedulerInterface {
     defer(fn: ScheduledFunction): () => void {
         return () => {
             if (fn._scheduled === undefined) {
+                const useTask = false;
+
                 // Force first rendering
-                fn._scheduled = false;
-                fn();
+                if (!useTask) {
+                    fn._scheduled = false;
+                    fn();
+                } else {
+                    fn._scheduled = true;
+                    Promise.resolve().then(() => {
+                        fn();
+                        fn._scheduled = false;
+                    });
+                }
             } else if (!fn._scheduled) {
                 this.tasks.push(fn);
                 fn._scheduled = true;

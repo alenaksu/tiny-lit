@@ -1,10 +1,9 @@
-import { Expression, TemplateInterface, TemplateArray, NodeRange } from './types';
+import { Expression, TemplateInterface, TemplateArray } from './types';
 import {
     isNode,
     replaceRange,
     isTemplate,
     isTemplateEqual,
-    insertBefore,
     moveTemplate,
     text
 } from './utils';
@@ -60,9 +59,10 @@ export class NodeExpression implements Expression {
 
                 if (!template) {
                     const node: Node = item.create();
-                    currentNode.nextSibling!
-                        ? insertBefore(node, currentNode.nextSibling!)
-                        : currentNode.parentNode!.appendChild(node);
+                    currentNode.parentNode!.insertBefore(
+                        node,
+                        currentNode.nextSibling
+                    );
 
                     templates.set(key, (template = item));
                 } else if (!isTemplateEqual(template, item)) {
@@ -114,18 +114,18 @@ export class NodeExpression implements Expression {
                 : <Node>newValue,
             isTemplate(element)
                 ? (<TemplateInterface>element).range!
-                : [<Node>element]
+                : <Node>element
         );
     }
 
     update(value: any, force: boolean): void {
-        const { element } = this;
+        const { element, placeholder } = this;
 
         if (!force && value === this.value) {
             return;
         }
 
-        if (value == null) value = this.placeholder;
+        if (value == null) value = placeholder;
 
         if (
             typeof value !== 'object' &&
@@ -139,7 +139,7 @@ export class NodeExpression implements Expression {
                 !(this.value instanceof Map) &&
                 (<Node>element).nodeType !== Node.COMMENT_NODE
             ) {
-                this.replaceWith(this.placeholder);
+                this.replaceWith(placeholder);
             }
             value = this.updateArray(value);
         } else {

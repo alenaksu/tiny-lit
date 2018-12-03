@@ -8,7 +8,7 @@ export interface TemplateInterface {
     update(values: any[], force?: boolean): void;
     create(): Node;
     delete(): void;
-    range?: NodeRange;
+    range?: [Node, Node];
     expressions?: Expression[];
     values: any[];
     strings?: TemplateStringsArray;
@@ -17,12 +17,11 @@ export interface TemplateInterface {
 }
 export declare type LinkSymbol = {
     type: new (...args: any[]) => void;
-    name: string;
+    name?: string;
     nodePath: Array<number>;
 };
 export declare type CacheEntry = {
     expressions: Array<LinkSymbol>;
     template: HTMLTemplateElement;
 };
-export declare type NodeRange = [Node, Node?];
 export declare type TemplateArray = Map<string, TemplateInterface>;

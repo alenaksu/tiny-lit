@@ -49,7 +49,7 @@ class TodoMVC extends Element {
             filter: null,
         });
 
-        this.attachShadow({ mode: 'open' });
+        // this.attachShadow({ mode: 'open' });
     }
 
     static get is() {
