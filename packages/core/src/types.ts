@@ -10,7 +10,7 @@ export interface TemplateInterface {
     update(values: any[], force?: boolean): void;
     create(): Node;
     delete(): void;
-    range?: NodeRange;
+    range?: [Node, Node];
     expressions?: Expression[];
     values: any[];
     strings?: TemplateStringsArray;
@@ -20,7 +20,7 @@ export interface TemplateInterface {
 
 export type LinkSymbol = {
     type: new (...args: any[]) => void;
-    name: string;
+    name?: string;
     nodePath: Array<number>;
 };
 
@@ -28,7 +28,5 @@ export type CacheEntry = {
     expressions: Array<LinkSymbol>;
     template: HTMLTemplateElement;
 };
-
-export type NodeRange = [Node, Node?];
 
 export type TemplateArray = Map<string, TemplateInterface>;

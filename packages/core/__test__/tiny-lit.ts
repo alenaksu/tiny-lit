@@ -26,6 +26,7 @@ describe('tiny-lit', () => {
 
         beforeEach(() => {
             root = document.createElement('div');
+            document.body.appendChild(root);
         });
 
         it('should has a map of all instances', () => {
@@ -262,6 +263,17 @@ describe('tiny-lit', () => {
             );
         });
 
+        it('should render style tags', () => {
+            const t = display => html`
+                <style>.test{ display: ${display}; }</style>
+            `;
+            render(t('block'), root);
+
+            expect(root.firstElementChild.textContent).toEqual('.test{ display: block; }');
+            render(t('none'), root);
+            expect(root.firstElementChild.textContent).toEqual('.test{ display: none; }');
+        });
+
         describe('arrays', () => {
             it('should render the array', () => {
                 const t = html`${['a', 'b', 'c'].map(
@@ -332,11 +344,23 @@ describe('tiny-lit', () => {
             });
 
             it('should reorder items using key', () => {
+                let connect = 0, disconnect = 0;
+                class CustomLI extends HTMLElement {
+                    connectedCallback() {
+                        connect++;
+                    }
+
+                    disconnectedCallback() {
+                        disconnect++;
+                    }
+                }
+                customElements.define('custom-li', CustomLI);
+
                 const t = items => html`
                     <ul>
                         ${items.map(i =>
                             html`
-                                <li>${i}</li>
+                                <custom-li>${i}</custom-li>
                             `.withKey(i)
                         )}
                     </ul>`;
@@ -347,10 +371,13 @@ describe('tiny-lit', () => {
                 list = ['b', 'c', 'a'];
                 render(t(list), root);
 
-                const li = root.querySelectorAll('li');
+                const li = root.querySelectorAll('custom-li');
                 list.forEach((i, index) =>
                     expect(li[index].textContent).toEqual(i)
                 );
+
+                expect(connect).toBe(5);
+                expect(disconnect).toBe(2);
             });
 
             it('should remove items', () => {

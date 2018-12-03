@@ -1,4 +1,4 @@
-import { TemplateInterface, Expression, NodeRange } from './types';
+import { TemplateInterface, Expression, } from './types';
 import { createElement } from './parser';
 import { TemplateSymbol, removeNodes } from './utils';
 
@@ -6,7 +6,7 @@ export class Template implements TemplateInterface {
     [TemplateSymbol] = true;
     values: any[];
     strings: TemplateStringsArray;
-    range?: NodeRange;
+    range?: [Node, Node];
     expressions?: Expression[];
     key: any = undefined;
 
@@ -28,7 +28,7 @@ export class Template implements TemplateInterface {
     }
 
     delete() {
-        removeNodes(<Node[]>this.range!);
+        removeNodes(...this.range!);
         this.range = undefined;
         this.expressions = [];
     }

@@ -24,7 +24,7 @@ class KarpinskyTriangle extends Element {
     constructor() {
         super();
 
-        // this.attachShadow({ mode: 'closed' });
+        this.attachShadow({ mode: 'open' });
     }
 
     render() {

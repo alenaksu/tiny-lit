@@ -25,7 +25,7 @@ class KarpinskyDemo extends Element {
     constructor() {
         super();
 
-        this.attachShadow({ mode: 'closed' });
+        // this.attachShadow({ mode: 'closed' });
     }
 
     connectedCallback() {
@@ -66,7 +66,6 @@ class KarpinskyDemo extends Element {
             height: 10px;
             left: 50%;
             top: 50%;
-            background: #eee;
             transform: scaleX(${scale / 2.1}) scaleY(0.7) translateZ(0.1px) translateX(50%)
         `;
     }

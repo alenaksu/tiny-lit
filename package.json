@@ -8,7 +8,7 @@
         "test": "lerna run test",
         "build": "lerna run build",
         "size": "npm run build && size-limit",
-        "demo": "yarn build && parcel packages/demo/index.html",
+        "demo": "parcel packages/demo/index.html",
         "build-demo": "rm -rf docs/demo && parcel build packages/demo/index.html --public-url https://alenaksu.github.io/tiny-lit/demo/ -d docs/demo",
         "npm-publish": "./scripts/publish.sh"
     },
