@@ -8,7 +8,7 @@ export class Template implements TemplateInterface {
     strings: TemplateStringsArray;
     range?: [Node, Node];
     expressions?: Expression[];
-    key: any = undefined;
+    key?: any;
 
     constructor(strings: TemplateStringsArray, values: any[]) {
         this.values = values;
@@ -30,7 +30,7 @@ export class Template implements TemplateInterface {
     delete() {
         removeNodes(...this.range!);
         this.range = undefined;
-        this.expressions = [];
+        this.expressions = undefined;
     }
 
     create(): DocumentFragment {

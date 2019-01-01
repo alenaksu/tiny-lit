@@ -6,7 +6,7 @@ export declare class Template implements TemplateInterface {
     strings: TemplateStringsArray;
     range?: [Node, Node];
     expressions?: Expression[];
-    key: any;
+    key?: any;
     constructor(strings: TemplateStringsArray, values: any[]);
     withKey(key: any): this;
     update(values: any[], force?: boolean): void;

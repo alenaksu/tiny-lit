@@ -1,4 +1,4 @@
-import { ExpressionMap, LinkSymbol, Expression } from './types';
+import { MarkerMap, LinkSymbol, Expression } from './types';
 import { AttributeExpression, NodeExpression } from './expressions';
 import {
     getNodePath,
@@ -17,7 +17,7 @@ function treeWalkerFilter() {
 
 export function linkAttributes(
     element: Element,
-    expressions: ExpressionMap,
+    markers: MarkerMap,
     linkedExpressions: LinkSymbol[]
 ): void {
     const attrs = element.attributes;
@@ -26,7 +26,7 @@ export function linkAttributes(
     while (i--) {
         const { name, value } = attrs.item(i) as Attr;
 
-        if (expressions.has(value)) {
+        if (markers.has(value)) {
             element.removeAttribute(name);
             linkedExpressions[markerNumber(value)] = {
                 type: AttributeExpression,
@@ -39,10 +39,10 @@ export function linkAttributes(
 
 export function linkComment(
     node: Comment,
-    expressions: ExpressionMap,
+    markers: MarkerMap,
     linkedExpressions: LinkSymbol[]
 ) {
-    if (expressions.has(node.data)) {
+    if (markers.has(node.data)) {
         linkedExpressions[markerNumber(node.data)] = {
             type: NodeExpression,
             nodePath: getNodePath(node)
@@ -57,7 +57,7 @@ export function linkTexts(
 ): void {
     const keys = node.data.match(MARKER_RE) || [];
 
-    keys.map((key: string) => {
+    keys.forEach((key: string) => {
         const keyNode: Text = text();
         node = (<Text>node).splitText(node.data.indexOf(key));
         node.deleteData(0, key.length);
@@ -73,7 +73,7 @@ export function linkTexts(
 
 export function linkExpressions(
     root: DocumentFragment,
-    expressions: ExpressionMap
+    markers: MarkerMap
 ) {
     const treeWalker = document.createTreeWalker(
         root,
@@ -82,19 +82,19 @@ export function linkExpressions(
         false
     );
 
-    const linkedExpressions: Array<LinkSymbol> = Array(expressions.size);
+    const linkedExpressions: Array<LinkSymbol> = Array(markers.size);
 
     while (treeWalker.nextNode()) {
         const node: any = treeWalker.currentNode;
 
         if (node.nodeType === Node.ELEMENT_NODE) {
-            linkAttributes(node, expressions, linkedExpressions);
+            linkAttributes(node, markers, linkedExpressions);
             if (TEXT_ELEMENT.test(node.tagName)) {
                 [].forEach.call(node.childNodes, node =>
                     linkTexts(node, linkedExpressions)
                 );
             }
-        } else linkComment(node, expressions, linkedExpressions);
+        } else linkComment(node, markers, linkedExpressions);
     }
 
     return linkedExpressions;

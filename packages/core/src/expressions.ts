@@ -131,7 +131,7 @@ export class NodeExpression implements Expression {
             typeof value !== 'object' &&
             (<Node>element).nodeType === Node.TEXT_NODE
         ) {
-            (<Node>element).nodeValue = value;
+            (<Node>element).textContent = value;
         } else if (isTemplateEqual(value, <TemplateInterface>element)) {
             (element as TemplateInterface).update(value.values);
         } else if (Array.isArray(value)) {

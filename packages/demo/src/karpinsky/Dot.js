@@ -30,7 +30,7 @@ class KarpinskyDot extends Element {
         this.addEventListener('mouseover', () => (this.hover = true));
         this.addEventListener('mouseleave', () => (this.hover = false));
 
-        // this.attachShadow({ mode: 'open' });
+        this.attachShadow({ mode: 'open' });
     }
 
     render() {

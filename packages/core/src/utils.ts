@@ -90,7 +90,7 @@ export function isTemplate(obj: any): boolean {
     return obj && obj[TemplateSymbol];
 }
 
-export const MARKER_RE = /__\d+__/g;
+export const MARKER_RE = /__(\d+)__/g;
 export const MARKER_NUMBER_RE = /\D+/g;
 export const TEXT_ELEMENT = /^(?:style|textarea)$/i;
 

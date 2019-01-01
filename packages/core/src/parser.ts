@@ -1,10 +1,10 @@
-import { Expression, CacheEntry, ExpressionMap } from './types';
+import { Expression, CacheEntry, MarkerMap } from './types';
 import { linkExpressions, resolve } from './linker';
 import { text, TEXT_ELEMENT } from './utils';
 
 const TemplateCache: WeakMap<TemplateStringsArray, CacheEntry> = new WeakMap();
 
-function createCacheEntry(html: string, expressionsMap: ExpressionMap): CacheEntry {
+function createCacheEntry(html: string, markersMap: MarkerMap): CacheEntry {
     const template = document.createElement('template');
     template.innerHTML = html;
     template.normalize();
@@ -16,7 +16,7 @@ function createCacheEntry(html: string, expressionsMap: ExpressionMap): CacheEnt
 
     return {
         template,
-        expressions: linkExpressions(content, expressionsMap)
+        expressions: linkExpressions(content, markersMap)
     };
 }
 
@@ -27,7 +27,12 @@ function createCacheEntry(html: string, expressionsMap: ExpressionMap): CacheEnt
  * 3. ...>...
  * 4. ......
  */
-const NODE_RE = /^.*<([0-9a-z\-]+)[^>]*(>)?|.*(>).*|.*$/si;
+const tagName = `[0-9a-zA-Z]+`,
+    attributeName = `[^<\\s\0"'>\\/=]+`,
+    attributeValue = `(?:"[^"]*"?|'[^']*'?|[^\\s'">]*)`,
+    attribute = `\\s*${attributeName}(?:\\s*=\\s*${attributeValue})?`,
+    tagOpen = `<(${tagName})(?:${attribute})*\\s*(>?)`;
+const NODE_RE = new RegExp(`^.*${tagOpen}|.*(>).*|.*$`, 'si');
 const enum MatchType {
     TagName = 1,
     ClosedTag = 2,
@@ -38,15 +43,15 @@ export function createElement(
     strings: TemplateStringsArray,
     values: any[]
 ): { fragment: DocumentFragment; expressions: Expression[] } {
-    let cacheEntry: CacheEntry;
-
     /**
      * https://tc39.github.io/ecma262/#sec-gettemplateobject
      * [...]The template objects are frozen and the same template object is
      * used each time a specific tagged Template is evaluated[...]
      */
-    if (!TemplateCache.has(strings)) {
-        const expressionsMap: any = new Map();
+    let cacheEntry: CacheEntry = TemplateCache.get(strings)!;
+
+    if (!cacheEntry) {
+        const markersMap: any = new Map();
         let isAttribute = false;
         let lastElement;
 
@@ -54,7 +59,7 @@ export function createElement(
             const marker = `__${i}__`;
             const match = strings[i].match(NODE_RE)!;
 
-            expressionsMap.set(marker, value);
+            markersMap.set(marker, value);
 
             if (match[MatchType.TagName]) {
                 lastElement = match[MatchType.TagName];
@@ -70,9 +75,8 @@ export function createElement(
             return html;
         }, strings[0]);
 
-        TemplateCache.set(strings, cacheEntry = createCacheEntry(html, expressionsMap));
-    } else
-        cacheEntry = TemplateCache.get(strings)!;
+        TemplateCache.set(strings, cacheEntry = createCacheEntry(html, markersMap));
+    }
 
     const fragment = document.importNode(cacheEntry.template.content, true);
     fragment.firstChild!.nodeValue = fragment.lastChild!.nodeValue = '';
