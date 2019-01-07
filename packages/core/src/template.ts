@@ -20,10 +20,10 @@ export class Template implements TemplateInterface {
         return this;
     }
 
-    update(values: any[], force?: boolean) {
+    update(values: any[]) {
         for (let i = 0; i < values.length; i++) {
             if (this.expressions![i] !== undefined)
-                this.expressions![i].update(values[i], force);
+                this.expressions![i].update(values[i]);
         }
     }
 
@@ -41,7 +41,7 @@ export class Template implements TemplateInterface {
         this.expressions = expressions;
         this.range = [fragment.firstChild!, fragment.lastChild!];
 
-        this.update(this.values, true);
+        this.update(this.values);
 
         return fragment;
     }

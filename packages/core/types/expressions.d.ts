@@ -13,5 +13,5 @@ export declare class NodeExpression implements Expression {
     constructor(element: Node);
     updateArray(items: TemplateInterface[]): Map<any, any>;
     replaceWith(newValue: Node | TemplateInterface | TemplateArray): void;
-    update(value: any, force: boolean): void;
+    update(value: any): void;
 }

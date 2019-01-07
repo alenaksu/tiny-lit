@@ -102,30 +102,30 @@ export class NodeExpression implements Expression {
             value.clear();
         }
 
-        this.element = newValue = isTemplate(newValue)
-            ? <TemplateInterface>newValue
-            : isNode(newValue)
-                ? <Node>newValue
-                : text(<any>newValue);
+        if (element !== newValue) {
+            this.element = newValue = isTemplate(newValue)
+                ? <TemplateInterface>newValue
+                : isNode(newValue)
+                    ? <Node>newValue
+                    : text(<any>newValue);
 
-        replaceRange(
-            isTemplate(newValue)
-                ? (<TemplateInterface>newValue).create()
-                : <Node>newValue,
-            isTemplate(element)
-                ? (<TemplateInterface>element).range!
-                : <Node>element
-        );
+            replaceRange(
+                isTemplate(newValue)
+                    ? (<TemplateInterface>newValue).create()
+                    : <Node>newValue,
+                isTemplate(element)
+                    ? (<TemplateInterface>element).range!
+                    : <Node>element
+            );
+        }
     }
 
-    update(value: any, force: boolean): void {
+    update(value: any): void {
         const { element, placeholder } = this;
 
-        if (!force && value === this.value) {
+        if (value === this.value) {
             return;
         }
-
-        if (value == null) value = placeholder;
 
         if (
             typeof value !== 'object' &&
@@ -143,7 +143,7 @@ export class NodeExpression implements Expression {
             }
             value = this.updateArray(value);
         } else {
-            this.replaceWith(value);
+            this.replaceWith(value == null ? placeholder : value);
         }
 
         this.value = value;

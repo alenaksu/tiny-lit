@@ -9,7 +9,7 @@ export declare class Template implements TemplateInterface {
     key?: any;
     constructor(strings: TemplateStringsArray, values: any[]);
     withKey(key: any): this;
-    update(values: any[], force?: boolean): void;
+    update(values: any[]): void;
     delete(): void;
     create(): DocumentFragment;
 }
