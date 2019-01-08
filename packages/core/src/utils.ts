@@ -97,3 +97,13 @@ export const TEXT_ELEMENT = /^(?:style|textarea)$/i;
 export function markerNumber(marker: string): number {
     return Number(marker.replace(MARKER_NUMBER_RE, ''));
 }
+
+const SVG_NAMESPACES = {
+    xlink: 'http://www.w3.org/1999/xlink',
+    xml: 'http://www.w3.org/XML/1998/namespace',
+    xmlns: 'http://www.w3.org/2000/xmlns/'
+};
+
+export function getSVGNamespace(attributeName): string {
+    return SVG_NAMESPACES[attributeName.split(':')[0]];
+}

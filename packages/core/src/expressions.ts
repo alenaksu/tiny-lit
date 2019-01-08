@@ -5,7 +5,8 @@ import {
     isTemplate,
     isTemplateEqual,
     moveTemplate,
-    text
+    text,
+    getSVGNamespace
 } from './utils';
 
 export class AttributeExpression implements Expression {
@@ -18,14 +19,14 @@ export class AttributeExpression implements Expression {
         this.element = element;
     }
 
-    update(value: any, force: boolean): void {
-        const { name, element, value: currentValue } = this;
+    update(value: any): void {
+        if (this.value === value) return;
 
-        if (!force && currentValue === value) {
-            return;
-        }
+        const { name, element } = this;
 
-        if (name in element) {
+        if ('ownerSVGElement' in <SVGAElement>element) {
+            element.setAttributeNS(getSVGNamespace(name), name, value);
+        } else if (name in element) {
             (element as any)[name] = value;
         } else if (typeof value !== 'undefined') {
             element.setAttribute(name, value);
@@ -121,11 +122,9 @@ export class NodeExpression implements Expression {
     }
 
     update(value: any): void {
-        const { element, placeholder } = this;
+        if (value === this.value) return;
 
-        if (value === this.value) {
-            return;
-        }
+        const { element, placeholder } = this;
 
         if (
             typeof value !== 'object' &&

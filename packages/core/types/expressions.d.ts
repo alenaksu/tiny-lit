@@ -4,7 +4,7 @@ export declare class AttributeExpression implements Expression {
     value?: any;
     element: Element;
     constructor(element: Element, name: string);
-    update(value: any, force: boolean): void;
+    update(value: any): void;
 }
 export declare class NodeExpression implements Expression {
     element: Node | TemplateInterface;

@@ -15,3 +15,4 @@ export declare const MARKER_RE: RegExp;
 export declare const MARKER_NUMBER_RE: RegExp;
 export declare const TEXT_ELEMENT: RegExp;
 export declare function markerNumber(marker: string): number;
+export declare function getSVGNamespace(attributeName: any): string;
