@@ -70,6 +70,27 @@ describe('tiny-lit', () => {
             expect(root.innerHTML).toEqual('<div>pluto</div>');
         });
 
+        it('should render svg elements', () => {
+            const t = (radius, url) => html`
+                <svg height="100" width="100">
+                    <circle cx="50" cy="50" r="${radius}" stroke="black" stroke-width="3" fill="red" />
+                    <use xlink:href=${url} />
+                </svg>
+            `;
+            let n = Math.floor(Math.random() * 10);
+            render(t(n, '/image1.jpg'), root);
+            const circle = root.querySelector('circle');
+            const use = root.querySelector('use');
+
+            expect(circle.r.baseVal.value).toBe(n);
+            expect(use.href.baseVal).toBe('/image1.jpg');
+
+            n = Math.floor(Math.random() * 10);
+            render(t(n, '/image2.png'), root);
+            expect(circle.r.baseVal.value).toBe(n);
+            expect(use.href.baseVal).toBe('/image2.png');
+        });
+
         it('should correctly set string attribute', () => {
             const c = 'btn',
                 t = html`<div class=${c}></div>`;
@@ -269,9 +290,13 @@ describe('tiny-lit', () => {
             `;
             render(t('block'), root);
 
-            expect(root.firstElementChild.textContent).toEqual('.test{ display: block; }');
+            expect(root.firstElementChild.textContent).toEqual(
+                '.test{ display: block; }'
+            );
             render(t('none'), root);
-            expect(root.firstElementChild.textContent).toEqual('.test{ display: none; }');
+            expect(root.firstElementChild.textContent).toEqual(
+                '.test{ display: none; }'
+            );
         });
 
         describe('arrays', () => {
@@ -344,7 +369,8 @@ describe('tiny-lit', () => {
             });
 
             it('should reorder items using key', () => {
-                let connect = 0, disconnect = 0;
+                let connect = 0,
+                    disconnect = 0;
                 class CustomLI extends HTMLElement {
                     connectedCallback() {
                         connect++;
