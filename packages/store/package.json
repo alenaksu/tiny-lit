@@ -5,6 +5,7 @@
     "module": "lib/esm/index.js",
     "source": "src/index.ts",
     "license": "MIT",
+    "repository": "alenaksu/tiny-lit",
     "scripts": {
         "start": "tsc -w",
         "clear": "rm -rf lib/",
