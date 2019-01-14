@@ -1,6 +1,6 @@
 {
     "name": "@tiny-lit/router",
-    "version": "1.0.0-alpha.17",
+    "version": "1.0.0-alpha.18",
     "main": "lib/cjs/index.js",
     "module": "lib/esm/index.js",
     "source": "src/index.ts",
