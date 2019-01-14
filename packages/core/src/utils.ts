@@ -31,11 +31,11 @@ export function removeNodes(
 ): void {
     if (!parent) return;
 
-    do {
+    while (startNode !== endNode) {
         const nextNode = startNode.nextSibling!;
         parent.removeChild(startNode);
         startNode = nextNode;
-    } while (endNode.parentNode);
+    }
 }
 
 export function moveTemplate(
