@@ -32,7 +32,7 @@ const tagName = `[0-9a-zA-Z]+`,
     attributeValue = `(?:"[^"]*"?|'[^']*'?|[^\\s'">]*)`,
     attribute = `\\s*${attributeName}(?:\\s*=\\s*${attributeValue})?`,
     tagOpen = `<(${tagName})(?:${attribute})*\\s*(>?)`;
-const NODE_RE = new RegExp(`^.*${tagOpen}|.*(>).*|.*$`, 'si');
+const NODE_RE = new RegExp(`^[^]*${tagOpen}|[^]*(>)[^]*|[^]*$`, 'i');
 const enum MatchType {
     TagName = 1,
     ClosedTag = 2,
