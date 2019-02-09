@@ -2,8 +2,8 @@
     "compilerOptions": {
         "noImplicitAny": false,
         "allowSyntheticDefaultImports": true,
-        "target": "es2017",
-        "module": "es2015",
+        "target": "es2018",
+        "module": "esnext",
         "lib": ["es2017", "esnext.asynciterable", "dom"],
         "declaration": true,
         "sourceMap": false,
