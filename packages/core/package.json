@@ -1,6 +1,6 @@
 {
     "name": "@tiny-lit/core",
-    "version": "1.0.0-alpha.20",
+    "version": "1.0.0-alpha.21",
     "main": "dist/core.js",
     "module": "dist/core.m.js",
     "umd:main": "dist/core.umd.js",
