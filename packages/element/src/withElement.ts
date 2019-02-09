@@ -13,10 +13,10 @@ export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
         renderCallbacks: Array<Function> = [];
         renderRoot: HTMLElement | ShadowRoot = this;
 
-        attachShadow() {
-            return (this.renderRoot = super.attachShadow.apply(
+        attachShadow(shadowRootInitDict: ShadowRootInit) {
+            return (this.renderRoot = super.attachShadow.call(
                 this,
-                arguments
+                shadowRootInitDict
             ));
         }
 
