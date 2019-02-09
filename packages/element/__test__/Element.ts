@@ -60,12 +60,6 @@ describe('Element', () => {
         root.innerHTML = '';
     });
 
-    it('should throw an exception if not extended', () => {
-        const e = <any>document.createElement('a-element');
-
-        expect(e.render).toThrow();
-    });
-
     it('should init with empty state', () => {
         const e = <any>document.createElement('c-element');
 
@@ -132,18 +126,6 @@ describe('Element', () => {
         e.setState(increment);
     });
 
-    it('should return child nodes with `slot` method', () => {
-        const e = <any>document.createElement('s-element'),
-            s = document.createElement('span');
-        e.appendChild(s);
-        e.update();
-        e.update();
-        e.update();
-
-        expect(e.slot.length).toBe(1);
-        expect(e.slot[0].values[0]).toBe(s);
-    });
-
     it('should save shadowRoot when attaching', () => {
         const e: any = document.createElement('c-element');
         const shadowRoot = e.attachShadow({ mode: 'open' });
@@ -151,7 +133,7 @@ describe('Element', () => {
         expect(shadowRoot).toBe(e.renderRoot);
     });
 
-    it('should render inside shado dom', done => {
+    it('should render inside shadow dom', done => {
         const e: any = document.createElement('c-element');
         const shadowRoot = e.attachShadow({ mode: 'open' });
 
@@ -202,6 +184,7 @@ describe('Element', () => {
             });
 
             expect(e.__props).toBeDefined();
+            console.log(e.__props);
             expect(e.__props).toEqual({
                 a: 'a',
                 b: 1,
@@ -209,6 +192,7 @@ describe('Element', () => {
                 myProp: 'null',
                 mySuperProp: false,
             });
+            e.remove();
         });
 
         it('should trigger update when props changing', () => {
