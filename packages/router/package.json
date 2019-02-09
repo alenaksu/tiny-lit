@@ -1,6 +1,6 @@
 {
     "name": "@tiny-lit/router",
-    "version": "1.0.0-alpha.19",
+    "version": "1.0.0-alpha.20",
     "main": "dist/router.js",
     "module": "dist/router.m.js",
     "umd:main": "dist/router.umd.js",
