@@ -1,4 +1,4 @@
-import { Element } from '../src/Element';
+import { Element as TlElement } from '../src/Element';
 import { html } from '@tiny-lit/core';
 
 describe('Element', () => {
@@ -7,7 +7,7 @@ describe('Element', () => {
     customElements.define('a-element', Element);
     customElements.define(
         'c-element',
-        class extends Element {
+        class extends TlElement {
             render() {
                 return template(this.state.text);
             }
@@ -15,7 +15,7 @@ describe('Element', () => {
     );
     customElements.define(
         's-element',
-        class extends Element {
+        class extends TlElement {
             get scheduler() {
                 return {
                     defer: update => update,
@@ -29,7 +29,7 @@ describe('Element', () => {
 
     customElements.define(
         'p-element',
-        class extends Element {
+        class extends TlElement {
             static get properties() {
                 return {
                     a: String,
@@ -184,7 +184,6 @@ describe('Element', () => {
             });
 
             expect(e.__props).toBeDefined();
-            console.log(e.__props);
             expect(e.__props).toEqual({
                 a: 'a',
                 b: 1,
