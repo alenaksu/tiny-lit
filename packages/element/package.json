@@ -1,9 +1,8 @@
 {
     "name": "@tiny-lit/element",
     "version": "1.0.0-alpha.21",
-    "main": "dist/element.js",
-    "module": "dist/element.m.js",
-    "umd:main": "dist/element.umd.js",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
     "source": "src/index.ts",
     "license": "MIT",
     "repository": "alenaksu/tiny-lit",
@@ -11,15 +10,16 @@
         "@tiny-lit/core": "^1.0.0-alpha.21"
     },
     "scripts": {
-        "start": "microbundle watch",
+        "start": "tsc -w",
         "clear": "rm -rf dist/",
-        "build": "npm run clear && microbundle build",
+        "build": "npm run clear && npm run build:esm && npm run build:cjs",
+        "build:esm": "tsc --module es2015 --target es5 --outDir dist/esm",
+        "build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
         "lint": "tslint --project ./",
         "size": "npm run build && size-limit",
-        "test": "karma start --single-run --browsers ChromeHeadless ../../karma.conf.js",
-        "release": "npm-run-all build test"
+        "test": "karma start --single-run --browsers ChromeHeadless ../../karma.conf.js"
     },
-    "typings": "./dist/index.d.ts",
+    "typings": "./types/index.d.ts",
     "size-limit": [
         {
             "limit": "1.2 KB",

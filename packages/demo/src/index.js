@@ -1,7 +1,7 @@
-import './src/todo';
-import './src/karpinsky';
-import './src/store';
-import './src/counter';
+import './todo';
+import './karpinsky';
+import './store';
+import './svg';
 
 import { RouterProvider, RouteElement } from '@tiny-lit/router';
 

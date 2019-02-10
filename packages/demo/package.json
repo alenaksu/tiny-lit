@@ -1,0 +1,31 @@
+{
+    "name": "demo-site",
+    "description": "",
+    "scripts": {
+        "start": "parcel index.html",
+        "build": "rm -rf ../../docs/demo && parcel build index.html --public-url https://alenaksu.github.io/tiny-lit/demo/ -d ../../docs/demo",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": "alenaksu/tiny-lit",
+    "license": "MIT",
+    "devDependencies": {
+        "@babel/core": "^7.2.2",
+        "@babel/plugin-proposal-class-properties": "^7.3.0",
+        "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+        "@babel/preset-env": "^7.3.1",
+        "@babel/preset-stage-2": "^7.0.0",
+        "@babel/preset-typescript": "^7.1.0",
+        "@webcomponents/custom-elements": "^1.2.1",
+        "@webcomponents/webcomponentsjs": "^2.2.1",
+        "parcel-bundler": "^1.11.0"
+    },
+    "dependencies": {
+        "@tiny-lit/core": "^1.0.0-alpha.21",
+        "@tiny-lit/element": "^1.0.0-alpha.21",
+        "@tiny-lit/router": "^1.0.0-alpha.21",
+        "@tiny-lit/store": "^1.0.0-alpha.21"
+    },
+    "publishConfig": {
+        "access": "restricted"
+    }
+}

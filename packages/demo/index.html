@@ -4,9 +4,9 @@
 <head>
     <title>Tiny-Lit Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- <script type="text/javascript" src="../../node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script> -->
-    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-    <script type="module" src="https://unpkg.com/@webcomponents/custom-elements@1.2.1/src/native-shim.js"></script>
+    <!-- <script type="text/javascript" src="node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script> -->
+    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script type="module" src="node_modules/@webcomponents/custom-elements/src/native-shim.js"></script>
     <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script> -->
     <link rel="stylesheet" href="index.css" />
     <style>
@@ -65,10 +65,10 @@
        <demo-route path="/karpinsky" component="karpinsky-demo"></demo-route>
        <demo-route path="/store" component="store-demo"></demo-route>
        <demo-route path="/todo" component="todo-mvc"></demo-route>
-       <demo-route path="/counter" component="test-counter"></demo-route>
+       <demo-route path="/counter" component="test-svg"></demo-route>
     </div>
 
-    <script src="index.js" defer=""></script>
+    <script async src="./src/index.js" defer=""></script>
 </body>
 
 </html>

@@ -28,7 +28,7 @@ function createCacheEntry(html: string, markersMap: MarkerMap): CacheEntry {
  * 4. ......
  */
 const tagName = `[0-9a-zA-Z]+`,
-    attributeName = `[^<\\s\0"'>\\/=]+`,
+    attributeName = `[^<\\s\\0"'>\\/=]+`,
     attributeValue = `(?:"[^"]*"?|'[^']*'?|[^\\s'">]*)`,
     attribute = `\\s*${attributeName}(?:\\s*=\\s*${attributeValue})?`,
     tagOpen = `<(${tagName})(?:${attribute})*\\s*(>?)`;
@@ -70,12 +70,16 @@ export function createElement(
                 isAttribute = TEXT_ELEMENT.test(lastElement);
             }
 
-            html += (isAttribute ? marker : `<!--${marker}-->`) + strings[i + 1];
+            html +=
+                (isAttribute ? marker : `<!--${marker}-->`) + strings[i + 1];
 
             return html;
         }, strings[0]);
 
-        TemplateCache.set(strings, cacheEntry = createCacheEntry(html, markersMap));
+        TemplateCache.set(
+            strings,
+            (cacheEntry = createCacheEntry(html, markersMap))
+        );
     }
 
     const fragment = document.importNode(cacheEntry.template.content, true);

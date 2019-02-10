@@ -74,17 +74,8 @@ typings/
 # End of https://www.gitignore.io/api/node,visualstudiocode
 
 # Compiler output
-/tiny-lit.d.ts
-/tiny-lit.js
-/tiny-lit.js.map
-/test/**/*.d.ts
-/test/**/*.js
-/test/**/*.js.map
 /demo/public/**/*.js.map
 /demo/public/**/*.js
-packages/*/lib
 **/.cache
 **/dist
-.rts2_cache_es
-.rts2_cache_umd
-.rts2_cache_cjs
+**/types
