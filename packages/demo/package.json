@@ -1,5 +1,6 @@
 {
     "name": "demo-site",
+    "private": true,
     "description": "",
     "scripts": {
         "start": "parcel index.html",
