@@ -1,12 +1,12 @@
-import { MarkerMap, LinkSymbol, Expression } from './types';
+import { LinkSymbol, Expression } from './types';
 import { AttributeExpression, NodeExpression } from './expressions';
 import {
     getNodePath,
     getNodeByPath,
     text,
     markerNumber,
-    MARKER_RE,
-    TEXT_ELEMENT
+    TEXT_ELEMENT,
+    getMarkers
 } from './utils';
 
 function treeWalkerFilter() {
@@ -17,7 +17,6 @@ function treeWalkerFilter() {
 
 export function linkAttributes(
     element: Element,
-    markers: MarkerMap,
     linkedExpressions: LinkSymbol[]
 ): void {
     const attrs = element.attributes;
@@ -25,10 +24,11 @@ export function linkAttributes(
 
     while (i--) {
         const { name, value } = attrs.item(i) as Attr;
+        const n = markerNumber(value);
 
-        if (markers.has(value)) {
+        if (n !== -1) {
             element.removeAttribute(name);
-            linkedExpressions[markerNumber(value)] = {
+            linkedExpressions[n] = {
                 type: AttributeExpression,
                 name,
                 nodePath: getNodePath(element)
@@ -37,13 +37,11 @@ export function linkAttributes(
     }
 }
 
-export function linkComment(
-    node: Comment,
-    markers: MarkerMap,
-    linkedExpressions: LinkSymbol[]
-) {
-    if (markers.has(node.data)) {
-        linkedExpressions[markerNumber(node.data)] = {
+export function linkComment(node: Comment, linkedExpressions: LinkSymbol[]) {
+    const n = markerNumber(node.data);
+
+    if (n !== -1) {
+        linkedExpressions[n] = {
             type: NodeExpression,
             nodePath: getNodePath(node)
         };
@@ -55,9 +53,7 @@ export function linkTexts(
     node: CharacterData,
     linkedExpressions: LinkSymbol[]
 ): void {
-    const keys = node.data.match(MARKER_RE) || [];
-
-    keys.forEach((key: string) => {
+    getMarkers(node.data).forEach((key: string) => {
         const keyNode: Text = text();
         node = (<Text>node).splitText(node.data.indexOf(key));
         node.deleteData(0, key.length);
@@ -71,10 +67,7 @@ export function linkTexts(
     });
 }
 
-export function linkExpressions(
-    root: DocumentFragment,
-    markers: MarkerMap
-) {
+export function linkExpressions(root: DocumentFragment) {
     const treeWalker = document.createTreeWalker(
         root,
         NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT,
@@ -82,19 +75,19 @@ export function linkExpressions(
         false
     );
 
-    const linkedExpressions: Array<LinkSymbol> = Array(markers.size);
+    const linkedExpressions: Array<LinkSymbol> = [];
 
     while (treeWalker.nextNode()) {
         const node: any = treeWalker.currentNode;
 
         if (node.nodeType === Node.ELEMENT_NODE) {
-            linkAttributes(node, markers, linkedExpressions);
+            linkAttributes(node, linkedExpressions);
             if (TEXT_ELEMENT.test(node.tagName)) {
                 [].forEach.call(node.childNodes, node =>
                     linkTexts(node, linkedExpressions)
                 );
             }
-        } else linkComment(node, markers, linkedExpressions);
+        } else linkComment(node, linkedExpressions);
     }
 
     return linkedExpressions;

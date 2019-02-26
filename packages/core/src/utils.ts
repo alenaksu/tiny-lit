@@ -90,12 +90,16 @@ export function isTemplate(obj: any): boolean {
     return obj && obj[TemplateSymbol];
 }
 
-export const MARKER_RE = /__(\d+)__/g;
-export const MARKER_NUMBER_RE = /\D+/g;
+export const MARKER_RE = /__(\d+)__/;
 export const TEXT_ELEMENT = /^(?:style|textarea)$/i;
 
+export function getMarkers(text: string): RegExpMatchArray {
+    return text.match(new RegExp(MARKER_RE, 'g')) || [];
+}
+
 export function markerNumber(marker: string): number {
-    return Number(marker.replace(MARKER_NUMBER_RE, ''));
+    const m = marker.match(MARKER_RE);
+    return Number(m ? m[1] : -1);
 }
 
 const SVG_NAMESPACES = {

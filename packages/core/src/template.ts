@@ -1,4 +1,4 @@
-import { TemplateInterface, Expression, } from './types';
+import { TemplateInterface, Expression } from './types';
 import { createElement } from './parser';
 import { TemplateSymbol, removeNodes } from './utils';
 
@@ -8,11 +8,17 @@ export class Template implements TemplateInterface {
     strings: TemplateStringsArray;
     range?: [Node, Node];
     expressions?: Expression[];
+    context?: string;
     key?: any;
 
-    constructor(strings: TemplateStringsArray, values: any[]) {
+    constructor(
+        strings: TemplateStringsArray,
+        values: any[],
+        context?: string
+    ) {
         this.values = values;
         this.strings = strings;
+        this.context = context;
     }
 
     withKey(key: any) {
@@ -36,7 +42,7 @@ export class Template implements TemplateInterface {
     create(): DocumentFragment {
         const { fragment, expressions } = createElement(
             this.strings,
-            this.values
+            this.context
         );
         this.expressions = expressions;
         this.range = [fragment.firstChild!, fragment.lastChild!];

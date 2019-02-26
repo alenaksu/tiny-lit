@@ -1,6 +1,3 @@
-export interface MarkerMap
-    extends Map<string, any> {}
-
 export interface Expression {
     update(value: any, force?: boolean): void;
     clear?(): void;
@@ -14,6 +11,7 @@ export interface TemplateInterface {
     expressions?: Expression[];
     values: any[];
     strings?: TemplateStringsArray;
+    context?: string;
     key?: string;
     withKey(key: string): TemplateInterface;
 }
@@ -26,7 +24,7 @@ export type LinkSymbol = {
 
 export type CacheEntry = {
     expressions: Array<LinkSymbol>;
-    template: HTMLTemplateElement;
+    content: DocumentFragment;
 };
 
 export type TemplateArray = Map<string, TemplateInterface>;

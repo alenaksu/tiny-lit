@@ -1,4 +1,4 @@
-import { html, Template, render } from '../src/index';
+import { html, Template, render, svg } from '../src/index';
 import { NodeExpression } from '../src/expressions';
 
 describe('tiny-lit', () => {
@@ -66,7 +66,7 @@ describe('tiny-lit', () => {
             const children = [].slice.call(root.children);
             render(t('pluto'), root);
 
-            expect([].slice.call(root.children)).toEqual(<any[]>children);
+            expect([].slice.call(root.children)).toEqual(children);
             expect(root.innerHTML).toEqual('<div>pluto</div>');
         });
 
@@ -79,8 +79,8 @@ describe('tiny-lit', () => {
             `;
             let n = Math.floor(Math.random() * 10);
             render(t(n, '/image1.jpg'), root);
-            const circle = root.querySelector('circle');
-            const use = root.querySelector('use');
+            const circle = root.querySelector('circle') as SVGCircleElement;
+            const use = root.querySelector('use') as SVGUseElement;
 
             expect(circle.r.baseVal.value).toBe(n);
             expect(use.href.baseVal).toBe('/image1.jpg');
@@ -89,6 +89,23 @@ describe('tiny-lit', () => {
             render(t(n, '/image2.png'), root);
             expect(circle.r.baseVal.value).toBe(n);
             expect(use.href.baseVal).toBe('/image2.png');
+        });
+
+        it('should render partial svgs', () => {
+            const p = ['a', 'b', 'c'].map(i => svg`<path id=${i}></path>`),
+                s = l => html`<svg>${l}</svg>`;
+
+            render(s(null), root);
+
+            expect(root.innerHTML).toEqual('<svg><!----></svg>');
+            render(s(p), root);
+            expect(root.innerHTML).toEqual(
+                '<svg><!----><path id="a"></path><path id="b"></path><path id="c"></path></svg>'
+            );
+
+            const path = root.querySelector('path') as SVGPathElement;
+
+            expect(path.namespaceURI).toBe('http://www.w3.org/2000/svg');
         });
 
         it('should correctly set string attribute', () => {
@@ -232,7 +249,7 @@ describe('tiny-lit', () => {
 
             const elementExpression: Template = <Template>(
                 (<NodeExpression>(
-                    (<Template>render.instances.get(root))!.expressions[0]
+                    (<Template>render.instances.get(root))!.expressions![0]
                 )).element
             );
             const update = elementExpression.update.bind(elementExpression);
@@ -290,11 +307,11 @@ describe('tiny-lit', () => {
             `;
             render(t('block'), root);
 
-            expect(root.firstElementChild.textContent).toEqual(
+            expect(root.firstElementChild!.textContent).toEqual(
                 '.test{ display: block; }'
             );
             render(t('none'), root);
-            expect(root.firstElementChild.textContent).toEqual(
+            expect(root.firstElementChild!.textContent).toEqual(
                 '.test{ display: none; }'
             );
         });

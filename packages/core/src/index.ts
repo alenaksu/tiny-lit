@@ -19,3 +19,7 @@ render.instances = new WeakMap<HTMLElement, TemplateInterface>();
 export function html(strings: any, ...values: any[]): Template {
     return new Template(strings, values);
 }
+
+export function svg(strings: any, ...values: any[]): Template {
+    return new Template(strings, values, 'svg');
+}
