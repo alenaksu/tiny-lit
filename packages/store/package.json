@@ -20,7 +20,7 @@
     "size-limit": [
         {
             "limit": "0.9 KB",
-            "path": "dist/store.m.js"
+            "path": "dist/esm/index.js"
         }
     ],
     "publishConfig": {
