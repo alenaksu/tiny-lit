@@ -7,7 +7,7 @@ import { removeNodes } from './utils';
 export function render(template: TemplateInterface, container: HTMLElement) {
     if (!render.instances.has(container)) {
         render.instances.set(container, template);
-        removeNodes(container.firstChild!, container.lastChild!, container);
+        removeNodes(container.firstChild!, null, container);
 
         container.appendChild(template.create());
     } else {

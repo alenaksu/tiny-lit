@@ -26,8 +26,8 @@ export function replaceRange(newNode: Node, range: any) {
 
 export function removeNodes(
     startNode: Node,
-    endNode: Node,
-    parent: Node = startNode.parentNode!
+    endNode: Node | null = null,
+    parent: Node | null = startNode.parentNode!
 ): void {
     if (!parent) return;
 
