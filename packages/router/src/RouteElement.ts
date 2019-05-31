@@ -10,7 +10,7 @@ const importModule = url =>
             script.onload = resolve;
             script.src = url;
 
-            document.appendChild(script);
+            document.head.appendChild(script);
 
             importedModules.add(url);
         }
