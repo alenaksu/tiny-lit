@@ -10,7 +10,7 @@
         "start": "tsc watch",
         "clear": "rm -rf dist/",
         "build": "npm run clear && npm run build:esm && npm run build:cjs",
-        "build:esm": "tsc --module es2015 --target es5 --outDir dist/esm",
+        "build:esm": "tsc --module es2015 --target es6 --outDir dist/esm",
         "build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
         "lint": "tslint --project ./",
         "size": "npm run build && size-limit",
