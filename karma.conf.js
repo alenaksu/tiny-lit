@@ -7,8 +7,8 @@ module.exports = function (config) {
             '/__test__/**/*.ts'
         ].map(path => process.cwd() + '/' + path),
         preprocessors: {
-            '**/src/**/*.ts': 'coverage',
             '**/*.ts': 'karma-typescript',
+            '**/src/**/*.ts': 'coverage',
         },
         karmaTypescriptConfig: {
             tsconfig: "./tsconfig.karma.json"
