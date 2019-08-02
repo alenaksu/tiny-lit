@@ -4,7 +4,6 @@ export type Constructor<T = {}> = new (...args: any[]) => T;
 
 export interface Element {
     state: any;
-    readonly scheduler: Scheduler;
     render(): Template | null;
     update(): void;
     setState(nextState: object | Function, callback?: Function): void;
@@ -25,17 +24,3 @@ export interface CustomElement {
 }
 
 export type ElementProperties<T> = { [P in keyof T]?: T[P] };
-
-export interface ScheduledFunction extends Function {
-    _priority?: number;
-    _scheduled?: boolean;
-}
-
-export interface IdleDeadline {
-    didTimeout: boolean;
-    timeRemaining(): number;
-}
-
-export interface Scheduler {
-    defer(fn: ScheduledFunction): () => void;
-}

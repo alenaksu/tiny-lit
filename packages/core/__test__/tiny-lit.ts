@@ -1,7 +1,21 @@
-import { html, Template, render, svg } from '../src/index';
+import { html, Template, render, svg, } from '../src/index';
 import { NodeExpression } from '../src/expressions';
+import { setEnabled } from '../src/scheduler';
+import {customMatchers} from './utils';
 
 describe('tiny-lit', () => {
+    beforeAll(() => {
+        setEnabled(false);
+    });
+
+    afterAll(() => {
+        setEnabled(true);
+    });
+
+    beforeEach(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
     describe('html', () => {
         it('returns a Template', () => {
             expect(html``).toEqual(jasmine.any(Template));
@@ -17,7 +31,11 @@ describe('tiny-lit', () => {
         it('values contain interpolated values', () => {
             const foo = 'foo',
                 bar = 1;
-            expect(html`${foo}${bar}`.values).toEqual([foo, bar]);
+            expect(
+                html`
+                    ${foo}${bar}
+                `.values
+            ).toEqual([foo, bar]);
         });
     });
 
@@ -35,24 +53,30 @@ describe('tiny-lit', () => {
 
         it('Template.create returns the rendered dom', () => {
             const foo = 'pippo',
-                t = html`<div>${foo}</div>`,
+                t = html`
+                    <div>${foo}</div>
+                `,
                 node = t.create();
 
             expect(node).toEqual(jasmine.any(Node));
 
             root.appendChild(node);
-            expect(root.innerHTML).toEqual('<div>pippo</div>');
+            expect(root.innerHTML).toSameHTML('<div>pippo</div>');
         });
 
         it('should render template into dom', () => {
-            const t = html`<div>pippo</div>`;
+            const t = html`
+                <div>pippo</div>
+            `;
 
             render(t, root);
-            expect(root.innerHTML).toEqual('<div>pippo</div>');
+            expect(root.innerHTML).toSameHTML('<div>pippo</div>');
         });
 
         it('should store template into instances property', () => {
-            const t = html`<div>pippo</div>`;
+            const t = html`
+                <div>pippo</div>
+            `;
 
             render(t, root);
             expect(render.instances.has(root)).toBe(true);
@@ -60,20 +84,30 @@ describe('tiny-lit', () => {
         });
 
         it('should update the template', () => {
-            const t = name => html`<div>${name}</div>`;
+            const t = name =>
+                html`
+                    <div>${name}</div>
+                `;
 
             render(t('pippo'), root);
             const children = [].slice.call(root.children);
             render(t('pluto'), root);
 
             expect([].slice.call(root.children)).toEqual(children);
-            expect(root.innerHTML).toEqual('<div>pluto</div>');
+            expect(root.innerHTML).toSameHTML('<div>pluto</div>');
         });
 
         it('should render svg elements', () => {
             const t = (radius, url) => html`
                 <svg height="100" width="100">
-                    <circle cx="50" cy="50" r="${radius}" stroke="black" stroke-width="3" fill="red" />
+                    <circle
+                        cx="50"
+                        cy="50"
+                        r="${radius}"
+                        stroke="black"
+                        stroke-width="3"
+                        fill="red"
+                    />
                     <use xlink:href=${url} />
                 </svg>
             `;
@@ -93,14 +127,17 @@ describe('tiny-lit', () => {
 
         it('should render partial svgs', () => {
             const p = ['a', 'b', 'c'].map(i => svg`<path id=${i}></path>`),
-                s = l => html`<svg>${l}</svg>`;
+                s = l =>
+                    html`
+                        <svg>${l}</svg>
+                    `;
 
             render(s(null), root);
 
-            expect(root.innerHTML).toEqual('<svg><!----></svg>');
+            expect(root.innerHTML).toSameHTML('<svg></svg>');
             render(s(p), root);
-            expect(root.innerHTML).toEqual(
-                '<svg><!----><path id="a"></path><path id="b"></path><path id="c"></path></svg>'
+            expect(root.innerHTML).toSameHTML(
+                '<svg><path id="a"></path><path id="b"></path><path id="c"></path></svg>'
             );
 
             const path = root.querySelector('path') as SVGPathElement;
@@ -110,7 +147,9 @@ describe('tiny-lit', () => {
 
         it('should correctly set string attribute', () => {
             const c = 'btn',
-                t = html`<div class=${c}></div>`;
+                t = html`
+                    <div class=${c}></div>
+                `;
 
             render(t, root);
             expect(root.children[0].getAttribute('class')).toEqual(c);
@@ -118,7 +157,9 @@ describe('tiny-lit', () => {
 
         it('should correctly set non-string attribute as property', () => {
             const c = () => {},
-                t = html`<div onclick=${c}></div>`;
+                t = html`
+                    <div onclick=${c}></div>
+                `;
 
             render(t, root);
             expect((<any>root.children[0]).onclick).toBe(c);
@@ -127,7 +168,10 @@ describe('tiny-lit', () => {
         it('should update property', () => {
             const c = () => {},
                 d = () => {},
-                t = c => html`<div onclick=${c}></div>`;
+                t = c =>
+                    html`
+                        <div onclick=${c}></div>
+                    `;
 
             render(t(c), root);
             render(t(d), root);
@@ -137,7 +181,10 @@ describe('tiny-lit', () => {
         it('should update attribute', () => {
             const c = 'pippo',
                 d = 'pluto',
-                t = c => html`<div class=${c}></div>`;
+                t = c =>
+                    html`
+                        <div class=${c}></div>
+                    `;
 
             render(t(c), root);
             render(t(d), root);
@@ -147,7 +194,10 @@ describe('tiny-lit', () => {
         it('should switch between attribute and property', () => {
             const c = 'pippo',
                 d = () => {},
-                t = cb => html`<div onclick=${cb}></div>`;
+                t = cb =>
+                    html`
+                        <div onclick=${cb}></div>
+                    `;
 
             render(t(c), root);
             render(t(d), root);
@@ -159,25 +209,32 @@ describe('tiny-lit', () => {
 
         it('should escape attributes', () => {
             const c = '">',
-                t = html`<div class=${c}>pluto</div>`;
+                t = html`
+                    <div class=${c}>pluto</div>
+                `;
 
             render(t, root);
-            expect(root.innerHTML).toEqual('<div class="&quot;>">pluto</div>');
+            expect(root.innerHTML).toSameHTML('<div class="&quot;>">pluto</div>');
         });
 
         it('should escape html', () => {
             const c = '<b>pippo</b>',
-                t = html`<div>${c}</div>`;
+                t = html`
+                    <div>${c}</div>
+                `;
 
             render(t, root);
-            expect(root.innerHTML).toEqual(
+            expect(root.innerHTML).toSameHTML(
                 '<div>&lt;b&gt;pippo&lt;/b&gt;</div>'
             );
         });
 
         it('should correctly set attributes', () => {
             const c = 'btn',
-                t = v => html`<input min=${v.a} custom=${v.b}  />`;
+                t = v =>
+                    html`
+                        <input min=${v.a} custom=${v.b} />
+                    `;
 
             render(t({ a: 0 }), root);
             expect((<any>root.children[0]).min).toBe('0');
@@ -200,48 +257,72 @@ describe('tiny-lit', () => {
         });
 
         it('should render nested templates', () => {
-            const a = html`<b>pippo</b>`,
-                b = html`<div>${a}</div>`;
+            const a = html`
+                    <b>pippo</b>
+                `,
+                b = html`
+                    <div>${a}</div>
+                `;
 
             render(b, root);
-            expect(root.innerHTML).toBe('<div><b>pippo</b></div>');
+            expect(root.innerHTML).toSameHTML('<div><b>pippo</b></div>');
         });
 
         it('should replace nodes', () => {
-            const t = s => html`<div>${s ? 'pippo' : null}</div>`;
+            const t = s =>
+                html`
+                    <div>${s ? 'pippo' : null}</div>
+                `;
 
             render(t(true), root);
-            expect(root.innerHTML).toBe('<div>pippo</div>');
+            expect(root.innerHTML).toSameHTML('<div>pippo</div>');
             render(t(false), root);
-            expect(root.innerHTML).toBe('<div><!----></div>');
+            expect(root.innerHTML).toSameHTML('<div></div>');
         });
 
         it('should replace different templates', () => {
-            const boldTemplate = html`<b>bold</b>`;
-            const normalTemplate = html`<span>normal</span>`;
+            const boldTemplate = html`
+                <b>bold</b>
+            `;
+            const normalTemplate = html`
+                <span>normal</span>
+            `;
             const t = bold =>
-                html`<div>${bold ? boldTemplate : normalTemplate}</div>`;
+                html`
+                    <div>${bold ? boldTemplate : normalTemplate}</div>
+                `;
 
             render(t(false), root);
             render(t(true), root);
-            expect(root.innerHTML).toBe('<div><b>bold</b></div>');
+            expect(root.innerHTML).toSameHTML('<div><b>bold</b></div>');
         });
 
         it('should replace template with primitive values', () => {
-            const t = content => html`<b>${content}</b>`;
-            const c = html`<span>normal</span>`;
+            const t = content =>
+                html`
+                    <b>${content}</b>
+                `;
+            const c = html`
+                <span>normal</span>
+            `;
 
             render(t(c), root);
             render(t('ciao'), root);
-            expect(root.innerHTML).toBe('<b>ciao</b>');
+            expect(root.innerHTML).toSameHTML('<b>ciao</b>');
 
             render(t(c), root);
-            expect(root.innerHTML).toBe('<b><span>normal</span></b>');
+            expect(root.innerHTML).toSameHTML('<b><span>normal</span></b>');
         });
 
         it('should update nested template', () => {
-            const a = c => html`<b>pippo ${c}</b>`,
-                b = c => html`<div>${a(c)}</div>`;
+            const a = c =>
+                    html`
+                        <b>pippo ${c}</b>
+                    `,
+                b = c =>
+                    html`
+                        <div>${a(c)}</div>
+                    `;
 
             render(b('pippo'), root);
 
@@ -264,8 +345,13 @@ describe('tiny-lit', () => {
         });
 
         it('should remove nested template on null value', () => {
-            const a = html`<b>pippo</b>`,
-                b = show => html`<div>${show ? a : null}</div>`;
+            const a = html`
+                    <b>pippo</b>
+                `,
+                b = show =>
+                    html`
+                        <div>${show ? a : null}</div>
+                    `;
 
             render(b(true), root);
 
@@ -276,63 +362,99 @@ describe('tiny-lit', () => {
         });
 
         it('should manage arrays as array of templates', () => {
-            const l = ['a', 'b', 'c'].map(i => html`<li>${i}</li>`),
-                t = html`${l}`,
+            const l = ['a', 'b', 'c'].map(
+                    i =>
+                        html`
+                            <li>${i}</li>
+                        `
+                ),
+                t = html`
+                    ${l}
+                `,
                 node = t.create();
 
             expect(node).toEqual(jasmine.any(Node));
 
             root.appendChild(node);
-            expect(root.innerHTML).toEqual(
-                '<!----><li>a</li><li>b</li><li>c</li>'
+            expect(root.innerHTML).toSameHTML(
+                '<li>a</li><li>b</li><li>c</li>'
             );
         });
 
         it('should render partial tables', () => {
-            const l = ['a', 'b', 'c'].map(i => html`<tr><td>${i}</td></tr>`),
-                t = l => html`<table>${l}</table>`;
+            const l = ['a', 'b', 'c'].map(
+                    i =>
+                        html`
+                            <tr>
+                                <td>${i}</td>
+                            </tr>
+                        `
+                ),
+                t = l =>
+                    html`
+                        <table>
+                            ${l}
+                        </table>
+                    `;
 
             render(t(null), root);
 
-            expect(root.innerHTML).toEqual('<table><!----></table>');
+            expect(root.innerHTML).toSameHTML('<table></table>');
             render(t(l), root);
-            expect(root.innerHTML).toEqual(
-                '<table><!----><tr><td>a</td></tr><tr><td>b</td></tr><tr><td>c</td></tr></table>'
+            expect(root.innerHTML).toSameHTML(
+                '<table><tr><td>a</td></tr><tr><td>b</td></tr><tr><td>c</td></tr></table>'
             );
         });
 
         it('should render style tags', () => {
             const t = display => html`
-                <style>.test{ display: ${display}; }</style>
+                <style>
+                    .test {
+                        display: ${display};
+                    }
+                </style>
             `;
             render(t('block'), root);
 
-            expect(root.firstElementChild!.textContent).toEqual(
-                '.test{ display: block; }'
+            expect(root.firstElementChild!.textContent).toSameHTML(
+                '.test { display: block; }'
             );
             render(t('none'), root);
-            expect(root.firstElementChild!.textContent).toEqual(
-                '.test{ display: none; }'
+            expect(root.firstElementChild!.textContent).toSameHTML(
+                '.test { display: none; }'
             );
         });
 
         describe('arrays', () => {
             it('should render the array', () => {
-                const t = html`${['a', 'b', 'c'].map(
-                        i => html`<li>${i}</li>`
-                    )}`,
+                const t = html`
+                        ${['a', 'b', 'c'].map(
+                            i =>
+                                html`
+                                    <li>${i}</li>
+                                `
+                        )}
+                    `,
                     node = t.create();
 
                 expect(node).toEqual(jasmine.any(Node));
 
                 root.appendChild(node);
-                expect(root.innerHTML).toEqual(
-                    '<!----><li>a</li><li>b</li><li>c</li>'
+                expect(root.innerHTML).toSameHTML(
+                    '<li>a</li><li>b</li><li>c</li>'
                 );
             });
 
             it('should return boundaries nodes', () => {
-                const t = l => html`${l.map(i => html`<li>${i}</li>`)}`;
+                const t = l =>
+                    html`
+                        ${l.map(
+                            i =>
+                                html`
+                                    <li>${i}</li>
+                                `
+                        )}
+                    `;
 
                 render(t(['a', 'b', 'c']), root);
                 render(t(['a', 'd', 'c', 'b']), root);
@@ -347,13 +469,22 @@ describe('tiny-lit', () => {
                 }
 
                 // the array contains also the root node
-                expect(count).toEqual(13);
+                expect(count).toEqual(23);
             });
 
             it('should remove everything within boundaries', () => {
-                const a = a => html`${a ? 'a' : null}`;
-                const b = b => html`${b ? a(!b) : null}`;
-                const c = c => html`${c ? b(c) : null} ${!c ? a(c) : null}`;
+                const a = a =>
+                    html`
+                        ${a ? 'a' : null}
+                    `;
+                const b = b =>
+                    html`
+                        ${b ? a(!b) : null}
+                    `;
+                const c = c =>
+                    html`
+                        ${c ? b(c) : null} ${!c ? a(c) : null}
+                    `;
 
                 render(c(true), root);
                 render(c(false), root);
@@ -363,7 +494,7 @@ describe('tiny-lit', () => {
                 render.instances.get(root)!.delete();
 
                 // the array contains also the root node
-                expect(root.innerHTML).toEqual('');
+                expect(root.innerHTML).toSameHTML('');
             });
 
             it('should update existing items', () => {
@@ -374,7 +505,8 @@ describe('tiny-lit', () => {
                                 <li>${i}</li>
                             `
                         )}
-                    </ul>`;
+                    </ul>
+                `;
 
                 render(t(['a', 'b', 'c']), root);
                 const li = root.querySelectorAll('li');
@@ -406,7 +538,8 @@ describe('tiny-lit', () => {
                                 <custom-li>${i}</custom-li>
                             `.withKey(i)
                         )}
-                    </ul>`;
+                    </ul>
+                `;
 
                 let list = ['a', 'b', 'c'];
                 render(t(list), root);
@@ -431,7 +564,8 @@ describe('tiny-lit', () => {
                                 <li>${i}</li>
                             `
                         )}
-                    </ul>`;
+                    </ul>
+                `;
 
                 render(t(['a', 'b', 'c']), root);
                 render(t(['a', 'b']), root);
@@ -442,13 +576,17 @@ describe('tiny-lit', () => {
             it('should replace different templates', () => {
                 const t = (items, bold) => html`
                     <ul>
-                        ${items.map(
-                            i =>
-                                bold
-                                    ? html`<li><b>${i}</b></li>`
-                                    : html`<li>${i}</li>`
+                        ${items.map(i =>
+                            bold
+                                ? html`
+                                      <li><b>${i}</b></li>
+                                  `
+                                : html`
+                                      <li>${i}</li>
+                                  `
                         )}
-                    </ul>`;
+                    </ul>
+                `;
 
                 const list = ['a', 'b', 'c'];
 

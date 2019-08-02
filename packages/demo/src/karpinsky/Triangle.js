@@ -16,6 +16,7 @@ class KarpinskyTriangle extends Element {
             seconds: Number,
         };
     }
+
     x = 0;
     y = 0;
     s = 0;
@@ -27,7 +28,7 @@ class KarpinskyTriangle extends Element {
         //this.attachShadow({ mode: 'open' });
     }
 
-    render() {
+    renderTemplate() {
         let { s, seconds, x, y } = this;
 
         if (s <= targetSize) {
@@ -55,6 +56,10 @@ class KarpinskyTriangle extends Element {
             <karpinsky-triangle x=${x + s} y=${y +
             s / 2} s=${s} seconds=${seconds}></karpinsky-triangle>
         `;
+    }
+
+    render() {
+        return html`${this.renderTemplate()}`;
     }
 }
 

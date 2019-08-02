@@ -1,4 +1,5 @@
 export { Template } from './template';
+export { scheduled } from './scheduler';
 
 import { TemplateInterface } from './types';
 import { Template } from './template';

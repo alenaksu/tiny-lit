@@ -3,7 +3,7 @@ import { html } from '@tiny-lit/core';
 import { Element } from '@tiny-lit/element';
 
 const JSONObject = value => {
-    if (typeof value !== object) {
+    if (typeof value === 'string') {
         try {
             value = JSON.parse(value);
         } catch (e) {}
@@ -343,7 +343,7 @@ class Item extends ElementWithStore {
 
     static get properties() {
         return {
-            c: JSONObject
+            item: JSONObject
         };
     }
 

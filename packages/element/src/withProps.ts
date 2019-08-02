@@ -17,7 +17,7 @@ function defineProps(constructor: any): string[] {
                     },
                     set(newValue: any) {
                         const oldValue = (<any>this).__props[name];
-                        (<any>this).__props[name] = props[name](newValue);
+                        (<any>this).__props[name] = newValue;
 
                         (<any>this).rendered &&
                             oldValue !== newValue &&
@@ -44,7 +44,9 @@ export function withProps<T extends Constructor>(Base: T) {
         }
 
         attributeChangedCallback(name: string, _: string, newValue: string) {
-            this[(<any>this.constructor).__attrsMap[name]] = newValue;
+            const { __attrsMap, properties } = <any>this.constructor;
+
+            this[__attrsMap[name]] = properties[name](newValue);
         }
     };
 }

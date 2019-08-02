@@ -8,7 +8,7 @@ function rafInterval(fn) {
 
     function run() {
         fn();
-        running && requestAnimationFrame(run);
+        return running && requestAnimationFrame(run);
     }
 
     requestAnimationFrame(run);
@@ -28,6 +28,12 @@ class KarpinskyDemo extends Element {
         // this.attachShadow({ mode: 'closed' });
     }
 
+    static get properties() {
+        return {
+            elapsed: Number
+        }
+    }
+
     connectedCallback() {
         const rendered = this.rendered;
 
@@ -35,7 +41,9 @@ class KarpinskyDemo extends Element {
 
         this.start = Date.now();
         this.timerInterval = setInterval(this.tick.bind(this), 1000);
-        this.renderInterval = rafInterval(this.update);
+        this.renderInterval = rafInterval(() => {
+            this.elapsed = Date.now() - this.start;
+        });
         this.setState({
             seconds: 0,
         });
@@ -55,7 +63,7 @@ class KarpinskyDemo extends Element {
     }
 
     getStyle() {
-        const elapsed = Date.now() - this.start;
+        const elapsed = this.elapsed;
         const t = (elapsed / 1000) % 10;
         const scale = 1 + (t > 5 ? 10 - t : t) / 10;
 
