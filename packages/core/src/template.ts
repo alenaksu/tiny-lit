@@ -1,5 +1,5 @@
 import { TemplateInterface, Expression } from './types';
-import { createElement } from './parser';
+import { parseTemplate } from './parser';
 import { TemplateSymbol, removeNodes } from './utils';
 
 export class Template implements TemplateInterface {
@@ -40,7 +40,7 @@ export class Template implements TemplateInterface {
     }
 
     create(): DocumentFragment {
-        const { fragment, expressions } = createElement(
+        const { fragment, expressions } = parseTemplate(
             this.strings,
             this.context
         );

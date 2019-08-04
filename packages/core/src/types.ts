@@ -28,3 +28,18 @@ export type CacheEntry = {
 };
 
 export type TemplateArray = Map<string, TemplateInterface>;
+
+export type SchedulerJob = {
+    task: Function;
+    args: any[];
+    pending: boolean;
+    firstRun: boolean;
+};
+
+export type SchedulerQueue = Array<SchedulerJob>;
+
+export const enum JobPriority {
+    Low = 0,
+    Normal,
+    High
+}

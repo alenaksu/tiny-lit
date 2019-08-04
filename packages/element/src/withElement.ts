@@ -1,9 +1,7 @@
 import { render, Template } from '@tiny-lit/core';
-import Scheduler from './Scheduler';
 import {
     Constructor,
     Element as ElementInterface,
-    Scheduler as SchedulerInterface
 } from './types';
 
 export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
@@ -18,10 +16,6 @@ export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
                 this,
                 shadowRootInitDict
             ));
-        }
-
-        get scheduler(): SchedulerInterface {
-            return Scheduler;
         }
 
         connectedCallback() {
@@ -47,13 +41,13 @@ export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
             return null;
         }
 
-        update = this.scheduler.defer(() => {
+        update() {
             this.rendered = true;
 
             const template = this.render();
             template && render(template, this.renderRoot as any);
 
             while (this.renderCallbacks.length) this.renderCallbacks.shift()!();
-        });
+        };
     };
 }

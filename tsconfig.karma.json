@@ -7,6 +7,8 @@
         "strictNullChecks": false,
         "noUnusedParameters": false,
         "noUnusedLocals": false,
+        "alwaysStrict": false,
+        "strict": false,
         "sourceMap": true,
         "types": ["jasmine"],
     },

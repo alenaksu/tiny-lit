@@ -8,6 +8,7 @@ import {
     text,
     getSVGNamespace
 } from './utils';
+import { scheduled } from './scheduler';
 
 export class AttributeExpression implements Expression {
     name: string;
@@ -19,7 +20,7 @@ export class AttributeExpression implements Expression {
         this.element = element;
     }
 
-    update(value: any): void {
+    update = scheduled((value: any): void => {
         if (this.value === value) return;
 
         const { name, element } = this;
@@ -35,7 +36,7 @@ export class AttributeExpression implements Expression {
         }
 
         this.value = value;
-    }
+    });
 }
 
 export class NodeExpression implements Expression {
@@ -121,7 +122,7 @@ export class NodeExpression implements Expression {
         }
     }
 
-    update(value: any): void {
+    update = scheduled((value: any): void => {
         if (value === this.value) return;
 
         const { element, placeholder } = this;
@@ -146,5 +147,5 @@ export class NodeExpression implements Expression {
         }
 
         this.value = value;
-    }
+    });
 }

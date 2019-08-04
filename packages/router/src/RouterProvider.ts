@@ -18,7 +18,7 @@ export class RouterProvider extends HTMLElement {
              });
         }
 
-        requestAnimationFrame(() => this.router!.resolve());
+        Promise.resolve().then(this.router!.resolve);
     }
 
     disconnectedCallback() {

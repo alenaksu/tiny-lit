@@ -3,30 +3,33 @@
     "private": true,
     "description": "",
     "scripts": {
-        "start": "parcel index.html",
+        "start": "parcel index.html --no-cache",
         "build": "rm -rf ../../docs/demo && parcel build index.html --public-url https://alenaksu.github.io/tiny-lit/demo/ -d ../../docs/demo",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": "alenaksu/tiny-lit",
     "license": "MIT",
     "devDependencies": {
-        "@babel/core": "^7.4.5",
-        "@babel/plugin-proposal-class-properties": "^7.4.4",
+        "@babel/core": "^7.5.5",
+        "@babel/plugin-proposal-class-properties": "^7.5.5",
         "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-        "@babel/preset-env": "^7.3.1",
+        "@babel/preset-env": "^7.5.5",
         "@babel/preset-stage-2": "^7.0.0",
         "@babel/preset-typescript": "^7.3.3",
-        "@webcomponents/custom-elements": "^1.2.1",
-        "@webcomponents/webcomponentsjs": "^2.2.1",
-        "parcel-bundler": "^1.11.0"
+        "@webcomponents/custom-elements": "^1.2.4",
+        "@webcomponents/webcomponentsjs": "^2.2.10",
+        "parcel-bundler": "^1.12.3"
     },
     "dependencies": {
-        "@tiny-lit/core": "^1.0.0-alpha.21",
-        "@tiny-lit/element": "^1.0.0-alpha.21",
-        "@tiny-lit/router": "^1.0.0-alpha.21",
-        "@tiny-lit/store": "^1.0.0-alpha.21"
+        "@tiny-lit/core": "^1.0.0-alpha.26",
+        "@tiny-lit/element": "^1.0.0-alpha.26",
+        "@tiny-lit/router": "^1.0.0-alpha.26",
+        "@tiny-lit/store": "^1.0.0-alpha.26"
     },
     "publishConfig": {
         "access": "restricted"
-    }
+    },
+    "browserslist": [
+        "chrome > 50"
+    ]
 }
