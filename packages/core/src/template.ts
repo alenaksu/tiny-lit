@@ -1,6 +1,6 @@
 import { TemplateInterface, Expression } from './types';
 import { parseTemplate } from './parser';
-import { TemplateSymbol, removeNodes } from './utils';
+import { TemplateSymbol, removeNodes, text } from './utils';
 
 export class Template implements TemplateInterface {
     [TemplateSymbol] = true;
@@ -34,7 +34,7 @@ export class Template implements TemplateInterface {
     }
 
     delete() {
-        removeNodes(...this.range!);
+        removeNodes(this.range![0], this.range![1].nextSibling);
         this.range = undefined;
         this.expressions = undefined;
     }
@@ -45,7 +45,10 @@ export class Template implements TemplateInterface {
             this.context
         );
         this.expressions = expressions;
-        this.range = [fragment.firstChild!, fragment.lastChild!];
+        this.range = [
+            fragment.insertBefore(text(), fragment.firstChild),
+            fragment.appendChild(text())
+        ];
 
         this.update(this.values);
 

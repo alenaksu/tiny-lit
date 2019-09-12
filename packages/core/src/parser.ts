@@ -1,6 +1,6 @@
 import { Expression, CacheEntry } from './types';
 import { linkExpressions, resolve } from './linker';
-import { TEXT_ELEMENT, comment } from './utils';
+import { TEXT_ELEMENT } from './utils';
 
 const TemplateCache: WeakMap<TemplateStringsArray, CacheEntry> = new WeakMap();
 
@@ -14,10 +14,6 @@ function createCacheEntry(html: string, context?: string): CacheEntry {
         range.selectNodeContents(content.firstChild!);
         content = range.extractContents();
     }
-
-    // HACK ie11 doesn't import empty text node
-    content.insertBefore(comment(), content.firstChild);
-    content.appendChild(comment());
 
     return {
         content,
@@ -86,9 +82,10 @@ export function parseTemplate(
     }
 
     const fragment = document.importNode(cacheEntry.content, true);
+    const expressions = resolve(fragment, cacheEntry.expressions);
 
     return {
         fragment,
-        expressions: resolve(fragment, cacheEntry.expressions)
+        expressions
     };
 }
