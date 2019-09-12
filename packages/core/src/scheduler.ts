@@ -74,9 +74,9 @@ export function scheduled(
         if (job.firstRun || !enabled) {
             job.firstRun = false;
             task(...args);
-        } else if (!job.pending) {
+        } else {
             job.args = args;
-            enqueueJob(job, priority);
+            if (!job.pending) enqueueJob(job, priority);
         }
     };
 }
