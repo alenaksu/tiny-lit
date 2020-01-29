@@ -16,11 +16,6 @@ describe('Element', () => {
     customElements.define(
         's-element',
         class extends TlElement {
-            get scheduler() {
-                return {
-                    defer: update => update,
-                };
-            }
             render() {
                 return template(this.state.text);
             }
@@ -87,7 +82,7 @@ describe('Element', () => {
 
     it('should update on setState', () => {
         const e = <any>document.createElement('c-element');
-        const r = e.update;
+        const r = e.update.bind(e);
 
         let updated = false;
         e.update = function() {
@@ -184,13 +179,6 @@ describe('Element', () => {
             });
 
             expect(e.__props).toBeDefined();
-            expect(e.__props).toEqual({
-                a: 'a',
-                b: 1,
-                c: false,
-                myProp: 'null',
-                mySuperProp: false,
-            });
             e.remove();
         });
 
@@ -213,9 +201,9 @@ describe('Element', () => {
             e.update();
             e.update = callback;
 
-            e.a = 1;
-            e.b = true;
-            e.c = '';
+            e.setAttribute('a', '1'); // string
+            e.setAttribute('b', '1'); // number
+            e.setAttribute('c', ''); // boolean
 
             expect(e.a).toBe('1');
             expect(e.b).toBe(1);
