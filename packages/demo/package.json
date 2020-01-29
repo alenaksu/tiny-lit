@@ -4,8 +4,7 @@
     "description": "",
     "scripts": {
         "start": "parcel index.html --no-cache",
-        "build": "rm -rf ../../docs/demo && parcel build index.html --public-url https://alenaksu.github.io/tiny-lit/demo/ -d ../../docs/demo",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "rm -rf ../../docs/demo && parcel build index.html --public-url https://alenaksu.github.io/tiny-lit/demo/ -d ../../docs/demo"
     },
     "repository": "alenaksu/tiny-lit",
     "license": "MIT",
