@@ -28,25 +28,24 @@ function defineProps(constructor: any): string[] {
         }
 
         constructor.__attrsMap = attrsMap;
-        constructor.__observedProps = Object.keys(attrsMap);
     }
 
-    return constructor.__observedProps;
+    return Object.keys(constructor.__attrsMap);
 }
 
 export function withProps<T extends Constructor>(Base: T) {
     return class extends Base {
         __props: object = Object.create(null);
         [propName: string]: any;
-
         static get observedAttributes(): string[] {
             return defineProps(this);
         }
 
         attributeChangedCallback(name: string, _: string, newValue: string) {
             const { __attrsMap, properties } = <any>this.constructor;
+            const propName = __attrsMap[name];
 
-            this[__attrsMap[name]] = properties[name](newValue);
+            this[propName] = properties[propName](newValue);
         }
     };
 }
