@@ -1,13 +1,13 @@
 {
     "name": "@tiny-lit/element",
-    "version": "2.0.0-alpha.2",
+    "version": "2.0.0-alpha.3",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
     "source": "src/index.ts",
     "license": "MIT",
     "repository": "alenaksu/tiny-lit",
     "dependencies": {
-        "@tiny-lit/core": "^2.0.0-alpha.2"
+        "@tiny-lit/core": "^2.0.0-alpha.3"
     },
     "scripts": {
         "start": "tsc -w",
