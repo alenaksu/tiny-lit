@@ -411,17 +411,22 @@ describe('tiny-lit', () => {
                 <style>
                     .test {
                         display: ${display};
+                        width: ${32}px;
                     }
                 </style>
+                ${'test'}
             `;
             render(t('block'), root);
 
             expect(root.firstElementChild!.textContent).toSameHTML(
-                '.test { display: block; }'
+                '.test { display: block; width: 32px; }'
             );
             render(t('none'), root);
             expect(root.firstElementChild!.textContent).toSameHTML(
-                '.test { display: none; }'
+                '.test { display: none; width: 32px; }'
+            );
+            expect(root.innerHTML).toSameHTML(
+                '<style> .test { display: none; width: 32px; } </style> test'
             );
         });
 

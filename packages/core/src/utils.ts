@@ -90,24 +90,18 @@ export function isTemplate(obj: any): boolean {
     return obj && obj[TemplateSymbol];
 }
 
-export const MARKER_RE = /__(\d+)__/;
+export const MARKER_PREFIX = `__${Math.random()
+    .toString()
+    .slice(2)}_`;
+export const MARKER_RE = new RegExp(
+    `<!--${MARKER_PREFIX}(\\d+)-->|${MARKER_PREFIX}(\\d+)`
+);
+
 export const TEXT_ELEMENT = /^(?:style|textarea)$/i;
 
-export function getMarkers(text: string): RegExpMatchArray {
-    return text.match(new RegExp(MARKER_RE, 'g')) || [];
-}
+export function markerNumber(value) {
+    const m = MARKER_RE.exec(value);
+    MARKER_RE.lastIndex = 0;
 
-export function markerNumber(marker: string): number {
-    const m = marker.match(MARKER_RE);
-    return Number(m ? m[1] : -1);
-}
-
-const SVG_NAMESPACES = {
-    xlink: 'http://www.w3.org/1999/xlink',
-    xml: 'http://www.w3.org/XML/1998/namespace',
-    xmlns: 'http://www.w3.org/2000/xmlns/'
-};
-
-export function getSVGNamespace(attributeName): string {
-    return SVG_NAMESPACES[attributeName.split(':')[0]];
+    return m ? Number(m[1] || m[2]) : -1;
 }

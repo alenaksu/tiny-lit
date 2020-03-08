@@ -5,28 +5,27 @@ import {
     isTemplate,
     isTemplateEqual,
     moveTemplate,
-    text,
-    getSVGNamespace
+    text
 } from './utils';
 import { scheduled } from './scheduler';
 
 export class AttributeExpression implements Expression {
-    name: string;
     value?: any;
-    element: Element;
 
-    constructor(element: Element, name: string) {
-        this.name = name;
-        this.element = element;
+    constructor(
+        public element: Element,
+        public name: string,
+        public namespaceURI: string | null
+    ) {
     }
 
     update = scheduled((value: any): void => {
         if (this.value === value) return;
 
-        const { name, element } = this;
+        const { name, element, namespaceURI } = this;
 
         if ('ownerSVGElement' in <SVGAElement>element) {
-            element.setAttributeNS(getSVGNamespace(name), name, value);
+            element.setAttributeNS(namespaceURI, name, value);
         } else if (name in element) {
             (element as any)[name] = value;
         } else if (typeof value !== 'undefined') {
@@ -108,8 +107,8 @@ export class NodeExpression implements Expression {
             this.element = newValue = isTemplate(newValue)
                 ? <TemplateInterface>newValue
                 : isNode(newValue)
-                    ? <Node>newValue
-                    : text(<any>newValue);
+                ? <Node>newValue
+                : text(<any>newValue);
 
             replaceRange(
                 isTemplate(newValue)

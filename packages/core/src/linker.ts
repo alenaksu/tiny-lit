@@ -4,9 +4,9 @@ import {
     getNodePath,
     getNodeByPath,
     text,
-    markerNumber,
     TEXT_ELEMENT,
-    getMarkers
+    MARKER_RE,
+    markerNumber
 } from './utils';
 
 function treeWalkerFilter() {
@@ -23,14 +23,15 @@ export function linkAttributes(
     let i = attrs.length;
 
     while (i--) {
-        const { name, value } = attrs.item(i) as Attr;
-        const n = markerNumber(value);
+        const { name, value, namespaceURI } = attrs.item(i) as Attr;
+        const m = markerNumber(value);
 
-        if (n !== -1) {
+        if (~m) {
             element.removeAttribute(name);
-            linkedExpressions[n] = {
+            linkedExpressions[m] = {
                 type: AttributeExpression,
                 name,
+                namespaceURI,
                 nodePath: getNodePath(element)
             };
         }
@@ -38,10 +39,10 @@ export function linkAttributes(
 }
 
 export function linkComment(node: Comment, linkedExpressions: LinkSymbol[]) {
-    const n = markerNumber(node.data);
+    const m = markerNumber(node.data);
 
-    if (n !== -1) {
-        linkedExpressions[n] = {
+    if (~m) {
+        linkedExpressions[m] = {
             type: NodeExpression,
             nodePath: getNodePath(node)
         };
@@ -53,18 +54,19 @@ export function linkTexts(
     node: CharacterData,
     linkedExpressions: LinkSymbol[]
 ): void {
-    getMarkers(node.data).forEach((key: string) => {
+    let m: RegExpExecArray | null;
+    while ((m = MARKER_RE.exec(node.data)) !== null) {
         const keyNode: Text = text();
-        node = (<Text>node).splitText(node.data.indexOf(key));
-        node.deleteData(0, key.length);
+        node = (<Text>node).splitText(m.index);
+        node.deleteData(0, m[0].length);
 
         node.parentNode!.insertBefore(keyNode, node);
 
-        linkedExpressions[markerNumber(key)] = {
+        linkedExpressions[Number(m[1] || m[2])] = {
             type: NodeExpression,
             nodePath: getNodePath(keyNode)
         };
-    });
+    }
 }
 
 export function linkExpressions(root: DocumentFragment) {
@@ -98,7 +100,8 @@ export function resolve(fragment: Node, symbols: LinkSymbol[]): Expression[] {
         symbol =>
             new symbol.type(
                 getNodeByPath(fragment, symbol.nodePath),
-                symbol.name
+                symbol.name,
+                symbol.namespaceURI
             )
     ) as any;
 }
