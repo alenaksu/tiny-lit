@@ -1,6 +1,7 @@
 import { Expression, CacheEntry } from './types';
 import { linkExpressions, resolve } from './linker';
-import { TEXT_ELEMENT } from './utils';
+import { MARKER_PREFIX } from './utils';
+// import { TEXT_ELEMENT } from './utils';
 
 const TemplateCache: WeakMap<TemplateStringsArray, CacheEntry> = new WeakMap();
 
@@ -29,7 +30,7 @@ function toHTML(strings: TemplateStringsArray) {
      * 3. ...>...
      * 4. ......
      */
-    const tagName = `[0-9a-zA-Z]+`,
+    const tagName = `[0-9a-z-]+`,
         attributeName = `[^<\\s\\0"'>\\/=]+`,
         attributeValue = `(?:"[^"]*"?|'[^']*'?|[^\\s'">]*)`,
         attribute = `\\s*${attributeName}(?:\\s*=\\s*${attributeValue})?`,
@@ -42,21 +43,18 @@ function toHTML(strings: TemplateStringsArray) {
     }
 
     let isAttribute = false;
-    let lastElement;
 
     let html = strings[0];
     for (let i = 0, l = strings.length; i < l - 1; i++) {
-        const marker = `__${i}__`;
+        const marker = `${MARKER_PREFIX}${i}`;
         const match = strings[i].match(NODE_RE)!;
 
         if (match[MatchType.TagName]) {
-            lastElement = match[MatchType.TagName];
             isAttribute = !match[MatchType.ClosedTag];
+        } else if (match[MatchType.EndTag]) {
+            isAttribute = false;
         }
 
-        if (match[MatchType.ClosedTag] || match[MatchType.EndTag]) {
-            isAttribute = TEXT_ELEMENT.test(lastElement);
-        }
         html += (isAttribute ? marker : `<!--${marker}-->`) + strings[i + 1];
     }
 

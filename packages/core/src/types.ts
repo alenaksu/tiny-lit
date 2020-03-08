@@ -19,6 +19,7 @@ export interface TemplateInterface {
 export type LinkSymbol = {
     type: new (...args: any[]) => void;
     name?: string;
+    namespaceURI?: string | null;
     nodePath: Array<number>;
 };
 
