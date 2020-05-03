@@ -77,5 +77,6 @@ typings/
 /demo/public/**/*.js.map
 /demo/public/**/*.js
 **/.cache
+**/.parcel-cache
 **/dist
 **/types

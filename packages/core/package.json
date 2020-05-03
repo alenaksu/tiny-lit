@@ -13,13 +13,13 @@
         "build:esm": "tsc --module es2015 --target es6 --outDir dist/esm",
         "build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
         "lint": "tslint --project ./",
-        "size": "npm run build && size-limit",
+        "size": "size-limit",
         "test": "karma start --single-run --browsers ChromeHeadless ../../karma.conf.js"
     },
     "typings": "./types/index.d.ts",
     "size-limit": [
         {
-            "limit": "2.0 KB",
+            "limit": "2.3 KB",
             "path": "dist/esm/index.js"
         }
     ],

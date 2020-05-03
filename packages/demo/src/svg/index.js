@@ -1,19 +1,20 @@
 import { html, render } from '@tiny-lit/core';
 import { Element } from '@tiny-lit/element';
 
-const t = c => html`
-    <div>${c}</div>
-`;
+const t = (c) => html` <div>${c}</div> `;
 
 class Svg extends Element {
     static get is() {
         return 'test-svg';
     }
 
+    static get properties() {
+        return {
+            radius: Number
+        };
+    }
+
     maxRadius = 50;
-    state = {
-        radius: 0
-    };
 
     constructor() {
         super();
@@ -28,17 +29,23 @@ class Svg extends Element {
     connectedCallback() {
         super.connectedCallback();
 
-        this.interval = setInterval(
-            () =>
-                this.setState({
-                    radius: Math.abs(Math.sin(Date.now() / 1000) * this.maxRadius)
-                }),
-            20
-        );
+        this.interval = setInterval(() => {
+            this.radius = Math.abs(
+                Math.sin(Date.now() / 1000) * this.maxRadius
+            );
+        }, 20);
     }
 
     disconnectedCallback() {
         clearInterval(this.interval);
+    }
+
+    get radius() {
+        console.log("get");
+    }
+
+    set radius(value) {
+        console.log("set", value);
     }
 
     render() {
@@ -59,14 +66,13 @@ class Svg extends Element {
                     min="10"
                     max="100"
                     onChange=${this.onChange}
-                    value=${this.radius}
                 />
             </div>
             <svg height=${this.maxRadius * 2} width=${this.maxRadius * 2}>
                 <circle
                     cx=${this.maxRadius}
                     cy=${this.maxRadius}
-                    r="${this.state.radius}"
+                    r="${this.radius}"
                     stroke="black"
                     stroke-width="3"
                     fill="red"
