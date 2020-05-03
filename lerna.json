@@ -1,6 +1,8 @@
 {
     "npmClient": "npm",
     "useWorkspaces": false,
-    "packages": ["packages/*"],
-    "version": "2.0.0-alpha.3"
+    "packages": [
+        "packages/*"
+    ],
+    "version": "2.0.0-alpha.4"
 }
