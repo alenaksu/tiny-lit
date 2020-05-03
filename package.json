@@ -35,7 +35,7 @@
         "lerna": "^3.20.2",
         "prettier": "^2.0.5",
         "pretty-quick": "^2.0.1",
-        "size-limit": "^0.18.5",
+        "size-limit": "^4.4.5",
         "ts-loader": "^7.0.2",
         "tslint": "^6.1.2",
         "typescript": "^3.8.3",
