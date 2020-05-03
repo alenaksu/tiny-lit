@@ -3,8 +3,8 @@ import { html } from '@tiny-lit/core';
 
 describe('Element', () => {
     const root = document.createElement('div');
-    const template = text => html`<div>${text}</div>`;
-    customElements.define('a-element', Element);
+    const template = (text) => html`<div>${text}</div>`;
+    customElements.define('a-element', class extends TlElement {});
     customElements.define(
         'c-element',
         class extends TlElement {
@@ -28,10 +28,15 @@ describe('Element', () => {
             static get properties() {
                 return {
                     a: String,
-                    b: Number,
-                    c: Boolean,
-                    myProp: String,
-                    mySuperProp: Boolean,
+                    b: {
+                        type: Number
+                    },
+                    c: {
+                        type: Boolean,
+                        onChange: jasmine.createSpy()
+                    },
+                    myProp: { type: String, onChange: true },
+                    mySuperProp: Boolean
                 };
             }
 
@@ -85,7 +90,7 @@ describe('Element', () => {
         const r = e.update.bind(e);
 
         let updated = false;
-        e.update = function() {
+        e.update = function () {
             updated = true;
             r();
         };
@@ -96,12 +101,12 @@ describe('Element', () => {
 
     it('should accept functions as setState argument', () => {
         const e = <any>document.createElement('c-element');
-        const increment = state => ({
-            value: state.value + 1,
+        const increment = (state) => ({
+            value: state.value + 1
         });
 
         e.setState({
-            value: 0,
+            value: 0
         });
         expect(e.state.value).toBe(0);
 
@@ -109,7 +114,7 @@ describe('Element', () => {
         expect(e.state.value).toBe(1);
     });
 
-    it('should pass state and element as setState function arguments', done => {
+    it('should pass state and element as setState function arguments', (done) => {
         const e = <any>document.createElement('c-element');
         const increment = (state, instance) => {
             expect(state).toEqual({});
@@ -128,7 +133,7 @@ describe('Element', () => {
         expect(shadowRoot).toBe(e.renderRoot);
     });
 
-    it('should render inside shadow dom', done => {
+    it('should render inside shadow dom', (done) => {
         const e: any = document.createElement('c-element');
         const shadowRoot = e.attachShadow({ mode: 'open' });
 
@@ -139,7 +144,7 @@ describe('Element', () => {
     });
 
     describe('withProps', () => {
-        it('should reflect props to attributes', done => {
+        it('should reflect props to attributes', (done) => {
             const e: any = document.createElement('p-element');
 
             expect(e.constructor.observedAttributes).toEqual([
@@ -147,18 +152,18 @@ describe('Element', () => {
                 'b',
                 'c',
                 'my-prop',
-                'my-super-prop',
+                'my-super-prop'
             ]);
 
-            e.setAttribute('my-prop', 'true');
-            e.setAttribute('my-super-prop', 'true');
+            e.setAttribute('a', 'true');
+            e.setAttribute('c', 'true');
 
             requestAnimationFrame(() => {
                 // expect(e.constructor.properties.mySuperProp).toHaveBeenCalled();
                 // expect(e.constructor.properties.myProp).toHaveBeenCalled();
 
-                expect(e.mySuperProp).toBe(true);
-                expect(e.myProp).toBe('true');
+                expect(e.a).toBe('true');
+                expect(e.c).toBe(true);
 
                 done();
             });
@@ -167,10 +172,10 @@ describe('Element', () => {
         it('should initialize observed properties', () => {
             const e: any = document.createElement('p-element');
 
-            e.constructor.observedAttributes.forEach(attrName => {
+            e.constructor.observedAttributes.forEach((attrName) => {
                 const desc = Object.getOwnPropertyDescriptor(
                     e.constructor.prototype,
-                    e.constructor.__attrsMap[attrName]
+                    e.constructor.__attrs[attrName]
                 );
 
                 expect(desc).toBeDefined();
@@ -182,7 +187,7 @@ describe('Element', () => {
             e.remove();
         });
 
-        it('should trigger update when props changing', () => {
+        it('should trigger update when props change', () => {
             const e: any = document.createElement('p-element');
             const callback = jasmine.createSpy('elem');
 
@@ -191,10 +196,10 @@ describe('Element', () => {
 
             e.a = 1;
 
-            expect(callback).toHaveBeenCalled();
+            expect(e.update).toHaveBeenCalled();
         });
 
-        it('should coerce property value', () => {
+        it('should coerce property value', (done) => {
             const e: any = document.createElement('p-element');
             const callback = jasmine.createSpy('elem');
 
@@ -205,9 +210,43 @@ describe('Element', () => {
             e.setAttribute('b', '1'); // number
             e.setAttribute('c', ''); // boolean
 
-            expect(e.a).toBe('1');
-            expect(e.b).toBe(1);
-            expect(e.c).toBe(false);
+            requestAnimationFrame(() => {
+                expect(e.a).toBe('1');
+                expect(e.b).toBe(1);
+                expect(e.c).toBe(false);
+
+                done();
+            });
+        });
+
+        it('should call the default property change callback', () => {
+            const e: any = document.createElement('p-element');
+
+            e.update();
+
+            e.myProp = 'bar';
+            e.onMyPropChanged = jasmine.createSpy('onMyPropChanged');
+            e.myProp = 'foo';
+
+            expect(e.onMyPropChanged).toHaveBeenCalledWith('foo', 'bar');
+        });
+
+        it('should call the defined property change callback', () => {
+            const e: any = document.createElement('p-element');
+
+            const onChange = e.constructor.__props.myProp.onChange;
+            e.constructor.__props.myProp.onChange = jasmine.createSpy('onChange');
+
+            e.update();
+
+            e.myProp = 'bar';
+            e.onMyPropChanged = jasmine.createSpy('onMyPropChanged');
+            e.myProp = 'foo';
+
+            expect(e.constructor.__props.myProp.onChange).toHaveBeenCalledWith('foo', 'bar');
+            expect(e.onMyPropChanged).not.toHaveBeenCalled();
+
+            e.constructor.__props.myProp.onChange = onChange;
         });
     });
 });

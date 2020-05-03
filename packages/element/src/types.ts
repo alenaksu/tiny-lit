@@ -23,4 +23,14 @@ export interface CustomElement {
     observedAttributes?: Array<string>;
 }
 
+export type PropertyDescriptor = {
+    type: Function;
+    onChange?: Function;
+};
+
 export type ElementProperties<T> = { [P in keyof T]?: T[P] };
+
+export type AttributeMap = Map<string, string>;
+
+export const PROPS = Symbol();
+export const ATTRS = Symbol();
