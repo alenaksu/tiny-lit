@@ -8,6 +8,7 @@ export interface Element {
     update(): void;
     setState(nextState: object | Function, callback?: Function): void;
     renderCallbacks: Array<Function>;
+    afterRender?: Function;
     renderRoot: HTMLElement | ShadowRoot;
 }
 
