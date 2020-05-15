@@ -33,7 +33,7 @@ class Svg extends Element {
             this.radius = Math.abs(
                 Math.sin(Date.now() / 1000) * this.maxRadius
             );
-        }, 20);
+        }, 10);
     }
 
     disconnectedCallback() {
