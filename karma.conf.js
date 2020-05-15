@@ -2,16 +2,18 @@ module.exports = function (config) {
     config.set({
         baseDir: '.',
         frameworks: ['jasmine', 'karma-typescript'],
-        files: [
-            '/src/**/*.ts',
-            '/__test__/**/*.ts'
-        ].map(path => process.cwd() + '/' + path),
+        files: ['/src/**/*.ts', '/__test__/**/*.ts'].map(
+            (path) => process.cwd() + '/' + path
+        ),
         preprocessors: {
             '**/*.ts': 'karma-typescript',
-            '**/src/**/*.ts': 'coverage',
+            '**/src/**/*.ts': 'coverage'
         },
         karmaTypescriptConfig: {
-            tsconfig: "./tsconfig.karma.json"
+            tsconfig: './tsconfig.karma.json',
+            bundlerOptions: {
+                transforms: [require('karma-typescript-es6-transform')()]
+            }
         },
         reporters: ['progress', 'karma-typescript', 'coverage'],
         port: 9876, // karma web server port
@@ -24,10 +26,10 @@ module.exports = function (config) {
         coverageReporter: {
             reporters: [
                 {
-                    type: 'text',
+                    type: 'text'
                 },
-                { type: 'lcov', dir: 'coverage' },
-            ],
-        },
+                { type: 'lcov', dir: 'coverage' }
+            ]
+        }
     });
 };

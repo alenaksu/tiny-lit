@@ -79,8 +79,10 @@ describe('Element', () => {
         const callback = jasmine.createSpy('elem');
         const e = <any>document.createElement('s-element');
 
-        e.setState({}, callback);
-        e.setState({}, callback);
+        e.setState({}, () => {
+            callback();
+            e.setState({}, callback);
+        });
 
         expect(callback).toHaveBeenCalledTimes(2);
     });
@@ -140,6 +142,46 @@ describe('Element', () => {
         e.setState({ text: 'ciaone' }, () => {
             expect(shadowRoot.innerHTML).toBe('<div>ciaone</div>');
             done();
+        });
+    });
+
+    it('should call beforeUpdate before every render', () => {
+        const e: any = document.createElement('c-element');
+        const beforeUpdate = jasmine.createSpy();
+        const render = jasmine.createSpy();
+
+        e.beforeUpdate = beforeUpdate;
+        e.render = render;
+        e.update();
+
+        expect(beforeUpdate).toHaveBeenCalledBefore(render);
+    });
+
+    it('should call firstUpdated after the first render', () => {
+        const e: any = document.createElement('c-element');
+        const firstUpdated = jasmine.createSpy();
+        const render = jasmine.createSpy();
+
+        e.firstUpdated = firstUpdated;
+        e.render = render;
+        e.update();
+
+        expect(render).toHaveBeenCalledBefore(firstUpdated);
+    });
+
+    it('should call updated after the render is completed', (done) => {
+        const e: any = document.createElement('c-element');
+        const updated = jasmine.createSpy();
+        const render = jasmine.createSpy();
+
+        e.updated = updated;
+        e.render = render;
+        e.update();
+        e.setState({}, () => {
+            setTimeout(() => {
+                expect(render).toHaveBeenCalledBefore(updated);
+                done();
+            });
         });
     });
 
@@ -235,7 +277,9 @@ describe('Element', () => {
             const e: any = document.createElement('p-element');
 
             const onChange = e.constructor.__props.myProp.onChange;
-            e.constructor.__props.myProp.onChange = jasmine.createSpy('onChange');
+            e.constructor.__props.myProp.onChange = jasmine.createSpy(
+                'onChange'
+            );
 
             e.update();
 
@@ -243,7 +287,10 @@ describe('Element', () => {
             e.onMyPropChanged = jasmine.createSpy('onMyPropChanged');
             e.myProp = 'foo';
 
-            expect(e.constructor.__props.myProp.onChange).toHaveBeenCalledWith('foo', 'bar');
+            expect(e.constructor.__props.myProp.onChange).toHaveBeenCalledWith(
+                'foo',
+                'bar'
+            );
             expect(e.onMyPropChanged).not.toHaveBeenCalled();
 
             e.constructor.__props.myProp.onChange = onChange;
