@@ -1,7 +1,7 @@
 {
     "name": "@tiny-lit/core",
     "version": "2.0.0-alpha.4",
-    "main": "dist/cjs/index.js",
+    "main": "dist/esm/index.js",
     "module": "dist/esm/index.js",
     "source": "src/index.ts",
     "license": "MIT",
