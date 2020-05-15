@@ -17,12 +17,18 @@
     },
     "size-limit": [
         {
-            "limit": "4 KB",
-            "path": "packages/**/dist/esm/index.js"
+            "name": "element",
+            "limit": "2.9 KB",
+            "path": "packages/element/dist/esm/index.js"
+        },
+        {
+            "name": "core",
+            "limit": "2.3 KB",
+            "path": "packages/core/dist/esm/index.js"
         }
     ],
     "devDependencies": {
-        "@size-limit/preset-small-lib": "^4.4.5",
+        "@size-limit/preset-small-lib": "^4.5.0",
         "@types/jasmine": "^3.5.10",
         "husky": "^4.2.5",
         "jasmine": "^3.5.0",
