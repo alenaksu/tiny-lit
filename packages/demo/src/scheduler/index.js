@@ -8,7 +8,7 @@ function rafInterval(fn) {
 
     function run() {
         fn();
-        return running && requestAnimationFrame(run);
+        running && requestAnimationFrame(run);
     }
 
     requestAnimationFrame(run);
@@ -16,28 +16,27 @@ function rafInterval(fn) {
     return () => (running = false);
 }
 
-
-class KarpinskyDemo extends Element {
+class SchedulerDemo extends Element {
     static get is() {
-        return 'karpinsky-demo';
+        return 'scheduler-demo';
     }
 
     constructor() {
         super();
 
-        // this.attachShadow({ mode: 'closed' });
+        this.attachShadow({ mode: 'open' });
     }
 
     static get properties() {
         return {
             elapsed: Number
-        }
+        };
     }
 
     connectedCallback() {
         const rendered = this.rendered;
 
-        if (!rendered) console.time('render');
+        console.time('render');
 
         this.start = Date.now();
         this.timerInterval = setInterval(this.tick.bind(this), 1000);
@@ -45,10 +44,8 @@ class KarpinskyDemo extends Element {
             this.elapsed = Date.now() - this.start;
         });
         this.setState({
-            seconds: 0,
+            seconds: 0
         });
-
-        if (!rendered) console.timeEnd('render');
     }
 
     disconnectedCallback() {
@@ -58,24 +55,22 @@ class KarpinskyDemo extends Element {
 
     tick() {
         this.setState({
-            seconds: (this.state.seconds % 10) + 1,
+            seconds: (this.state.seconds % 10) + 1
         });
     }
 
-    getStyle() {
+    getTransform() {
         const elapsed = this.elapsed;
         const t = (elapsed / 1000) % 10;
         const scale = 1 + (t > 5 ? 10 - t : t) / 10;
 
         return `
-            position: absolute;
-            transform-origin: 0 0;
-            width: 10px;
-            height: 10px;
-            left: 50%;
-            top: 50%;
-            transform: scaleX(${scale / 2.1}) scaleY(0.7) translateZ(0.1px) translateX(50%)
+            transform: scale(${scale / 2.1}, 0.7) translateX(50%) translateZ(0);
         `;
+    }
+
+    firstUpdated() {
+        console.timeEnd('render');
     }
 
     render() {
@@ -86,12 +81,27 @@ class KarpinskyDemo extends Element {
                 :host {
                     color: black;
                 }
+
+                .container {
+                    position: absolute;
+                    transform-origin: 0 0;
+                    width: 10px;
+                    height: 10px;
+                    left: 50%;
+                    top: 50%;
+                    will-change: transform;
+                }
             </style>
-            <div style=${this.getStyle()}>
-                <karpinsky-triangle x=${0} y=${0} s=${1000} seconds=${seconds} />
+            <div class="container" style=${this.getTransform()}>
+                <sierpinski-triangle
+                    x=${0}
+                    y=${0}
+                    s=${1000}
+                    seconds=${seconds}
+                />
             </div>
         `;
     }
 }
 
-customElements.define(KarpinskyDemo.is, KarpinskyDemo);
+customElements.define(SchedulerDemo.is, SchedulerDemo);

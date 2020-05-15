@@ -3,47 +3,49 @@ import { SchedulerQueue, SchedulerJob, JobPriority } from './types';
 const jobsQueue: SchedulerQueue = [];
 const jobsQueueLow: SchedulerQueue = [];
 
+const JOB_WINDOW = 10;
+const JOB_MAX_WAIT = 100;
+const raf = window.requestAnimationFrame;
+
 let flushPending = false;
 let queueAge = 0;
 let enabled = true;
 
 function flushQueue(queue, timeout: number): void {
     let i = 0;
+    const l = queue.length;
 
-    while (timeout - performance.now() > 0 && i < queue.length) {
+    while (Date.now() < timeout && i < l) {
         const job = queue[i++];
         job.task!(...job.args);
 
         job.args = undefined;
-        job.pending = false;
+        job.scheduled = false;
     }
+
     queue.splice(0, i);
 }
 
 function flush() {
-    flushPending = true;
+    queueAge++;
 
-    requestAnimationFrame(() => {
-        queueAge++;
+    const now = Date.now();
+    const timeSlice = JOB_WINDOW * Math.ceil(queueAge * (1.0 / JOB_MAX_WAIT));
+    const timeout = now + timeSlice;
 
-        const now = performance.now();
-        const timeSlice = 10 * Math.ceil(queueAge * (1.0 / 50));
-        const timeout = now + timeSlice;
+    flushQueue(jobsQueue, timeout);
+    flushQueue(jobsQueueLow, timeout);
 
-        flushQueue(jobsQueue, timeout);
-        flushQueue(jobsQueueLow, timeout);
+    if (jobsQueue.length > 0) {
+        jobsQueueLow.push(...jobsQueue);
+        jobsQueue.length = 0;
+    }
 
-        if (jobsQueue.length > 0) {
-            jobsQueueLow.push(...jobsQueue);
-            jobsQueue.length = 0;
-        }
-
-        if (jobsQueueLow.length > 0) flush();
-        else {
-            flushPending = false;
-            queueAge = 0;
-        }
-    });
+    if (jobsQueueLow.length > 0) raf(flush);
+    else {
+        flushPending = false;
+        queueAge = 0;
+    }
 }
 
 export function setEnabled(value: boolean) {
@@ -51,12 +53,15 @@ export function setEnabled(value: boolean) {
 }
 
 export function enqueueJob(job: SchedulerJob, priority: JobPriority) {
-    job.pending = true;
+    job.scheduled = true;
 
     if (priority === JobPriority.Normal) jobsQueue.push(job);
     else if (priority === JobPriority.Low) jobsQueueLow.push(job);
 
-    if (!flushPending) flush();
+    if (!flushPending) {
+        flushPending = true;
+        raf(flush);
+    }
 }
 
 export function scheduled(
@@ -66,7 +71,7 @@ export function scheduled(
     const job: SchedulerJob = {
         task,
         args: [],
-        pending: false,
+        scheduled: false,
         firstRun: true
     };
 
@@ -76,7 +81,7 @@ export function scheduled(
             task(...args);
         } else {
             job.args = args;
-            if (!job.pending) enqueueJob(job, priority);
+            if (!job.scheduled) enqueueJob(job, priority);
         }
     };
 }

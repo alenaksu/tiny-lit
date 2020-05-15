@@ -3,8 +3,8 @@
     "private": true,
     "description": "",
     "scripts": {
-        "start": "parcel index.html --no-cache",
-        "build": "rm -rf ../../docs/demo && parcel build index.html --no-cache --public-url https://alenaksu.github.io/tiny-lit/demo/ -d ../../docs/demo"
+        "start": "parcel public/index.html --no-cache",
+        "build": "rm -rf ../../docs/demo && parcel build public/index.html --no-cache --public-url https://alenaksu.github.io/tiny-lit/demo/ -d ../../docs/demo"
     },
     "repository": "alenaksu/tiny-lit",
     "license": "MIT",
@@ -15,13 +15,15 @@
         "@babel/preset-modules": "^0.1.3",
         "@babel/preset-typescript": "^7.9.0",
         "@parcel/transformer-typescript-tsc": "^2.0.0-alpha.3",
-        "parcel-bundler": "^1.12.4"
+        "parcel-bundler": "^1.12.4",
+        "snowpack": "^2.0.0-beta.20"
     },
     "dependencies": {
-        "@tiny-lit/core": "^2.0.0-alpha.3",
-        "@tiny-lit/element": "^2.0.0-alpha.3",
-        "@tiny-lit/router": "^2.0.0-alpha.3",
-        "@tiny-lit/store": "^2.0.0-alpha.3"
+        "@tiny-lit/core": "^2.0.0-alpha.4",
+        "@tiny-lit/element": "^2.0.0-alpha.4",
+        "@tiny-lit/router": "^2.0.0-alpha.4",
+        "@tiny-lit/store": "^2.0.0-alpha.4",
+        "secchiojs": "^1.0.3"
     },
     "publishConfig": {
         "access": "restricted"

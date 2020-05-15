@@ -8,8 +8,16 @@ export function text(data: string = ''): Text {
     return document.createTextNode(data);
 }
 
-export function isNode(obj: any): boolean {
-    return !!obj && !!(<Node>obj).nodeType;
+export function isNode(obj: any, type?: number): boolean {
+    return (
+        !!obj &&
+        !!(<Node>obj).nodeType &&
+        (!type || (<Node>obj).nodeType === type)
+    );
+}
+
+export function isPrimitive(val: any) {
+    return val !== Object(val);
 }
 
 export function replaceRange(newNode: Node, range: any) {
@@ -79,7 +87,7 @@ export function getNodeByPath(node: Node, path: Array<number>): Node {
 
 export const TemplateSymbol = Symbol();
 
-export function isTemplateEqual(
+export function isSameTemplate(
     t1: TemplateInterface,
     t2: TemplateInterface
 ): boolean {
@@ -90,9 +98,7 @@ export function isTemplate(obj: any): boolean {
     return obj && obj[TemplateSymbol];
 }
 
-export const MARKER_PREFIX = `__${Math.random()
-    .toString()
-    .slice(2)}_`;
+export const MARKER_PREFIX = `__${Math.random().toString().slice(2)}_`;
 export const MARKER_RE = new RegExp(
     `<!--${MARKER_PREFIX}(\\d+)-->|${MARKER_PREFIX}(\\d+)`
 );

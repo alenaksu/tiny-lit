@@ -1,25 +1,23 @@
 import { html } from '@tiny-lit/core';
 import { Element } from '@tiny-lit/element';
 import style from './style.js';
+import { getBucket } from 'secchiojs';
 
 function prevented(f) {
-    return e => {
+    return (e) => {
         e.stopPropagation();
         e.preventDefault();
         f(e);
     };
 }
 
-function loadStorage(defaultValue) {
-    const s = localStorage.getItem('todoMvc');
-    return s ? JSON.parse(s) : defaultValue;
-}
-
-function saveStorage(value) {
-    window.requestAnimationFrame(() =>
-        localStorage.setItem('todoMvc', JSON.stringify(value))
-    );
-}
+const [getTodos, setTodos] = getBucket('todoMvc', {
+    version: 1,
+    defaultValue: {
+        todos: [],
+        filter: null
+    }
+});
 
 function shuffle(array) {
     let counter = array.length;
@@ -44,11 +42,7 @@ function shuffle(array) {
 class TodoMVC extends Element {
     constructor() {
         super();
-        this.state = loadStorage({
-            todos: [],
-            filter: null,
-        });
-
+        this.state = getTodos();
         this.attachShadow({ mode: 'open' });
     }
 
@@ -58,7 +52,7 @@ class TodoMVC extends Element {
 
     setState(nextState) {
         super.setState(nextState);
-        saveStorage(this.state);
+        setTodos(this.state);
     }
 
     setFilter(completed) {
@@ -72,18 +66,16 @@ class TodoMVC extends Element {
                 {
                     text: e.target.elements[0].value,
                     completed: false,
-                    id: Math.random()
-                        .toString()
-                        .substr(2),
-                },
-            ],
+                    id: Math.random().toString().substr(2)
+                }
+            ]
         });
         e.target.reset();
     }
 
     handleDeleteTodo(remove) {
         this.setState({
-            todos: [...this.state.todos.filter(todo => todo !== remove)],
+            todos: [...this.state.todos.filter((todo) => todo !== remove)]
         });
     }
 
@@ -93,23 +85,24 @@ class TodoMVC extends Element {
 
             todos[index].completed = !todos[index].completed;
             this.setState({
-                todos: [...todos],
+                todos: [...todos]
             });
         });
     }
 
     handleClearCompleted() {
         this.setState({
-            todos: [...this.state.todos.filter(todo => !todo.completed)],
+            todos: [...this.state.todos.filter((todo) => !todo.completed)]
         });
     }
 
     connectedCallback() {
-        const rendered = this.rendered;
-
-        if (!rendered) console.time('render');
+        console.time('render');
         this.update();
-        if (!rendered) console.timeEnd('render');
+    }
+
+    firstUpdated() {
+        console.timeEnd('render');
     }
 
     render() {
@@ -120,7 +113,7 @@ class TodoMVC extends Element {
             <section class="todoapp body">
                 <header class="header">
                     <h1>todos</h1>
-                    <form onSubmit=${prevented(e => this.handleAddTodo(e))}>
+                    <form onSubmit=${prevented((e) => this.handleAddTodo(e))}>
                         <input
                             class="new-todo"
                             placeholder="What needs to be done?"
@@ -136,45 +129,57 @@ class TodoMVC extends Element {
                         <!-- These are here just to show the structure of the list items -->
                         <!-- List items should get the class \`editing\` when editing and \`completed\` when marked as completed -->
                         ${todos
-                                .map(
-                                    (todo, index) => (
-                                        (todo.index = index), todo
-                                    )
-                                )
-                                .filter(
-                                    todo =>
-                                        filter === null ||
-                                        todo.completed === filter
-                                ).map(
-                            todo =>
+                            .map((todo, index) => ((todo.index = index), todo))
+                            .filter(
+                                (todo) =>
+                                    filter === null || todo.completed === filter
+                            )
+                            .map((todo) =>
                                 html`
-                            <li class=${todo.completed ? 'completed' : ''}>
-                                <div
-                                    class="view"
-                                >
-                                    <input
-                                        class="toggle"
-                                        type="checkbox"
-                                        checked=${todo.completed}
-                                        onClick=${this.switchCompleted(todo.index)}
-                                    />
-                                    <label onClick=${this.switchCompleted(todo.index)}>${todo.text}</label>
-                                    <button class="destroy" onClick=${prevented(
-                                        () => this.handleDeleteTodo(todo)
-                                    )}></button>
-                                </div>
-                                <input class="edit" value=${todo.text} />
-                            </li>
-                        `.withKey(todo.id)
-                        )}
+                                    <li
+                                        class=${todo.completed
+                                            ? 'completed'
+                                            : ''}
+                                    >
+                                        <div class="view">
+                                            <input
+                                                class="toggle"
+                                                type="checkbox"
+                                                checked=${todo.completed}
+                                                onClick=${this.switchCompleted(
+                                                    todo.index
+                                                )}
+                                            />
+                                            <label
+                                                onClick=${this.switchCompleted(
+                                                    todo.index
+                                                )}
+                                                >${todo.text}</label
+                                            >
+                                            <button
+                                                class="destroy"
+                                                onClick=${prevented(() =>
+                                                    this.handleDeleteTodo(todo)
+                                                )}
+                                            ></button>
+                                        </div>
+                                        <input
+                                            class="edit"
+                                            value=${todo.text}
+                                        />
+                                    </li>
+                                `.withKey(todo.id)
+                            )}
                     </ul>
                 </section>
                 <!-- This footer should hidden by default and shown when there are todos -->
                 <footer class="footer">
                     <!-- This should be \`0 items left\` by default -->
                     <span class="todo-count">
-                        <strong>${todos.filter(todo => !todo.completed).length}
-                        </strong> item left
+                        <strong
+                            >${todos.filter((todo) => !todo.completed).length}
+                        </strong>
+                        item left
                     </span>
 
                     <ul class="filters">
@@ -209,13 +214,20 @@ class TodoMVC extends Element {
                         </li>
                     </ul>
                     <!-- Hidden if no completed items are left ↓ -->
-                    <button class="clear-completed" onClick=${prevented(() =>
-                        this.handleClearCompleted()
-                    )}>Clear completed</button>
-                    <button class="clear-completed shuffle" onClick=${prevented(
-                        () =>
+                    <button
+                        class="clear-completed"
+                        onClick=${prevented(() => this.handleClearCompleted())}
+                    >
+                        Clear completed
+                    </button>
+                    <button
+                        class="clear-completed shuffle"
+                        onClick=${prevented(() =>
                             this.setState({ todos: shuffle(this.state.todos) })
-                    )}>Shuffle</button>
+                        )}
+                    >
+                        Shuffle
+                    </button>
                 </footer>
             </section>
             <footer class="info">

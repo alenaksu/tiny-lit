@@ -6,7 +6,8 @@ import {
     text,
     TEXT_ELEMENT,
     MARKER_RE,
-    markerNumber
+    markerNumber,
+    isNode
 } from './utils';
 
 function treeWalkerFilter() {
@@ -82,12 +83,12 @@ export function linkExpressions(root: DocumentFragment) {
     while (treeWalker.nextNode()) {
         const node: any = treeWalker.currentNode;
 
-        if (node.nodeType === Node.ELEMENT_NODE) {
+        if (isNode(node, Node.ELEMENT_NODE)) {
             linkAttributes(node, linkedExpressions);
             if (TEXT_ELEMENT.test(node.tagName)) {
-                [].forEach.call(node.childNodes, node =>
-                    linkTexts(node, linkedExpressions)
-                );
+                for (const childNode of node.childNodes) {
+                    linkTexts(childNode, linkedExpressions);
+                }
             }
         } else linkComment(node, linkedExpressions);
     }
@@ -97,7 +98,7 @@ export function linkExpressions(root: DocumentFragment) {
 
 export function resolve(fragment: Node, symbols: LinkSymbol[]): Expression[] {
     return symbols.map(
-        symbol =>
+        (symbol) =>
             new symbol.type(
                 getNodeByPath(fragment, symbol.nodePath),
                 symbol.name,

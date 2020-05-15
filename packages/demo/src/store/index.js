@@ -1,6 +1,5 @@
 import { StoreProvider, withStore, createStore } from '@tiny-lit/store';
-import { html } from '@tiny-lit/core';
-import { Element } from '@tiny-lit/element';
+import { html, Element } from '@tiny-lit/element';
 
 const JSONObject = value => {
     if (typeof value === 'string') {

@@ -33,8 +33,8 @@ export type TemplateArray = Map<string, TemplateInterface>;
 export type SchedulerJob = {
     task: Function;
     args: any[];
-    pending: boolean;
-    firstRun: boolean;
+    scheduled?: boolean;
+    firstRun?: boolean;
 };
 
 export type SchedulerQueue = Array<SchedulerJob>;

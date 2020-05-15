@@ -28,7 +28,7 @@ export class Template implements TemplateInterface {
 
     update(values: any[]) {
         for (let i = 0; i < values.length; i++) {
-            if (this.expressions![i] !== undefined)
+            if (this.expressions![i])
                 this.expressions![i].update(values[i]);
         }
     }

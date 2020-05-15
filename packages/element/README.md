@@ -149,3 +149,58 @@ class Clock extends Element {
     }
 }
 ```
+
+### Lifecycle callbacks
+
+```js
+class Clock extends Element {
+    title = 'My clock';
+
+    static get properties() {
+        return {
+            title: String
+        };
+    }
+
+    connectedCallback() {
+        setInterval(
+            () =>
+                this.setState({
+                    time: new Date().toLocaleTimeString()
+                }),
+            1000
+        );
+    }
+
+    beforeUpdate() {
+        console.log("beforeUpdate");
+    }
+
+    firstUpdated() {
+        console.log("firstUpdated");
+    }
+
+    updated() {
+        console.log("updated");
+    }
+
+    render() {
+        return html`
+            <h1>${this.title}</h1>
+            <div>${this.state.time}</div>
+        `;
+    }
+}
+```
+
+#### beforeUpdate
+
+Called before the element will be rendered
+
+#### firstUpdated
+
+Called when the element is rendered for the first time
+
+#### updated
+
+Called when the element has been rendered

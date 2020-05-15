@@ -5,7 +5,7 @@
     <title>Tiny-Lit Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script> -->
-    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" type="text/css" href="/index.css" />
     <style>
         body, html {
             margin: 0;
@@ -53,19 +53,19 @@
 
     <div id="menu">
         <a class="menu-link" href="/todo">Todo</a>
-        <a class="menu-link" href="/karpinsky">Karpinsky</a>
+        <a class="menu-link" href="/scheduler">Scheduler</a>
         <a class="menu-link" href="/store">Store</a>
         <a class="menu-link" href="/svg">SVG</a>
     </div>
 
     <div id="content">
-       <demo-route path="/karpinsky" component="karpinsky-demo"></demo-route>
+       <demo-route path="/scheduler" component="scheduler-demo"></demo-route>
        <demo-route path="/store" component="store-demo"></demo-route>
        <demo-route path="/todo" component="todo-mvc"></demo-route>
        <demo-route path="/svg" component="test-svg"></demo-route>
     </div>
 
-    <script async src="./src/index.js" defer=""></script>
+    <script type="module" src="../src/index.js"></script>
 </body>
 
 </html>
