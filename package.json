@@ -19,12 +19,12 @@
         {
             "name": "element",
             "limit": "2.9 KB",
-            "path": "packages/element/dist/esm/index.js"
+            "path": "packages/element/dist/index.js"
         },
         {
             "name": "core",
             "limit": "2.3 KB",
-            "path": "packages/core/dist/esm/index.js"
+            "path": "packages/core/dist/index.js"
         }
     ],
     "devDependencies": {
