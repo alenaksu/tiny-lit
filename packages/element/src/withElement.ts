@@ -1,4 +1,4 @@
-import { render, Template, scheduled } from '@tiny-lit/core';
+import { render, Template, scheduled, JobPriority } from '@tiny-lit/core';
 import {
     Constructor,
     Element as ElementInterface,
@@ -52,7 +52,7 @@ export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
 
             this.rendered ? this.updated() : this.firstUpdated();
             this.rendered = true;
-        })
+        }, JobPriority.Callback)
 
         update() {
             this.beforeUpdate();
@@ -60,7 +60,7 @@ export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
             const template = this.render();
             template && render(template, this.renderRoot as any);
 
-            this._onUpdated();
+            this.renderCallbacks.length && this._onUpdated();
         };
     };
 }
