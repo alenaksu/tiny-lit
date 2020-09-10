@@ -19,7 +19,6 @@
         "snowpack": "^2.0.0-beta.20"
     },
     "dependencies": {
-        "@tiny-lit/core": "^2.0.0-alpha.4",
         "@tiny-lit/element": "^2.0.0-alpha.4",
         "@tiny-lit/router": "^2.0.0-alpha.4",
         "@tiny-lit/store": "^2.0.0-alpha.4",
@@ -29,7 +28,7 @@
         "access": "restricted"
     },
     "browserslist": [
-        "Chrome > 50"
+        "Chrome > 60"
     ],
     "babel": {
         "presets": [

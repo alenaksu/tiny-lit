@@ -1,5 +1,4 @@
-import { html, render } from '@tiny-lit/core';
-import { Element } from '@tiny-lit/element';
+import { Element, html } from '@tiny-lit/element';
 
 const t = (c) => html` <div>${c}</div> `;
 
