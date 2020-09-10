@@ -19,9 +19,9 @@
         "snowpack": "^2.0.0-beta.20"
     },
     "dependencies": {
-        "@tiny-lit/element": "^2.0.0-alpha.4",
-        "@tiny-lit/router": "^2.0.0-alpha.4",
-        "@tiny-lit/store": "^2.0.0-alpha.4",
+        "@tiny-lit/element": "^2.0.0-alpha.7",
+        "@tiny-lit/router": "^2.0.0-alpha.7",
+        "@tiny-lit/store": "^2.0.0-alpha.7",
         "secchiojs": "^1.0.3"
     },
     "publishConfig": {
