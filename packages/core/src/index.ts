@@ -1,5 +1,6 @@
 export { Template } from './template';
 export { scheduled } from './scheduler';
+export * from './types';
 
 import { TemplateInterface } from './types';
 import { Template } from './template';
@@ -11,9 +12,8 @@ export function render(template: TemplateInterface, container: HTMLElement) {
         removeNodes(container.firstChild!, null, container);
 
         container.appendChild(template.create());
-    } else {
-        render.instances.get(container)!.update(template.values);
     }
+    return render.instances.get(container)!.update(template.values);
 }
 render.instances = new WeakMap<HTMLElement, TemplateInterface>();
 

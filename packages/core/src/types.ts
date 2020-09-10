@@ -1,11 +1,11 @@
 export interface Expression {
-    update(value: any, force?: boolean): void;
+    update(value: any): void;
     clear?(): void;
 }
 
 export interface TemplateInterface {
-    update(values: any[], force?: boolean): void;
-    create(): Node;
+    update(values: any[]): void;
+    create(): DocumentFragment;
     delete(): void;
     range?: [Node, Node];
     expressions?: Expression[];
@@ -42,5 +42,6 @@ export type SchedulerQueue = Array<SchedulerJob>;
 export const enum JobPriority {
     Low = 0,
     Normal,
-    High
+    High,
+    Callback
 }

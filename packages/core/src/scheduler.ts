@@ -2,6 +2,7 @@ import { SchedulerQueue, SchedulerJob, JobPriority } from './types';
 
 const jobsQueue: SchedulerQueue = [];
 const jobsQueueLow: SchedulerQueue = [];
+const jobsQueueCallback: SchedulerQueue = [];
 
 const JOB_WINDOW = 10;
 const JOB_MAX_WAIT = 100;
@@ -43,6 +44,7 @@ function flush() {
 
     if (jobsQueueLow.length > 0) raf(flush);
     else {
+        flushQueue(jobsQueueCallback, Number.MAX_SAFE_INTEGER);
         flushPending = false;
         queueAge = 0;
     }
@@ -57,6 +59,7 @@ export function enqueueJob(job: SchedulerJob, priority: JobPriority) {
 
     if (priority === JobPriority.Normal) jobsQueue.push(job);
     else if (priority === JobPriority.Low) jobsQueueLow.push(job);
+    else if (priority === JobPriority.Callback) jobsQueueCallback.push(job);
 
     if (!flushPending) {
         flushPending = true;
