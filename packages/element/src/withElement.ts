@@ -60,7 +60,7 @@ export function withElement<T extends Constructor<HTMLElement>>(Base: T) {
             const template = this.render();
             template && render(template, this.renderRoot as any);
 
-            this.renderCallbacks.length && this._onUpdated();
+            this._onUpdated();
         };
     };
 }
